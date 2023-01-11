@@ -18,8 +18,9 @@ public final class Constants {
   public static class OperatorConstants {
     //  The formula for calculating the theoretical maximum velocity is:
     //   <Motor free speed RPM> / 60 * <Drive reduction> * <Wheel diameter meters> * pi
-    private static final double FALCON_FREE_SPEED = 6380.0;
-    private static final double DRIVE_REDUCTION = 1;
+    // divide by 60 to get rpm into rotations per second
+    private static final double FALCON_FREE_SPEED = 6380.0; // Estimated max speed of a falcon in rmp
+    private static final double DRIVE_REDUCTION = 6.75; // 6.75 : 1 reduction
     private static final double WHEEL_DIAMETER = Units.inchesToMeters(4);
     public static final double MAX_VELOCITY = (FALCON_FREE_SPEED / 60.0) * DRIVE_REDUCTION * WHEEL_DIAMETER * Math.PI;
 
