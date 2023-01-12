@@ -1,5 +1,7 @@
 package frc.robot.subsystems;
 
+import com.ctre.phoenix.sensors.CANCoder;
+
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
@@ -23,8 +25,6 @@ public class Drive extends SubsystemBase {
     private SwerveModuleState _frontRightModule;
     private SwerveModuleState _backLeftModule;
     private SwerveModuleState _backRightModule;
-
-    
 
     // This holds all of the swerve info and does a bunch of the swerve math
     private SwerveDriveKinematics _kinematics;
@@ -72,5 +72,7 @@ public class Drive extends SubsystemBase {
         _frontRightModule = states[1];
         _backLeftModule = states[2];
         _backRightModule = states[3];
+
+        // states[0].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE, states[0].angle.getRadians()
     }
 }
