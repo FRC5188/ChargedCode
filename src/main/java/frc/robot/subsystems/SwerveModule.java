@@ -15,7 +15,10 @@ public class SwerveModule {
     private static final double FALCON_FREE_SPEED = 6380.0; // Estimated max speed of a falcon in rmp
     private static final double DRIVE_REDUCTION = 6.75; // 6.75 : 1 reduction
     private static final double WHEEL_DIAMETER = Units.inchesToMeters(4);
+
     public static final double MAX_VELOCITY = (FALCON_FREE_SPEED / 60.0) * DRIVE_REDUCTION * WHEEL_DIAMETER * Math.PI;
+    // Lower the max voltage to reduce robot speed
+    public static final double MAX_VOLTAGE = 12.0;
 
     // PID coefficients for the turning motor
     private static final double TURNING_MOTOR_P = 0.2;
@@ -29,11 +32,7 @@ public class SwerveModule {
 
     private CANCoder _turningEncoder;
 
-    private PIDController _drivePIDController;
-    private ProfiledPIDController _turningPIDController;
-
-    private SimpleMotorFeedforward _driveFeedforward;
-    private SimpleMotorFeedforward _turningFeedforward;
+    private PIDController _turningPIDController;
 
     public SwerveModule(int driveMotorId, int turningMotorId, int turningEncoderId, double encoderOffset) {
         _driveMotor = new WPI_TalonFX(driveMotorId);
@@ -41,7 +40,10 @@ public class SwerveModule {
 
         _turningEncoder = new CANCoder(turningEncoderId);
 
-
+        _turningPIDController = new PIDController(TURNING_MOTOR_P, TURNING_MOTOR_I, TURNING_MOTOR_D);
     }
 
+    public void set(double driveVoltage, double steerAngle) {
+
+    }
 }
