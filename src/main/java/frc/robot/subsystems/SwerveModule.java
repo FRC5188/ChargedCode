@@ -1,7 +1,12 @@
 package frc.robot.subsystems;
 
+import com.ctre.phoenix.motorcontrol.FeedbackDevice;
+import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.TalonFXFeedbackDevice;
+import com.ctre.phoenix.motorcontrol.TalonFXInvertType;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.ctre.phoenix.sensors.CANCoder;
+import com.ctre.phoenix.sensors.CANCoderStatusFrame;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
@@ -24,6 +29,9 @@ public class SwerveModule {
 
     private static final double CANCODER_RESOLUTION = 4096;
 
+    public final static double kNeutralDeadband = 0.001;
+    public final static int CANCoderDataPeriod = 20;
+
     private WPI_TalonFX _driveMotor;
     private WPI_TalonFX _turningMotor;
 
@@ -38,8 +46,30 @@ public class SwerveModule {
     public SwerveModule(int driveMotorId, int turningMotorId, int turningEncoderId, double encoderOffset) {
         _driveMotor = new WPI_TalonFX(driveMotorId);
         _turningMotor = new WPI_TalonFX(turningMotorId);
-
         _turningEncoder = new CANCoder(turningEncoderId);
+
+        _driveMotor.configFactoryDefault();
+        _turningMotor.configFactoryDefault();
+        _turningEncoder.configFactoryDefault();
+
+        _driveMotor.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, 0, 0);
+        _turningMotor.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Absolute);
+
+        _driveMotor.setNeutralMode(NeutralMode.Coast);
+        _turningMotor.setNeutralMode(NeutralMode.Brake);
+
+        _driveMotor.setSensorPhase(false);
+        _turningMotor.setSensorPhase(false);
+
+        _driveMotor.setInverted(TalonFXInvertType.CounterClockwise);
+        _turningMotor.setInverted(TalonFXInvertType.Clockwise);
+
+        _driveMotor.configNeutralDeadband(kNeutralDeadband);
+        _turningMotor.configNeutralDeadband(kNeutralDeadband);
+
+        // _driveMotor.setStatusFramePeriod(1, 20);
+        // _turningMotor.setStatusFramePeriod(1, 20);
+        _turningEncoder.setStatusFramePeriod(CANCoderStatusFrame.SensorData, CANCoderDataPeriod);
 
 
     }
