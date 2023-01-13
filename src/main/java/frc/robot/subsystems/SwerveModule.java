@@ -9,8 +9,7 @@ import com.ctre.phoenix.sensors.CANCoder;
 import com.ctre.phoenix.sensors.CANCoderStatusFrame;
 
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.controller.ProfiledPIDController;
-import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
 
 public class SwerveModule {
@@ -29,8 +28,6 @@ public class SwerveModule {
     private static final double TURNING_MOTOR_P = 0.2;
     private static final double TURNING_MOTOR_I = 0;
     private static final double TURNING_MOTOR_D = 0.1;
-
-    private static final double CANCODER_RESOLUTION = 4096;
 
     public final static double kNeutralDeadband = 0.001;
     public final static int CANCoderDataPeriod = 20;
@@ -71,11 +68,14 @@ public class SwerveModule {
         // _driveMotor.setStatusFramePeriod(1, 20);
         // _turningMotor.setStatusFramePeriod(1, 20);
         _turningEncoder.setStatusFramePeriod(CANCoderStatusFrame.SensorData, CANCoderDataPeriod);
-
-
     }
 
-    public void set(double driveVoltage, double steerAngle) {
+    public double getTurningAngleRadians() {
+        return Math.toRadians(_turningEncoder.getAbsolutePosition());
+    }
 
+    public void set(SwerveModuleState moduleInfo) {
+        _driveMotor.setVoltage(moduleInfo.speedMetersPerSecond / MAX_VELOCITY * MAX_VOLTAGE);
+        _turningMotor.setVoltage(_turningPIDController.calculate(getTurningAngleRadians(), moduleInfo.angle.getRadians()));
     }
 }

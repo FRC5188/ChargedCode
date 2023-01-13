@@ -106,14 +106,9 @@ public class Drive extends SubsystemBase {
         _backRightModuleState = states[3];
 
         // Set each module's velocity and angle based on swerve info
-        // TODO: Swap inputs to give SwerveModuleState and handle this calculation inside SwerveModule
-        _frontLeftModule.set(_frontLeftModuleState.speedMetersPerSecond / SwerveModule.MAX_VELOCITY * SwerveModule.MAX_VOLTAGE, 
-                             _frontLeftModuleState.angle.getRadians());
-        _frontRightModule.set(_frontRightModuleState.speedMetersPerSecond / SwerveModule.MAX_VELOCITY * SwerveModule.MAX_VOLTAGE, 
-                             _frontRightModuleState.angle.getRadians());
-        _backLeftModule.set(_backLeftModuleState.speedMetersPerSecond / SwerveModule.MAX_VELOCITY * SwerveModule.MAX_VOLTAGE, 
-                             _backLeftModuleState.angle.getRadians());
-        _backRightModule.set(_backRightModuleState.speedMetersPerSecond / SwerveModule.MAX_VELOCITY * SwerveModule.MAX_VOLTAGE, 
-                             _backRightModuleState.angle.getRadians());
+        _frontLeftModule.set(_frontLeftModuleState);
+        _frontRightModule.set(_frontRightModuleState);
+        _backLeftModule.set(_backLeftModuleState);
+        _backRightModule.set(_backRightModuleState);
     }
 }
