@@ -15,6 +15,7 @@ import frc.robot.Constants.CanIDs;
 
 import com.kauailabs.navx.frc.AHRS;
 
+import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
@@ -116,7 +117,7 @@ public class Drive extends SubsystemBase {
 
         // Create the kinematics object using the module locations
         _kinematics = new SwerveDriveKinematics(_frontLeftLocation, _frontRightLocation, _backLeftLocation, _backRightLocation);
-        SwerveDriveOdometry _odometry = new SwerveDriveOdometry(_kinematics, m_gyro.getRotation2d(), new SwerveModulePosition[] {_frontLeftModule.getPosition(), _frontRightModule.getPosition(), _backLeftModule.getPosition(), _backRightModule.getPosition()}, new Pose2d(Constants.Position.StartingXPosition, Constants.Position.StartingYPosition, new Rotation2d()));
+        SwerveDrivePoseEstimator _odometry = new SwerveDrivePoseEstimator(_kinematics, m_gyro.getRotation2d(), new SwerveModulePosition[] {_frontLeftModule.getPosition(), _frontRightModule.getPosition(), _backLeftModule.getPosition(), _backRightModule.getPosition()}, new Pose2d(Constants.Position.StartingXPosition, Constants.Position.StartingYPosition, new Rotation2d()));
     }
 
     public void updateOdometry() {
