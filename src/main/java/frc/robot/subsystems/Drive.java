@@ -119,6 +119,16 @@ public class Drive extends SubsystemBase {
         SwerveDriveOdometry _odometry = new SwerveDriveOdometry(_kinematics, m_gyro.getRotation2d(), new SwerveModulePosition[] {_frontLeftModule.getPosition(), _frontRightModule.getPosition(), _backLeftModule.getPosition(), _backRightModule.getPosition()}, new Pose2d(Constants.Position.StartingXPosition, Constants.Position.StartingYPosition, new Rotation2d()));
     }
 
+    public void updateOdometry() {
+        _odometry.update(
+            m_gyro.getRotation2d(),
+            new SwerveModulePosition[] {
+              _frontLeftModule.getPosition(),
+              _frontRightModule.getPosition(),
+              _backLeftModule.getPosition(),
+              _backRightModule.getPosition()
+            });
+      }
 
     @Override
     public void periodic() {
