@@ -1,5 +1,9 @@
 package frc.robot.subsystems;
 
+import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
+import com.ctre.phoenix.sensors.CANCoder;
+
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
@@ -7,12 +11,26 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.Constants.CanIDs;
+
+import com.kauailabs.navx.frc.AHRS;
+
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
+import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
 
 public class Drive extends SubsystemBase {
     // Width and height of the robot chassis with the corners at the center of each swerve module
     // We need these numbers to complete swerve math
     private final double CHASSIS_WIDTH = Units.inchesToMeters(20.75);
     private final double CHASSIS_HEIGHT = Units.inchesToMeters(24.75);
+
+    private AHRS m_gyro;
+
 
     // The encoders will likely not be exactly at 0 when the wheel is pointed forward, so this compensates for that
     private final double FRONT_LEFT_ENCODER_OFFSET = 0;
@@ -32,6 +50,7 @@ public class Drive extends SubsystemBase {
     private SwerveModuleState _backLeftModuleState;
     private SwerveModuleState _backRightModuleState;
 
+
     // These are the actual swerve modules, we mainly set their speeds and angles using info in SwerveModuleState
     private SwerveModule _frontLeftModule;
     private SwerveModule _frontRightModule;
@@ -40,6 +59,9 @@ public class Drive extends SubsystemBase {
 
     // This does the swerve math
     private SwerveDriveKinematics _kinematics;
+
+    SwerveDriveOdometry _odometry;
+    Pose2d _pose;
 
     // This helps us convert from generic velocities into swerve velocities
     private ChassisSpeeds _chassisSpeeds;
@@ -61,34 +83,55 @@ public class Drive extends SubsystemBase {
         _backLeftModuleState = new SwerveModuleState();
         _backRightModuleState = new SwerveModuleState();
 
+        CANCoder backRightAbsoluteEncoder = new CANCoder(Constants.CanIDs.BACK_RIGHT_DRIVE_ID);
+        CANCoder frontLeftAbsoluteEncoder = new CANCoder(Constants.CanIDs.FRONT_LEFT_DRIVE_ID);
+        CANCoder frontRightAbsoluteEncoder = new CANCoder(Constants.CanIDs.FRONT_RIGHT_DRIVE_ID);
+        CANCoder backLeftAbsoluteEncoder = new CANCoder(Constants.CanIDs.BACK_LEFT_DRIVE_ID);
+
+
         // Each module needs a drive motor, a turning motor, an encoder, and the encoder's offset from 0
-        _frontLeftModule = new SwerveModule(Constants.CanIDs.FRONT_LEFT_DRIVE_ID, 
+        _frontLeftModule = new SwerveModule(Constants.CanIDS.FRONT_LEFT_DRIVE_ENCODER_ID, 
+                                            Constants.CanIDs.FRONT_LEFT_DRIVE_ID, 
                                             Constants.CanIDs.FRONT_LEFT_TURNING_ID, 
-                                            Constants.CanIDs.FRONT_LEFT_ENCODER_ID, 
+                                            Constants.CanIDs.FRONT_LEFT_TURNING_ENCODER_ID, 
                                             FRONT_LEFT_ENCODER_OFFSET);
-        _frontRightModule = new SwerveModule(Constants.CanIDs.FRONT_RIGHT_DRIVE_ID, 
+        _frontRightModule = new SwerveModule(Constants.CanIDS.FRONT_RIGHT_DRIVE_ENCODER_ID, 
+                                            Constants.CanIDs.FRONT_RIGHT_DRIVE_ID, 
                                             Constants.CanIDs.FRONT_RIGHT_TURNING_ID, 
-                                            Constants.CanIDs.FRONT_RIGHT_ENCODER_ID, 
+                                            Constants.CanIDs.FRONT_RIGHT_TURNING_ENCODER_ID, 
                                             FRONT_RIGHT_ENCODER_OFFSET);
-        _backLeftModule = new SwerveModule(Constants.CanIDs.BACK_LEFT_DRIVE_ID, 
+         _backLeftModule = new SwerveModule(Constants.CanIDS.BACK_LEFT_DRIVE_ENCODER_ID, 
+                                            Constants.CanIDs.BACK_LEFT_DRIVE_ID, 
                                             Constants.CanIDs.BACK_LEFT_TURNING_ID, 
-                                            Constants.CanIDs.BACK_LEFT_ENCODER_ID, 
+                                            Constants.CanIDs.BACK_LEFT_TURNING_ENCODER_ID, 
                                             BACK_LEFT_ENCODER_OFFSET);
-        _backRightModule = new SwerveModule(Constants.CanIDs.BACK_RIGHT_DRIVE_ID, 
+        _backRightModule = new SwerveModule(Constants.CanIDS.BACK_RIGHT_DRIVE_ENCODER_ID,
+                                            Constants.CanIDs.BACK_RIGHT_DRIVE_ID, 
                                             Constants.CanIDs.BACK_RIGHT_TURNING_ID, 
-                                            Constants.CanIDs.BACK_RIGHT_ENCODER_ID, 
+                                            Constants.CanIDs.BACK_RIGHT_DRIVE_ENCODER_ID, 
                                             BACK_RIGHT_ENCODER_OFFSET);
+
+
+                                    
 
         // Create the kinematics object using the module locations
         _kinematics = new SwerveDriveKinematics(_frontLeftLocation, _frontRightLocation, _backLeftLocation, _backRightLocation);
-        // Create a reusable container for holding our speed info
-        _chassisSpeeds = new ChassisSpeeds();
+        SwerveDriveOdometry _odometry = new SwerveDriveOdometry(_kinematics, m_gyro.getRotation2d(), new SwerveModulePosition[] {_frontLeftModule.getPosition(), _frontRightModule.getPosition(), _backLeftModule.getPosition(), _backRightModule.getPosition()}, new Pose2d(Constants.Position.StartingXPosition, Constants.Position.StartingYPosition, new Rotation2d()));
     }
+
 
     @Override
     public void periodic() {
-
-    }
+        // Get the rotation of the robot from the gyro.
+        var gyroAngle = m_gyro.getRotation2d();
+      
+        // Update the pose
+        _pose = _odometry.update(gyroAngle,
+          new SwerveModulePosition[] {
+            _frontLeftModule.getPosition(), _frontRightModule.getPosition(),
+            _backLeftModule.getPosition(), _backRightModule.getPosition()
+          });
+      }
 
     public void drive(double vx, double vy, double omega) {
         // Update speed info based on inputs
@@ -105,10 +148,27 @@ public class Drive extends SubsystemBase {
         _backLeftModuleState = states[2];
         _backRightModuleState = states[3];
 
+
+       // SwerveDriveOdometry _odometry = new SwerveDriveOdometry(m_gyro.getRotation2d(), );
+
         // Set each module's velocity and angle based on swerve info
         _frontLeftModule.set(_frontLeftModuleState);
         _frontRightModule.set(_frontRightModuleState);
         _backLeftModule.set(_backLeftModuleState);
         _backRightModule.set(_backRightModuleState);
     }
+
+        // get odometry values
+        public double getOdometryX() {
+            return _odometry.getPoseMeters().getX();
+        }
+    
+        public double getOdometryY() {
+            return _odometry.getPoseMeters().getY();
+        }
+    
+        public double getOdometryAngle() {
+            return _odometry.getPoseMeters().getRotation().getRadians();
+        }
 }
+

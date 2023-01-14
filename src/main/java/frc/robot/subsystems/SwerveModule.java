@@ -7,6 +7,9 @@ import com.ctre.phoenix.motorcontrol.TalonFXInvertType;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.ctre.phoenix.sensors.CANCoder;
 import com.ctre.phoenix.sensors.CANCoderStatusFrame;
+import edu.wpi.first.math.geometry.Rotation2d;
+
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
@@ -35,12 +38,14 @@ public class SwerveModule {
     private WPI_TalonFX _driveMotor;
     private WPI_TalonFX _turningMotor;
 
+    private CANCoder _driveEncoder;
     private CANCoder _turningEncoder;
 
     private PIDController _turningPIDController;
 
-    public SwerveModule(int driveMotorId, int turningMotorId, int turningEncoderId, double encoderOffset) {
+    public SwerveModule(int driveEncoderID, int driveMotorId, int turningMotorId, int turningEncoderId, double encoderOffset) {
         _driveMotor = new WPI_TalonFX(driveMotorId);
+        _driveEncoder = new CANCoder(driveEncoderID);
         _turningMotor = new WPI_TalonFX(turningMotorId);
         _turningEncoder = new CANCoder(turningEncoderId);
 
@@ -49,6 +54,7 @@ public class SwerveModule {
         _driveMotor.configFactoryDefault();
         _turningMotor.configFactoryDefault();
         _turningEncoder.configFactoryDefault();
+
 
         _driveMotor.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, 0, 0);
         _turningMotor.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Absolute);
@@ -74,6 +80,10 @@ public class SwerveModule {
         return Math.toRadians(_turningEncoder.getAbsolutePosition());
     }
 
+    public SwerveModulePosition getPosition() {
+        return new SwerveModulePosition(
+            _driveEncoder.getPosition(), new Rotation2d(_turningEncoder.getPosition()));
+      }
     public void set(SwerveModuleState moduleInfo) {
         _driveMotor.setVoltage(moduleInfo.speedMetersPerSecond / MAX_VELOCITY * MAX_VOLTAGE);
         _turningMotor.setVoltage(_turningPIDController.calculate(getTurningAngleRadians(), moduleInfo.angle.getRadians()));
