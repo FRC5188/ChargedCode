@@ -16,4 +16,25 @@ public final class Constants {
   public static class OperatorConstants {
     public static final int kDriverControllerPort = 0;
   }
+  /**
+   * @summary ArmPositions represents the states in which the arm will be in. 
+   */
+  public enum ArmPositions 
+  { 
+    Stored, 
+    /* GAME PIECE PICKUP */
+    LoadStationPickUp,
+    GroundPickUpCone,
+
+    /* GAME PIECE SCORING */
+    // High Goal
+    HighCone,
+    HighCube,
+    // Middle Goal
+    MiddleCone,
+    MiddleCube,
+    // Low Goal
+    LowCone,
+    LowCube
+  }
 }
