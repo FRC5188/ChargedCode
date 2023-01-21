@@ -16,7 +16,10 @@ public final class Constants {
   public static class OperatorConstants {
     public static final int kDriverControllerPort = 0;
   }
-
+public static class Aio{
+  public final static int ELBOW_PORT_POT = 0;
+  public final static int SHOULDER_PORT_POT = 1;
+}
   public static class CanIDs {
     public static final int ARM_ELBOW_MOTOR_CANID = 9999;
     public static final int ARM_SHOULDER_MOTOR_CANID = 9999;

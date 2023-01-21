@@ -6,6 +6,7 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 
+import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Solenoid;
 
@@ -17,12 +18,16 @@ public class Arm extends SubsystemBase {
   WPI_TalonFX _shoulderMotor;
   WPI_TalonFX _elbowMotor;
   Solenoid _wristSolenoid;
+  AnalogInput _elbowPotentiometer;
+  AnalogInput _shoulderPotentiometer;
   public enum wristPosition { Parallel, Perpendicular}
 
   public Arm() {
     _shoulderMotor = new WPI_TalonFX(Constants.CanIDs.ARM_SHOULDER_MOTOR_CANID);
     _elbowMotor = new WPI_TalonFX(Constants.CanIDs.ARM_ELBOW_MOTOR_CANID);
     _wristSolenoid = new Solenoid(PneumaticsModuleType.REVPH, Constants.WRIST_SOLENOID_PORT);
+    _elbowPotentiometer = new AnalogInput(Constants.Aio.ELBOW_PORT_POT);
+    _shoulderPotentiometer = new AnalogInput(Constants.Aio.SHOULDER_PORT_POT);
   }
 
   public void setShoulderMotorSpeed(double speed){
@@ -36,7 +41,12 @@ public class Arm extends SubsystemBase {
   public void setWristPosition(wristPosition position){
     _wristSolenoid.set(position == wristPosition.Parallel);
   }
-
+  public int getShoulderPotPos(){
+    return _shoulderPotentiometer.getAverageValue();
+  }
+  public int getElbowPotPos(){
+    return _elbowPotentiometer.getAverageValue();
+  }
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
