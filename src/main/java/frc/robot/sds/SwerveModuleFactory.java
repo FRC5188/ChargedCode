@@ -54,12 +54,13 @@ public class SwerveModuleFactory<DriveConfiguration, SteerConfiguration> {
 
         @Override
         public double getSteerAngle() {
+            System.out.println("Current: " + Math.toDegrees(steerController.getStateAngle()));
             return steerController.getStateAngle();
         }
 
         @Override
         public void set(double driveVoltage, double steerAngle) {
-            System.out.println("Current: " + getSteerAngle());
+
 
             steerAngle %= (2.0 * Math.PI);
             if (steerAngle < 0.0) {
