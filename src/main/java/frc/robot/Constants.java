@@ -16,6 +16,12 @@ public final class Constants {
   public static class OperatorConstants {
     public static final int kDriverControllerPort = 0;
   }
+
+  public static class CanIDs {
+    public static final int ARM_ELBOW_MOTOR_CANID = 9999;
+    public static final int ARM_SHOULDER_MOTOR_CANID = 9999;
+
+  }
   /**
    * @summary ArmPositions represents the states in which the arm will be in. 
    */
