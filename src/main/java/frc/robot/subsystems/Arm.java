@@ -4,11 +4,28 @@
 
 package frc.robot.subsystems;
 
+import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
+
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 
 public class Arm extends SubsystemBase {
   /** Creates a new Arm. */
-  public Arm() {}
+  WPI_TalonFX _shoulderMotor;
+  WPI_TalonFX _elbowMotor;
+  public Arm() {
+    _shoulderMotor = new WPI_TalonFX(Constants.CanIDs.ARM_SHOULDER_MOTOR_CANID);
+    _elbowMotor = new WPI_TalonFX(Constants.CanIDs.ARM_ELBOW_MOTOR_CANID);
+
+  }
+
+  public void setShoulderMotorSpeed(double speed){
+    _shoulderMotor.set(speed);
+  }
+
+  public void setElbowMotorSpeed(double speed){
+    _elbowMotor.set(speed);
+  }
 
   @Override
   public void periodic() {
