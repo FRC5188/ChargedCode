@@ -4,6 +4,8 @@
 
 package frc.robot.subsystems;
 
+import com.ctre.phoenix.sensors.AbsoluteSensorRange;
+import com.ctre.phoenix.sensors.CANCoder;
 import com.kauailabs.navx.frc.AHRS;
 
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -16,177 +18,213 @@ import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.sds.Mk3SwerveModuleHelper;
+import frc.robot.Constants.CanIDs;
+import frc.robot.sds.Mk4iSwerveModuleHelper;
 import frc.robot.sds.SdsModuleConfigurations;
 import frc.robot.sds.SwerveModule;
 
 public class Drive extends SubsystemBase {
-  private static final double DRIVETRAIN_TRACKWIDTH_METERS = Units.inchesToMeters(20.75);
-  private static final double DRIVETRAIN_WHEELBASE_METERS = Units.inchesToMeters(24.75);
-  /**
-   * The maximum voltage that will be delivered to the drive motors.
-   * <p>
-   * This can be reduced to cap the robot's maximum speed. Typically, this is useful during initial testing of the robot.
-   */
-  public static final double MAX_VOLTAGE = 12.0;
-  // FIXME Measure the drivetrain's maximum velocity or calculate the theoretical.
-  //  The formula for calculating the theoretical maximum velocity is:
-  //   <Motor free speed RPM> / 60 * <Drive reduction> * <Wheel diameter meters> * pi
-  //  By default this value is setup for a Mk3 standard module using Falcon500s to drive.
-  //  An example of this constant for a Mk4 L2 module with NEOs to drive is:
-  //   5880.0 / 60.0 / SdsModuleConfigurations.MK4_L2.getDriveReduction() * SdsModuleConfigurations.MK4_L2.getWheelDiameter() * Math.PI
-  /**
-   * The maximum velocity of the robot in meters per second.
-   * <p>
-   * This is a measure of how fast the robot should be able to drive in a straight line.
-   */
-  public static final double MAX_VELOCITY_METERS_PER_SECOND = 6380.0 / 60.0 *
-          SdsModuleConfigurations.MK3_STANDARD.getDriveReduction() *
-          SdsModuleConfigurations.MK3_STANDARD.getWheelDiameter() * Math.PI;
-  /**
-   * The maximum angular velocity of the robot in radians per second.
-   * <p>
-   * This is a measure of how fast the robot can rotate in place.
-   */
-  // Here we calculate the theoretical maximum angular velocity. You can also replace this with a measured amount.
-  public static final double MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND = MAX_VELOCITY_METERS_PER_SECOND /
-          Math.hypot(DRIVETRAIN_TRACKWIDTH_METERS / 2.0, DRIVETRAIN_WHEELBASE_METERS / 2.0);
+    
+    /** The width of the chassis from the centers of the swerve modules */
+    private static final double CHASSIS_WIDTH_METERS = Units.inchesToMeters(20.75);
+    /** The height of the chassis from the centers of the swerve modules */
+    private static final double CHASSIS_HEIGHT_METERS = Units.inchesToMeters(24.75);
+    /**
+     * The maximum voltage that will be delivered to the drive motors.
+     * <p>
+     * This can be reduced to cap the robot's maximum speed.
+     */
+    public static final double MAX_VOLTAGE = 6.0;
 
-  private final SwerveDriveKinematics m_kinematics = new SwerveDriveKinematics(
-          // Front left
-          new Translation2d(DRIVETRAIN_TRACKWIDTH_METERS / 2.0, DRIVETRAIN_WHEELBASE_METERS / 2.0),
-          // Front right
-          new Translation2d(DRIVETRAIN_TRACKWIDTH_METERS / 2.0, -DRIVETRAIN_WHEELBASE_METERS / 2.0),
-          // Back left
-          new Translation2d(-DRIVETRAIN_TRACKWIDTH_METERS / 2.0, DRIVETRAIN_WHEELBASE_METERS / 2.0),
-          // Back right
-          new Translation2d(-DRIVETRAIN_TRACKWIDTH_METERS / 2.0, -DRIVETRAIN_WHEELBASE_METERS / 2.0)
-  );
+    /**
+     * The maximum velocity of the robot in meters per second.
+     * <p>
+     * This is a measure of how fast the robot should be able to drive in a straight
+     * line.
+     * The formula for calculating the theoretical maximum velocity is:
+     * <p>
+     * Motor free speed RPM / 60 * Drive reduction * Wheel diameter meters * Pi
+     */
+    public static final double MAX_VELOCITY_METERS_PER_SECOND = 6380.0 / 60.0 *
+            SdsModuleConfigurations.MK4I_L2.getDriveReduction() *
+            SdsModuleConfigurations.MK4I_L2.getWheelDiameter() * Math.PI;
 
-  // By default we use a Pigeon for our gyroscope. But if you use another gyroscope, like a NavX, you can change this.
-  // The important thing about how you configure your gyroscope is that rotating the robot counter-clockwise should
-  // cause the angle reading to increase until it wraps back over to zero.
-  // FIXME Remove if you are using a Pigeon
-  //private final PigeonIMU m_pigeon = new PigeonIMU(DRIVETRAIN_PIGEON_ID);
-  // FIXME Uncomment if you are using a NavX
-  private final AHRS m_navx = new AHRS(); // NavX connected over MXP
+    /**
+     * The maximum angular velocity of the robot in radians per second.
+     * <p>
+     * This is a measure of how fast the robot can rotate in place.
+     */
+    public static final double MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND = MAX_VELOCITY_METERS_PER_SECOND /
+            Math.hypot(CHASSIS_WIDTH_METERS / 2.0, CHASSIS_HEIGHT_METERS / 2.0);
 
-  // These are our modules. We initialize them in the constructor.
-  private final SwerveModule m_frontLeftModule;
-  // private final SwerveModule m_frontRightModule;
-  // private final SwerveModule m_backLeftModule;
-  // private final SwerveModule m_backRightModule;
+    /** The offset to get the encoder to read 0 when facing forward */
+    private static final double FRONT_LEFT_MODULE_ENCODER_OFFSET = -155.9;
+    /** The offset to get the encoder to read 0 when facing forward */
+    private static final double FRONT_RIGHT_MODULE_ENCODER_OFFSET = -241.17;
+    /** The offset to get the encoder to read 0 when facing forward */
+    private static final double BACK_LEFT_MODULE_ENCODER_OFFSET = -266.66;
+    /** The offset to get the encoder to read 0 when facing forward */
+    private static final double BACK_RIGHT_MODULE_ENCODER_OFFSET = -25.40;
 
-  private ChassisSpeeds m_chassisSpeeds = new ChassisSpeeds(0.0, 0.0, 0.0);
+    public static final double ksVolts = 0.22;
+    public static final double kvVoltSecondsPerMeter = 1.98;
+    public static final double kaVoltSecondsSquaredPerMeter = 0.2;
+    public static final double kPDriveVel = 8.5;
+    public static final double kRamseteB = 2;
+    public static final double kRamseteZeta = 0.7; 
 
-  public Drive() {
-    ShuffleboardTab tab = Shuffleboard.getTab("Drivetrain");
+    /**
+     * This object does the math to convert a motion vector into individual module
+     * vectors
+     * <p>
+     * See WPILib's documentation for more information
+     */
+    // We divide our chassis width and height by 2 so we can represent each module
+    // as a point relative to the
+    // center of the robot. Positive along x means going to the left from the
+    // center, and positive along
+    // y means going up from the center
+    private final SwerveDriveKinematics _kinematics = new SwerveDriveKinematics(
+            // Front left
+            new Translation2d(CHASSIS_WIDTH_METERS / 2.0, CHASSIS_HEIGHT_METERS / 2.0),
+            // Front right
+            new Translation2d(CHASSIS_WIDTH_METERS / 2.0, -CHASSIS_HEIGHT_METERS / 2.0),
+            // Back left
+            new Translation2d(-CHASSIS_WIDTH_METERS / 2.0, CHASSIS_HEIGHT_METERS / 2.0),
+            // Back right
+            new Translation2d(-CHASSIS_WIDTH_METERS / 2.0, -CHASSIS_HEIGHT_METERS / 2.0));
 
-    // There are 4 methods you can call to create your swerve modules.
-    // The method you use depends on what motors you are using.
-    //
-    // Mk3SwerveModuleHelper.createFalcon500(...)
-    //   Your module has two Falcon 500s on it. One for steering and one for driving.
-    //
-    // Mk3SwerveModuleHelper.createNeo(...)
-    //   Your module has two NEOs on it. One for steering and one for driving.
-    //
-    // Mk3SwerveModuleHelper.createFalcon500Neo(...)
-    //   Your module has a Falcon 500 and a NEO on it. The Falcon 500 is for driving and the NEO is for steering.
-    //
-    // Mk3SwerveModuleHelper.createNeoFalcon500(...)
-    //   Your module has a NEO and a Falcon 500 on it. The NEO is for driving and the Falcon 500 is for steering.
-    //
-    // Similar helpers also exist for Mk4 modules using the Mk4SwerveModuleHelper class.
+    /**
+     * The gyro that we will use to keep track of our current rotation. The output
+     * of the gyro
+     * impacts the odometry of the robot, as well as field-oriented drive.
+     */
+    private final AHRS _navx = new AHRS();
 
-    // By default we will use Falcon 500s in standard configuration. But if you use a different configuration or motors
-    // you MUST change it. If you do not, your code will crash on startup.
-    // FIXME Setup motor configuration
-    m_frontLeftModule = Mk3SwerveModuleHelper.createFalcon500(
-            // This parameter is optional, but will allow you to see the current state of the module on the dashboard.
-            tab.getLayout("Front Left Module", BuiltInLayouts.kList)
-                    .withSize(2, 4)
-                    .withPosition(0, 0),
-            // This can either be STANDARD or FAST depending on your gear configuration
-            Mk3SwerveModuleHelper.GearRatio.STANDARD,
-            // This is the ID of the drive motor
-            1,
-            // This is the ID of the steer motor
-            2,
-            // This is the ID of the steer encoder
-            3,
-            // This is how much the steer encoder is offset from true zero (In our case, zero is facing straight forward)
-            Math.toRadians(21.7)
-    );
+    // These are our modules
+    private final SwerveModule _frontLeftModule;
+    private final SwerveModule _frontRightModule;
+    private final SwerveModule _backLeftModule;
+    private final SwerveModule _backRightModule;
 
-  //   // We will do the same for the other modules
-  //   m_frontRightModule = Mk3SwerveModuleHelper.createFalcon500(
-  //           tab.getLayout("Front Right Module", BuiltInLayouts.kList)
-  //                   .withSize(2, 4)
-  //                   .withPosition(2, 0),
-  //           Mk3SwerveModuleHelper.GearRatio.STANDARD,
-  //           FRONT_RIGHT_MODULE_DRIVE_MOTOR,
-  //           FRONT_RIGHT_MODULE_STEER_MOTOR,
-  //           FRONT_RIGHT_MODULE_STEER_ENCODER,
-  //           FRONT_RIGHT_MODULE_STEER_OFFSET
-  //   );
+    // private CANCoder _frontLeft;
+    // private CANCoder _frontRight;
+    // private CANCoder _backLeft;
+    // private CANCoder _backRight;
 
-  //   m_backLeftModule = Mk3SwerveModuleHelper.createFalcon500(
-  //           tab.getLayout("Back Left Module", BuiltInLayouts.kList)
-  //                   .withSize(2, 4)
-  //                   .withPosition(4, 0),
-  //           Mk3SwerveModuleHelper.GearRatio.STANDARD,
-  //           BACK_LEFT_MODULE_DRIVE_MOTOR,
-  //           BACK_LEFT_MODULE_STEER_MOTOR,
-  //           BACK_LEFT_MODULE_STEER_ENCODER,
-  //           BACK_LEFT_MODULE_STEER_OFFSET
-  //   );
+    /**
+     * This represents the desired vector of the robot.
+     * <p>
+     * The first part is the forwards velocity, which is how fast we want to go
+     * forward/backward.
+     * Second is the sideways velocity, which is how fast we want to strafe
+     * left/right.
+     * Last is the angular velocity, which is how fast we want to rotate cw/ccw.
+     */
+    private ChassisSpeeds _chassisSpeeds = new ChassisSpeeds(0.0, 0.0, 0.0);
 
-  //   m_backRightModule = Mk3SwerveModuleHelper.createFalcon500(
-  //           tab.getLayout("Back Right Module", BuiltInLayouts.kList)
-  //                   .withSize(2, 4)
-  //                   .withPosition(6, 0),
-  //           Mk3SwerveModuleHelper.GearRatio.STANDARD,
-  //           BACK_RIGHT_MODULE_DRIVE_MOTOR,
-  //           BACK_RIGHT_MODULE_STEER_MOTOR,
-  //           BACK_RIGHT_MODULE_STEER_ENCODER,
-  //           BACK_RIGHT_MODULE_STEER_OFFSET
-  //   );
-   }
+    /**
+     * Represents the drive chassis of the robot. Contains all of the code to
+     * move in a swerve format using either a joystick or supplied values.
+     */
+    public Drive() {
+        ShuffleboardTab shuffleboardTab = Shuffleboard.getTab("Drivetrain");
+        // _frontLeft = new CANCoder(CanIDs.FRONT_LEFT_ENCODER_ID);
+        // _frontLeft.configAbsoluteSensorRange(AbsoluteSensorRange.Unsigned_0_to_360);
+        // _frontLeft.configMagnetOffset(0);
+        // _frontRight = new CANCoder(CanIDs.FRONT_RIGHT_ENCODER_ID);
+        // _frontRight.configAbsoluteSensorRange(AbsoluteSensorRange.Unsigned_0_to_360);
+        // _frontRight.configMagnetOffset(0);
+        // _backLeft = new CANCoder(CanIDs.BACK_LEFT_ENCODER_ID);
+        // _backLeft.configAbsoluteSensorRange(AbsoluteSensorRange.Unsigned_0_to_360);
+        // _backLeft.configMagnetOffset(0);
+        // _backRight = new CANCoder(CanIDs.BACK_RIGHT_ENCODER_ID);
+        // _backRight.configAbsoluteSensorRange(AbsoluteSensorRange.Unsigned_0_to_360);
+        // _backRight.configMagnetOffset(0);
 
-  /**
-   * Sets the gyroscope angle to zero. This can be used to set the direction the robot is currently facing to the
-   * 'forwards' direction.
-   */
-  public void zeroGyroscope() {
-    // FIXME Uncomment if you are using a NavX
-    m_navx.zeroYaw();
-  }
+        _frontLeftModule = Mk4iSwerveModuleHelper.createFalcon500(
+            shuffleboardTab.getLayout("Front Left Module", BuiltInLayouts.kList)
+            .withSize(2, 4)
+            .withPosition(0, 0),
+            Mk4iSwerveModuleHelper.GearRatio.L2,
+            CanIDs.FRONT_LEFT_DRIVE_ID,
+            CanIDs.FRONT_LEFT_TURNING_ID,
+            CanIDs.FRONT_LEFT_ENCODER_ID,
+            FRONT_LEFT_MODULE_ENCODER_OFFSET);
 
-  public Rotation2d getGyroscopeRotation() {
-    // FIXME Uncomment if you are using a NavX
-   if (m_navx.isMagnetometerCalibrated()) {
-     // We will only get valid fused headings if the magnetometer is calibrated
-     return Rotation2d.fromDegrees(m_navx.getFusedHeading());
-   }
+        _frontRightModule = Mk4iSwerveModuleHelper.createFalcon500(
+            shuffleboardTab.getLayout("Front Right Module", BuiltInLayouts.kList)
+            .withSize(2, 4)
+            .withPosition(0, 0),
+            Mk4iSwerveModuleHelper.GearRatio.L2,
+            CanIDs.FRONT_RIGHT_DRIVE_ID,
+            CanIDs.FRONT_RIGHT_TURNING_ID,
+            CanIDs.FRONT_RIGHT_ENCODER_ID,
+            FRONT_RIGHT_MODULE_ENCODER_OFFSET);
 
-   // We have to invert the angle of the NavX so that rotating the robot counter-clockwise makes the angle increase.
-   return Rotation2d.fromDegrees(360.0 - m_navx.getYaw());
-  }
+        _backLeftModule = Mk4iSwerveModuleHelper.createFalcon500(
+            shuffleboardTab.getLayout("Back Left Module", BuiltInLayouts.kList)
+            .withSize(2, 4)
+            .withPosition(0, 0),
+            Mk4iSwerveModuleHelper.GearRatio.L2,
+            CanIDs.BACK_LEFT_DRIVE_ID,
+            CanIDs.BACK_LEFT_TURNING_ID,
+            CanIDs.BACK_LEFT_ENCODER_ID,
+            BACK_LEFT_MODULE_ENCODER_OFFSET);
 
-  public void drive(ChassisSpeeds chassisSpeeds) {
-    m_chassisSpeeds = chassisSpeeds;
-  }
+        _backRightModule = Mk4iSwerveModuleHelper.createFalcon500(
+            shuffleboardTab.getLayout("Back Right Module", BuiltInLayouts.kList)
+            .withSize(2, 4)
+            .withPosition(0, 0),
+            Mk4iSwerveModuleHelper.GearRatio.L2,
+            CanIDs.BACK_RIGHT_DRIVE_ID,
+            CanIDs.BACK_RIGHT_TURNING_ID,
+            CanIDs.BACK_RIGHT_ENCODER_ID,
+            BACK_RIGHT_MODULE_ENCODER_OFFSET);
+    }
 
-  @Override
-  public void periodic() {
+    /**
+     * Sets the gyroscope angle to zero. This can be used to set the direction the
+     * robot is currently facing to the
+     * 'forwards' direction.
+     */
+    public void zeroGyroscope() {
+        _navx.zeroYaw();
+    }
 
-    SwerveModuleState[] states = m_kinematics.toSwerveModuleStates(m_chassisSpeeds);
-    SwerveDriveKinematics.desaturateWheelSpeeds(states, MAX_VELOCITY_METERS_PER_SECOND);
+    public Rotation2d getGyroscopeRotation() {
+        if (_navx.isMagnetometerCalibrated()) {
+            // We will only get valid fused headings if the magnetometer is calibrated
+            return Rotation2d.fromDegrees(_navx.getFusedHeading());
+        }
 
-    m_frontLeftModule.set(states[0].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE, states[0].angle.getRadians());
-    // m_frontRightModule.set(states[1].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE, states[1].angle.getRadians());
-    // m_backLeftModule.set(states[2].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE, states[2].angle.getRadians());
-    // m_backRightModule.set(states[3].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE, states[3].angle.getRadians());
-  }
+        // We have to invert the angle of the NavX so that rotating the robot
+        // counter-clockwise makes the angle increase.
+        return Rotation2d.fromDegrees(360.0 - _navx.getYaw());
+    }
+
+    public void drive(ChassisSpeeds chassisSpeeds) {
+        _chassisSpeeds = chassisSpeeds;
+    }
+
+    @Override
+    public void periodic() {
+        // Convert the drive base vector into module vectors
+        SwerveModuleState[] states = _kinematics.toSwerveModuleStates(_chassisSpeeds);
+        // Normalize the wheel speeds so we aren't trying to set above the max
+        SwerveDriveKinematics.desaturateWheelSpeeds(states, MAX_VELOCITY_METERS_PER_SECOND);
+
+        // System.out.println("FL: " + _frontLeft.getAbsolutePosition() + " FR: " + _frontRight.getAbsolutePosition());
+        // System.out.printf("BL: %.5f BR: %.5f \n", _backLeft.getAbsolutePosition(), _backRight.getAbsolutePosition());
+
+        // Set each module's speed and angle
+        _frontLeftModule.set(states[0].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE,
+                             states[0].angle.getRadians());
+        _frontRightModule.set(states[1].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE, 
+                              states[1].angle.getRadians());
+        _backLeftModule.set(states[2].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE, 
+                            states[2].angle.getRadians());
+        _backRightModule.set(states[3].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE, 
+                             states[3].angle.getRadians());
+    }
 }
