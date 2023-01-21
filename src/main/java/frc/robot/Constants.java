@@ -25,6 +25,8 @@ public static class Aio{
     public static final int ARM_SHOULDER_MOTOR_CANID = 9999;
 
   }
+
+  public static int WRIST_SOLENOID_PORT = 999;
   /**
    * @summary ArmPositions represents the states in which the arm will be in. 
    */
