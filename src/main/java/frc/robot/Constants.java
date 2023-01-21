@@ -25,7 +25,7 @@ public final class Constants {
   /**
    * @summary ArmPositions represents the states in which the arm will be in. 
    */
-  public enum ArmPositions 
+  public enum ArmPositionState 
   { 
     Stored, 
     /* GAME PIECE PICKUP */
@@ -43,4 +43,22 @@ public final class Constants {
     LowCone,
     LowCube
   }
+
+public static class ArmPositionConstants {
+    // LOAD STATION
+    public static final double LOADING_STATION_SHOULDER_POS = -1.0; 
+    public static final double LOADING_STATION_ELBOW_POS = -1.0;
+    // GROUND PICKUP
+    public static final double GROUND_PICKUP_SHOULDER_POS = -1.0;
+    public static final double GROUND_PICKUP_ELBOW_POS = -1.0;
+    // HIGH GOAL
+    public static final double HIGH_GOAL_SHOULDER_POS = -1.0;
+    public static final double HIGH_GOAL_ELBOW_POS = -1.0;
+    // MIDDLE GOAL
+    public static final double MIDDLE_GOAL_SHOULDER_POS = -1.0;
+    public static final double MIDDLE_GOAL_ELBOW_POS = -1.0;
+    // LOW GOAL
+    public static final double LOW_GOAL_SHOULDER_POS = -1.0;
+    public static final double LOW_GOAL_ELBOW_POS = -1.0;
+    }
 }
