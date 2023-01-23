@@ -66,4 +66,19 @@ public static class ArmPositionConstants {
     public static final double LOW_GOAL_SHOULDER_POS = -1.0;
     public static final double LOW_GOAL_ELBOW_POS = -1.0;
     }
+
+/** added PID constants+*/
+public static class PID {
+  public static final double ShoulderMotorkP = 0.0;
+  public static final double ShoulderMotorkI = 0.0;
+  public static final double ShoulderMotorkD = 0.0;
+  public static final double ShoulderMotorkTolerance = 0.0;
+
+
+  public static final double ElbowMotorkP = 0.0;
+  public static final double ElbowMotorkI = 0.0;
+  public static final double ElbowMotorkD = 0.0;
+  public static final double ElbowMotorkTolerance = 0.0;
+
+}
 }
