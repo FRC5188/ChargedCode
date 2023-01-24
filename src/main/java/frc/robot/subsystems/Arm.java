@@ -96,11 +96,23 @@ public class Arm extends SubsystemBase {
   }
 
   public void setShoulderMotorSpeed(double speed){
-    _shoulderMotor.set(speed);
+    try{
+      if(speed > 1.0 || speed < -1.0){
+        throw new IllegalArgumentException("Shoulder motor speed out of range");
+      }
+      _shoulderMotor.set(speed);
+    } catch(IllegalArgumentException e) { return; }
   }
 
+
+  
   public void setElbowMotorSpeed(double speed){
-    _elbowMotor.set(speed);
+    try{
+      if(speed > 1.0 || speed < -1.0){
+        throw new IllegalArgumentException("Elbow motor speed out of range");
+      }
+      _elbowMotor.set(speed);
+    } catch(IllegalArgumentException e) { return; }
   }
 
   public void setWristPosition(wristPosition position){
