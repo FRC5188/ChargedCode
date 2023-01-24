@@ -35,7 +35,7 @@ public static class Aio{
     Stored, 
     /* GAME PIECE PICKUP */
     LoadStationPickUp,
-    GroundPickUpCone,
+    GroundPickUp,
 
     /* GAME PIECE SCORING */
     // High Goal
@@ -45,8 +45,7 @@ public static class Aio{
     MiddleCone,
     MiddleCube,
     // Low Goal
-    LowCone,
-    LowCube
+    LowScore
   }
 
 public static class ArmPositionConstants {

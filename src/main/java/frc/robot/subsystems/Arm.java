@@ -41,6 +41,24 @@ public class Arm extends SubsystemBase {
   private double ElbowMotorkD = 0.0;
   private double ElbowMotorkTolerance = 0.0;
 
+  public enum ArmPositionState 
+  { 
+    Stored, 
+    /* GAME PIECE PICKUP */
+    LoadStationPickUp,
+    GroundPickUp,
+
+    /* GAME PIECE SCORING */
+    // High Goal
+    HighCone,
+    HighCube,
+    // Middle Goal
+    MiddleCone,
+    MiddleCube,
+    // Low Goal
+    LowScore
+  }
+
   public Arm() {
     _shoulderMotor = new WPI_TalonFX(Constants.CanIDs.ARM_SHOULDER_MOTOR_CANID);
     _elbowMotor = new WPI_TalonFX(Constants.CanIDs.ARM_ELBOW_MOTOR_CANID);
