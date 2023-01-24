@@ -24,12 +24,22 @@ public class Arm extends SubsystemBase {
   public enum wristPosition { Parallel, Perpendicular}
 
   // Arm PID controllers
-  private PIDController m_shoulderMotorPID;
-  private PIDController m_elbowMotorPID;
+  private PIDController _shoulderMotorPID;
+  private PIDController _elbowMotorPID;
 
-  // internal constants
-  private double m_shoulderMotorPIDMaxSpeed;
-  private double m_elbowMotorPIDMaxSpeed;
+  // internal PID constants
+  private double _shoulderMotorPIDMaxSpeed;
+  private double _elbowMotorPIDMaxSpeed;
+
+  private double ShoulderMotorkP = 0.0;
+  private double ShoulderMotorkI = 0.0;
+  private double ShoulderMotorkD = 0.0;
+  private double ShoulderMotorkTolerance = 0.0;
+
+  private double ElbowMotorkP = 0.0;
+  private double ElbowMotorkI = 0.0;
+  private double ElbowMotorkD = 0.0;
+  private double ElbowMotorkTolerance = 0.0;
 
   public Arm() {
     _shoulderMotor = new WPI_TalonFX(Constants.CanIDs.ARM_SHOULDER_MOTOR_CANID);
@@ -39,11 +49,11 @@ public class Arm extends SubsystemBase {
     _shoulderPotentiometer = new AnalogInput(Constants.Aio.SHOULDER_PORT_POT);
 
     //Create PID controllers
-    m_shoulderMotorPID = new PIDController(Constants.PID.ShoulderMotorkP, Constants.PID.ShoulderMotorkI, Constants.PID.ShoulderMotorkD);
-    m_shoulderMotorPID.setTolerance(Constants.PID.ShoulderMotorkTolerance);
+    _shoulderMotorPID = new PIDController(ShoulderMotorkP, ShoulderMotorkI, ShoulderMotorkD);
+    _shoulderMotorPID.setTolerance(ShoulderMotorkTolerance);
     
-    m_elbowMotorPID = new PIDController(Constants.PID.ElbowMotorkP, Constants.PID.ElbowMotorkI, Constants.PID.ElbowMotorkD);
-    m_elbowMotorPID.setTolerance(Constants.PID.ElbowMotorkTolerance);
+    _elbowMotorPID = new PIDController(ElbowMotorkP, ElbowMotorkI, ElbowMotorkD);
+    _elbowMotorPID.setTolerance(ElbowMotorkTolerance);
   }
 
 /**
@@ -52,8 +62,8 @@ public class Arm extends SubsystemBase {
      * @param maxSpeed the max speed of motor, in percent output
      */
     public void shoulderMotorPIDInit(double setpoint,  double maxSpeed) {
-      m_shoulderMotorPID.setSetpoint(setpoint);
-      m_shoulderMotorPIDMaxSpeed = maxSpeed;
+      _shoulderMotorPID.setSetpoint(setpoint);
+      _shoulderMotorPIDMaxSpeed = maxSpeed;
   }
 
 
@@ -63,8 +73,8 @@ public class Arm extends SubsystemBase {
      * @param maxSpeed the max speed of motor, in percent output
      */
     public void elbowMotorPIDInit(double setpoint,  double maxSpeed) {
-      m_elbowMotorPID.setSetpoint(setpoint);
-      m_elbowMotorPIDMaxSpeed = maxSpeed;
+      _elbowMotorPID.setSetpoint(setpoint);
+      _elbowMotorPIDMaxSpeed = maxSpeed;
   }
 
   public void setShoulderMotorSpeed(double speed){
@@ -99,7 +109,7 @@ public class Arm extends SubsystemBase {
      */
     public void shoulderMotorPIDExec() {
       double position = getShoulderPotPos();
-      double power = m_shoulderMotorPID.calculate(position) * m_shoulderMotorPIDMaxSpeed;
+      double power = _shoulderMotorPID.calculate(position) * _shoulderMotorPIDMaxSpeed;
 
       setShoulderMotorSpeed(power);
   }
@@ -109,7 +119,7 @@ public class Arm extends SubsystemBase {
      */
     public void elbowMotorPIDExec() {
       double position = getElbowPotPos();
-      double power = m_elbowMotorPID.calculate(position) * m_elbowMotorPIDMaxSpeed;
+      double power = _elbowMotorPID.calculate(position) * _elbowMotorPIDMaxSpeed;
     
       setElbowMotorSpeed(power);
   }
@@ -117,10 +127,10 @@ public class Arm extends SubsystemBase {
 
   /** Checks if the joint motors are at their setpoints **/
   public boolean atUpperJointPIDSetpoint() {
-    return m_shoulderMotorPID.atSetpoint();
+    return _shoulderMotorPID.atSetpoint();
 }
 
 public boolean atLowerJointPIDSetpoint() {
-  return m_elbowMotorPID.atSetpoint();
+  return _elbowMotorPID.atSetpoint();
 }
 }
