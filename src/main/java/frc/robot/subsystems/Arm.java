@@ -14,41 +14,48 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
 public class Arm extends SubsystemBase {
-  /** Creates a new Arm. */
-  WPI_TalonFX _shoulderMotor;
-  WPI_TalonFX _elbowMotor;
-  Solenoid _wristSolenoid;
-  AnalogInput _elbowPotentiometer;
-  AnalogInput _shoulderPotentiometer;
-  public enum wristPosition { Parallel, Perpendicular}
+    /** Creates a new Arm. */
+    WPI_TalonFX _shoulderMotor;
+    WPI_TalonFX _elbowMotor;
+    Solenoid _wristSolenoid;
+    AnalogInput _elbowPotentiometer;
+    AnalogInput _shoulderPotentiometer;
 
-  public Arm() {
-    _shoulderMotor = new WPI_TalonFX(Constants.CanIDs.ARM_SHOULDER_MOTOR_CANID);
-    _elbowMotor = new WPI_TalonFX(Constants.CanIDs.ARM_ELBOW_MOTOR_CANID);
-    _wristSolenoid = new Solenoid(PneumaticsModuleType.REVPH, Constants.WRIST_SOLENOID_PORT);
-    _elbowPotentiometer = new AnalogInput(Constants.Aio.ELBOW_PORT_POT);
-    _shoulderPotentiometer = new AnalogInput(Constants.Aio.SHOULDER_PORT_POT);
-  }
+    public enum WristPosition {
+        Parallel, 
+        Perpendicular
+    }
 
-  public void setShoulderMotorSpeed(double speed){
-    _shoulderMotor.set(speed);
-  }
+    public Arm() {
+        _shoulderMotor = new WPI_TalonFX(Constants.CanIDs.ARM_SHOULDER_MOTOR_CANID);
+        _elbowMotor = new WPI_TalonFX(Constants.CanIDs.ARM_ELBOW_MOTOR_CANID);
+        _wristSolenoid = new Solenoid(PneumaticsModuleType.REVPH, Constants.WRIST_SOLENOID_PORT);
+        _elbowPotentiometer = new AnalogInput(Constants.AIO.ELBOW_PORT_POT);
+        _shoulderPotentiometer = new AnalogInput(Constants.AIO.SHOULDER_PORT_POT);
+    }
 
-  public void setElbowMotorSpeed(double speed){
-    _elbowMotor.set(speed);
-  }
+    public void setShoulderMotorSpeed(double speed) {
+        _shoulderMotor.set(speed);
+    }
 
-  public void setWristPosition(wristPosition position){
-    _wristSolenoid.set(position == wristPosition.Parallel);
-  }
-  public int getShoulderPotPos(){
-    return _shoulderPotentiometer.getAverageValue();
-  }
-  public int getElbowPotPos(){
-    return _elbowPotentiometer.getAverageValue();
-  }
-  @Override
-  public void periodic() {
-    // This method will be called once per scheduler run
-  }
+    public void setElbowMotorSpeed(double speed) {
+        _elbowMotor.set(speed);
+    }
+
+    public void setWristPosition(WristPosition position) {
+        _wristSolenoid.set(position == WristPosition.Parallel);
+    }
+
+    public int getShoulderPotPos() {
+        return _shoulderPotentiometer.getAverageValue();
+    }
+
+    public int getElbowPotPos() {
+        return _elbowPotentiometer.getAverageValue();
+    }
+
+    @Override
+    public void periodic() {
+        // This method will be called once per scheduler run
+    }
 }
