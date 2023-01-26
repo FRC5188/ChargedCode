@@ -38,20 +38,33 @@ public class Arm extends SubsystemBase {
     }
 
     // LOAD STATION
-    public static final double LOADING_STATION_SHOULDER_POS = -1.0;
-    public static final double LOADING_STATION_ELBOW_POS = -1.0;
+    private final double LOADING_STATION_SHOULDER_POS = -1.0;
+    private final double LOADING_STATION_ELBOW_POS = -1.0;
+    private final WristPosition LOADING_STATION_WRIST_POS = WristPosition.Parallel;
     // GROUND PICKUP
-    public static final double GROUND_PICKUP_SHOULDER_POS = -1.0;
-    public static final double GROUND_PICKUP_ELBOW_POS = -1.0;
+    private final double GROUND_PICKUP_SHOULDER_POS = -1.0;
+    private final double GROUND_PICKUP_ELBOW_POS = -1.0;
+    private final WristPosition GROUND_PICKUP_WRIST_POS = WristPosition.Parallel;
     // HIGH GOAL
-    public static final double HIGH_GOAL_SHOULDER_POS = -1.0;
-    public static final double HIGH_GOAL_ELBOW_POS = -1.0;
+    private final double HIGH_GOAL_CONE_SHOULDER_POS = -1.0;
+    private final double HIGH_GOAL_CONE_ELBOW_POS = -1.0;
+    private final WristPosition HIGH_GOAL_CONE_WRIST_POS = WristPosition.Parallel;
+
+    private final double HIGH_GOAL_CUBE_SHOULDER_POS = -1.0;
+    private final double HIGH_GOAL_CUBE_ELBOW_POS = -1.0;
+    private final WristPosition HIGH_GOAL_CUBE_WRIST_POS = WristPosition.Parallel;
     // MIDDLE GOAL
-    public static final double MIDDLE_GOAL_SHOULDER_POS = -1.0;
-    public static final double MIDDLE_GOAL_ELBOW_POS = -1.0;
+    private final double MIDDLE_GOAL_CONE_SHOULDER_POS = -1.0;
+    private final double MIDDLE_GOAL_CONE_ELBOW_POS = -1.0;
+    private final WristPosition MIDDLE_GOAL_CONE_WRIST_POS = WristPosition.Parallel;
+
+    private final double MIDDLE_GOAL_CUBE_SHOULDER_POS = -1.0;
+    private final double MIDDLE_GOAL_CUBE_ELBOW_POS = -1.0;
+    private final WristPosition MIDDLE_GOAL_CUBE_WRIST_POS = WristPosition.Parallel;
     // LOW GOAL
-    public static final double LOW_GOAL_SHOULDER_POS = -1.0;
-    public static final double LOW_GOAL_ELBOW_POS = -1.0;
+    private final double LOW_GOAL_SHOULDER_POS = -1.0;
+    private final double LOW_GOAL_ELBOW_POS = -1.0;
+    private final WristPosition LOW_GOAL_WRIST_POS = WristPosition.Parallel;
 
     /** Creates a new Arm. */
     private WPI_TalonFX _shoulderMotor;
@@ -65,8 +78,8 @@ public class Arm extends SubsystemBase {
     private PIDController _elbowMotorPID;
 
     // internal PID constants
-    private double _shoulderMotorPIDMaxSpeed;
-    private double _elbowMotorPIDMaxSpeed;
+    private double _shoulderMotorPIDMaxSpeed = 0.6;
+    private double _elbowMotorPIDMaxSpeed = 0.6;
 
     private double ShoulderMotorkP = 0.0;
     private double ShoulderMotorkI = 0.0;
@@ -84,10 +97,6 @@ public class Arm extends SubsystemBase {
         LoadStationPickUp,
         GroundPickUp,
     }
-
-    // internal constants
-    private double m_shoulderMotorPIDMaxSpeed;
-    private double m_elbowMotorPIDMaxSpeed;
 
     public Arm() {
         _shoulderMotor = new WPI_TalonFX(Constants.CanIDs.ARM_SHOULDER_MOTOR_CANID);
@@ -110,15 +119,33 @@ public class Arm extends SubsystemBase {
         _wristSolenoid.set(position == WristPosition.Parallel);
     }
 
+    public WristPosition getWristPosition() {
+        return _wristSolenoid.get() ? WristPosition.Parallel : WristPosition.Perpendicular;
+    }
+
     /**
      * Initializes the PID controller for moving the shoulder motor
      * 
      * @param setpoint setpoint of the shoulder motor
      * @param maxSpeed the max speed of motor, in percent output
      */
-    public void shoulderMotorPIDInit(double setpoint, double maxSpeed) {
+    public void shoulderMotorPIDInit(double setpoint) {
         _shoulderMotorPID.setSetpoint(setpoint);
-        _shoulderMotorPIDMaxSpeed = maxSpeed;
+    }
+    
+    /**
+     * Executes the shoulder motor PID controller
+     */
+    public void shoulderMotorPIDExec() {
+        double position = getShoulderPotPos();
+        double power = _shoulderMotorPID.calculate(position) * _shoulderMotorPIDMaxSpeed;
+
+        setShoulderMotorSpeed(power);
+    }
+
+    /** Checks if the joint motors are at their setpoints **/
+    public boolean shoulderAtSetpoint() {
+        return _shoulderMotorPID.atSetpoint();
     }
 
     /**
@@ -127,9 +154,23 @@ public class Arm extends SubsystemBase {
      * @param setpoint setpoint of the elbow motor
      * @param maxSpeed the max speed of motor, in percent output
      */
-    public void elbowMotorPIDInit(double setpoint, double maxSpeed) {
+    public void elbowMotorPIDInit(double setpoint) {
         _elbowMotorPID.setSetpoint(setpoint);
-        _elbowMotorPIDMaxSpeed = maxSpeed;
+    }
+
+    /**
+     * Executes the shoulder motor PID controller
+     */
+    public void elbowMotorPIDExec() {
+        double position = getElbowPotPos();
+        double power = _elbowMotorPID.calculate(position) * _elbowMotorPIDMaxSpeed;
+
+        setElbowMotorSpeed(power);
+    }
+
+    /** Checks if the joint motors are at their setpoints **/
+    public boolean elbowAtSetpoint() {
+        return _elbowMotorPID.atSetpoint();
     }
 
     public void setShoulderMotorSpeed(double speed) {
@@ -148,43 +189,18 @@ public class Arm extends SubsystemBase {
         return _elbowPotentiometer.getAverageValue();
     }
 
-    /**
-     * Executes the shoulder motor PID controller
-     */
-    public void shoulderMotorPIDExec() {
-        double position = getShoulderPotPos();
-        double power = _shoulderMotorPID.calculate(position) * m_shoulderMotorPIDMaxSpeed;
-
-        setShoulderMotorSpeed(power);
-    }
-
-    /**
-     * Executes the elbow motor PID controller
-     */
-    public void elbowMotorPIDExec() {
-        double position = getElbowPotPos();
-        double power = _elbowMotorPID.calculate(position) * _elbowMotorPIDMaxSpeed;
-
-        setElbowMotorSpeed(power);
-    }
-
-    /** Checks if the joint motors are at their setpoints **/
-    public boolean atUpperJointPIDSetpoint() {
-        return _shoulderMotorPID.atSetpoint();
-    }
-
-    public boolean atLowerJointPIDSetpoint() {
-        return _elbowMotorPID.atSetpoint();
-    }
-
-    public void moveArmToPosition(ArmPosition setpoint) {
-
-        double shoulderSetpoint;
-        double elbowSetpoint;
-        WristPosition wristPosition;
+    public void moveArmToPositionInit(ArmPosition setpoint) {
+        // Start with our values being where we currently are
+        // That way, if there's an issue, the arm just stays where it is
+        double shoulderSetpoint = this.getShoulderPotPos();
+        double elbowSetpoint = this.getElbowPotPos();
+        WristPosition wristPosition = this.getWristPosition();
 
         switch (setpoint) {
             case GroundPickUp:
+                shoulderSetpoint = GROUND_PICKUP_SHOULDER_POS;
+                elbowSetpoint = GROUND_PICKUP_ELBOW_POS;
+                wristPosition = GROUND_PICKUP_WRIST_POS;
                 break;
             case HighCone:
                 break;
@@ -201,8 +217,22 @@ public class Arm extends SubsystemBase {
             case Stored:
                 break;
             default:
+                // If we hit default that means we don't know what position we are in
+                // So we just wanna stay put until we get a new position
                 break;
         }
+
+        this.shoulderMotorPIDInit(shoulderSetpoint);
+        this.elbowMotorPIDInit(elbowSetpoint);
+        this.setWristPosition(wristPosition);
+    }
+
+    public void moveArmToPositionExec() {
+        // FILL ME OUT!
+    }
+
+    public void armAtSetpoint() {
+        // FILL ME OUT!
     }
 
     @Override
