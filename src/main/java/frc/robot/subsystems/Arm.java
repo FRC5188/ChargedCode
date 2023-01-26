@@ -20,8 +20,25 @@ public class Arm extends SubsystemBase {
         Perpendicular
     }
 
+    public enum ArmPosition {
+        Stored,
+        /* GAME PIECE PICKUP */
+        LoadStationPickUp,
+        GroundPickUp,
+
+        /* GAME PIECE SCORING */
+        // High Goal
+        HighCone,
+        HighCube,
+        // Middle Goal
+        MiddleCone,
+        MiddleCube,
+        // Low Goal
+        LowScore
+    }
+
     // LOAD STATION
-    public static final double LOADING_STATION_SHOULDER_POS = -1.0; 
+    public static final double LOADING_STATION_SHOULDER_POS = -1.0;
     public static final double LOADING_STATION_ELBOW_POS = -1.0;
     // GROUND PICKUP
     public static final double GROUND_PICKUP_SHOULDER_POS = -1.0;
@@ -44,8 +61,29 @@ public class Arm extends SubsystemBase {
     private AnalogInput _shoulderPotentiometer;
 
     // Arm PID controllers
-    private PIDController m_shoulderMotorPID;
-    private PIDController m_elbowMotorPID;
+    private PIDController _shoulderMotorPID;
+    private PIDController _elbowMotorPID;
+
+    // internal PID constants
+    private double _shoulderMotorPIDMaxSpeed;
+    private double _elbowMotorPIDMaxSpeed;
+
+    private double ShoulderMotorkP = 0.0;
+    private double ShoulderMotorkI = 0.0;
+    private double ShoulderMotorkD = 0.0;
+    private double ShoulderMotorkTolerance = 0.0;
+
+    private double ElbowMotorkP = 0.0;
+    private double ElbowMotorkI = 0.0;
+    private double ElbowMotorkD = 0.0;
+    private double ElbowMotorkTolerance = 0.0;
+
+    public enum ArmPositionState {
+        Stored,
+        /* GAME PIECE PICKUP */
+        LoadStationPickUp,
+        GroundPickUp,
+    }
 
     // internal constants
     private double m_shoulderMotorPIDMaxSpeed;
@@ -54,18 +92,44 @@ public class Arm extends SubsystemBase {
     public Arm() {
         _shoulderMotor = new WPI_TalonFX(Constants.CanIDs.ARM_SHOULDER_MOTOR_CANID);
         _elbowMotor = new WPI_TalonFX(Constants.CanIDs.ARM_ELBOW_MOTOR_CANID);
-        _wristSolenoid = new Solenoid(PneumaticsModuleType.REVPH, Constants.WRIST_SOLENOID_PORT);
+        _wristSolenoid = new Solenoid(PneumaticsModuleType.REVPH, Constants.PHPorts.WRIST_SOLENOID_PORT);
         _elbowPotentiometer = new AnalogInput(Constants.AIO.ELBOW_PORT_POT);
         _shoulderPotentiometer = new AnalogInput(Constants.AIO.SHOULDER_PORT_POT);
 
         // Create PID controllers
-        m_shoulderMotorPID = new PIDController(Constants.PID.ShoulderMotorkP, Constants.PID.ShoulderMotorkI,
+        _shoulderMotorPID = new PIDController(Constants.PID.ShoulderMotorkP, Constants.PID.ShoulderMotorkI,
                 Constants.PID.ShoulderMotorkD);
-        m_shoulderMotorPID.setTolerance(Constants.PID.ShoulderMotorkTolerance);
+        _shoulderMotorPID.setTolerance(Constants.PID.ShoulderMotorkTolerance);
 
-        m_elbowMotorPID = new PIDController(Constants.PID.ElbowMotorkP, Constants.PID.ElbowMotorkI,
-                Constants.PID.ElbowMotorkD);
-        m_elbowMotorPID.setTolerance(Constants.PID.ElbowMotorkTolerance);
+        _elbowMotorPID = new PIDController(ElbowMotorkP, ElbowMotorkI,
+                ElbowMotorkD);
+        _elbowMotorPID.setTolerance(ElbowMotorkTolerance);
+    }
+
+    public void setWristPosition(WristPosition position) {
+        _wristSolenoid.set(position == WristPosition.Parallel);
+    }
+
+    /**
+     * Initializes the PID controller for moving the shoulder motor
+     * 
+     * @param setpoint setpoint of the shoulder motor
+     * @param maxSpeed the max speed of motor, in percent output
+     */
+    public void shoulderMotorPIDInit(double setpoint, double maxSpeed) {
+        _shoulderMotorPID.setSetpoint(setpoint);
+        _shoulderMotorPIDMaxSpeed = maxSpeed;
+    }
+
+    /**
+     * Initializes the PID controller for moving the elbow motor
+     * 
+     * @param setpoint setpoint of the elbow motor
+     * @param maxSpeed the max speed of motor, in percent output
+     */
+    public void elbowMotorPIDInit(double setpoint, double maxSpeed) {
+        _elbowMotorPID.setSetpoint(setpoint);
+        _elbowMotorPIDMaxSpeed = maxSpeed;
     }
 
     public void setShoulderMotorSpeed(double speed) {
@@ -74,10 +138,6 @@ public class Arm extends SubsystemBase {
 
     public void setElbowMotorSpeed(double speed) {
         _elbowMotor.set(speed);
-    }
-
-    public void setWristPosition(WristPosition position) {
-        _wristSolenoid.set(position == WristPosition.Parallel);
     }
 
     public int getShoulderPotPos() {
@@ -89,33 +149,11 @@ public class Arm extends SubsystemBase {
     }
 
     /**
-     * Initializes the PID controller for moving the shoulder motor
-     * 
-     * @param setpoint setpoint of the shoulder motor
-     * @param maxSpeed the max speed of motor, in percent output
-     */
-    public void shoulderMotorPIDInit(double setpoint, double maxSpeed) {
-        m_shoulderMotorPID.setSetpoint(setpoint);
-        m_shoulderMotorPIDMaxSpeed = maxSpeed;
-    }
-
-    /**
-     * Initializes the PID controller for moving the elbow motor
-     * 
-     * @param setpoint setpoint of the elbow motor
-     * @param maxSpeed the max speed of motor, in percent output
-     */
-    public void elbowMotorPIDInit(double setpoint, double maxSpeed) {
-        m_elbowMotorPID.setSetpoint(setpoint);
-        m_elbowMotorPIDMaxSpeed = maxSpeed;
-    }
-
-    /**
      * Executes the shoulder motor PID controller
      */
     public void shoulderMotorPIDExec() {
         double position = getShoulderPotPos();
-        double power = m_shoulderMotorPID.calculate(position) * m_shoulderMotorPIDMaxSpeed;
+        double power = _shoulderMotorPID.calculate(position) * m_shoulderMotorPIDMaxSpeed;
 
         setShoulderMotorSpeed(power);
     }
@@ -125,29 +163,28 @@ public class Arm extends SubsystemBase {
      */
     public void elbowMotorPIDExec() {
         double position = getElbowPotPos();
-        double power = m_elbowMotorPID.calculate(position) * m_elbowMotorPIDMaxSpeed;
+        double power = _elbowMotorPID.calculate(position) * _elbowMotorPIDMaxSpeed;
 
         setElbowMotorSpeed(power);
     }
 
     /** Checks if the joint motors are at their setpoints **/
     public boolean atUpperJointPIDSetpoint() {
-        return m_shoulderMotorPID.atSetpoint();
+        return _shoulderMotorPID.atSetpoint();
     }
 
     public boolean atLowerJointPIDSetpoint() {
-        return m_elbowMotorPID.atSetpoint();
+        return _elbowMotorPID.atSetpoint();
     }
 
-    public void moveArmToPosition(Constants.ArmPosition setpoint) {
-        
+    public void moveArmToPosition(ArmPosition setpoint) {
+
         double shoulderSetpoint;
         double elbowSetpoint;
         WristPosition wristPosition;
 
-        switch(setpoint) {
-            case GroundPickUpCone:
-
+        switch (setpoint) {
+            case GroundPickUp:
                 break;
             case HighCone:
                 break;
@@ -155,9 +192,7 @@ public class Arm extends SubsystemBase {
                 break;
             case LoadStationPickUp:
                 break;
-            case LowCone:
-                break;
-            case LowCube:
+            case LowScore:
                 break;
             case MiddleCone:
                 break;
