@@ -4,24 +4,24 @@
 
 package frc.robot.subsystems;
 
-import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
-import com.ctre.phoenix.sensors.CANCoder;
+import org.photonvision.PhotonCamera;
 
-import com.ctre.phoenix.sensors.AbsoluteSensorRange;
-import com.ctre.phoenix.sensors.CANCoder;
 import com.kauailabs.navx.frc.AHRS;
 
+import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 import frc.robot.Constants.CanIDs;
 import frc.robot.sds.Mk4iSwerveModuleHelper;
 import frc.robot.sds.SdsModuleConfigurations;
@@ -122,6 +122,12 @@ public class Drive extends SubsystemBase {
      */
     private ChassisSpeeds _chassisSpeeds = new ChassisSpeeds(0.0, 0.0, 0.0);
 
+    // Vision code
+    private PhotonCamera _camera;
+
+    // Odemetry Code
+    SwerveDrivePoseEstimator _odometry;
+
     /**
      * Represents the drive chassis of the robot. Contains all of the code to
      * move in a swerve format using either a joystick or supplied values.
@@ -180,6 +186,21 @@ public class Drive extends SubsystemBase {
             CanIDs.BACK_RIGHT_TURNING_ID,
             CanIDs.BACK_RIGHT_ENCODER_ID,
             BACK_RIGHT_MODULE_ENCODER_OFFSET);
+
+            // Vision Code
+             this._camera = new PhotonCamera("photonvision");
+
+             // Odemetry Code
+             this._odometry = new SwerveDrivePoseEstimator(_kinematics, this._navx.getRotation2d(),
+                                                         new SwerveModulePosition[] {
+                                                            _frontLeftModule.getPosition(), 
+                                                            _frontRightModule.getPosition(),
+                                                            _backLeftModule.getPosition(), 
+                                                            _backRightModule.getPosition()
+                                                        }, 
+                                                        new Pose2d(Constants.Position.StartingXPosition, 
+                                                        Constants.Position.StartingYPosition, new Rotation2d())
+                                                        );
     }
 
     /**
