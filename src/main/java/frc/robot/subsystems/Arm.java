@@ -70,6 +70,11 @@ public class Arm extends SubsystemBase {
     private final double LOW_GOAL_SHOULDER_POS = -1.0;
     private final double LOW_GOAL_ELBOW_POS = -1.0;
     private final WristPosition LOW_GOAL_WRIST_POS = WristPosition.Parallel;
+    
+    // STORED
+    private final double STORED_SHOULDER_POS = -1.0;
+    private final double STORED_ELBOW_POS = -1.0
+    private final WristPosition STORED_WRIST_POS = WristPosition.Parallel;
 
     // CLAW
     private CANSparkMax _intakeMotor;
@@ -141,8 +146,45 @@ public class Arm extends SubsystemBase {
      * @param setpoint setpoint of the shoulder motor
      * @param maxSpeed the max speed of motor, in percent output
      */
-    public void shoulderMotorPIDInit(double setpoint) {
-        _shoulderMotorPID.setSetpoint(setpoint);
+    public void shoulderMotorPIDInit(ArmPosition setpoint) {
+// Start with our values being where we currently are
+            // That way, if there's an issue, the arm just stays where it is
+            double shoulderSetpoint = this.getShoulderPotPos();
+    
+            switch (setpoint) {
+                case GroundPickUp:
+                    shoulderSetpoint = GROUND_PICKUP_SHOULDER_POS;
+                    break;
+                case HighCone:
+                    shoulderSetpoint = HIGH_GOAL_CONE_SHOULDER_POS;
+                    break;
+                case HighCube:
+                    shoulderSetpoint = HIGH_GOAL_CUBE_SHOULDER_POS;
+                    break;
+                case LoadStationPickUp:
+                    shoulderSetpoint = LOADING_STATION_SHOULDER_POS;
+                    break;
+                case LowScore:
+                    shoulderSetpoint = LOW_GOAL_SHOULDER_POS;
+                    break;
+                case MiddleCone:
+                    shoulderSetpoint = MIDDLE_GOAL_CONE_SHOULDER_POS;
+                    break;
+                case MiddleCube:
+                    shoulderSetpoint = MIDDLE_GOAL_CUBE_SHOULDER_POS;
+                    break;
+                case Stored:
+                    shoulderSetpoint = STORED_ELBOW_POS;
+                    break;
+                default:
+                    // If we hit default that means we don't know what position we are in
+                    // So we just wanna stay put until we get a new position
+                    shoulderSetpoint = this.getShoulderPotPos();
+                    break;
+            }
+
+        _shoulderMotorPID.setSetpoint(shoulderSetpoint);
+            
     }
     
     /**
@@ -166,8 +208,43 @@ public class Arm extends SubsystemBase {
      * @param setpoint setpoint of the elbow motor
      * @param maxSpeed the max speed of motor, in percent output
      */
-    public void elbowMotorPIDInit(double setpoint) {
-        _elbowMotorPID.setSetpoint(setpoint);
+    public void elbowMotorPIDInit(ArmPosition setpoint) {
+        // Start with our values being where we currently are
+            // That way, if there's an issue, the arm just stays where it is
+            double elbowSetpoint = this.getElbowPotPos();
+    
+            switch (setpoint) {
+                case GroundPickUp:
+                    elbowSetpoint = GROUND_PICKUP_ELBOW_POS;
+                    break;
+                case HighCone:
+                    elbowSetpoint = HIGH_GOAL_CONE_ELBOW_POS;
+                    break;
+                case HighCube:
+                    elbowSetpoint = HIGH_GOAL_CUBE_ELBOW_POS;
+                    break;
+                case LoadStationPickUp:
+                    elbowSetpoint = LOADING_STATION_ELBOW_POS;
+                    break;
+                case LowScore:
+                    elbowSetpoint = LOW_GOAL_ELBOW_POS;
+                    break;
+                case MiddleCone:
+                    elbowSetpoint = MIDDLE_GOAL_CONE_ELBOW_POS;
+                    break;
+                case MiddleCube:
+                    elbowSetpoint = MIDDLE_GOAL_CUBE_ELBOW_POS;
+                    break;
+                case Stored:
+                    elbowSetpoint = STORED_ELBOW_POS;
+                    break;
+                default:
+                    // If we hit default that means we don't know what position we are in
+                    // So we just wanna stay put until we get a new position
+                    elbowSetpoint = this.getElbowPotPos();
+                    break;
+            }
+        _elbowMotorPID.setSetpoint(elbowSetpoint);
     }
 
     /**
@@ -201,50 +278,10 @@ public class Arm extends SubsystemBase {
         return _elbowPotentiometer.getAverageValue();
     }
 
-    public void moveArmToPositionInit(ArmPosition setpoint) {
-        // Start with our values being where we currently are
-        // That way, if there's an issue, the arm just stays where it is
-        double shoulderSetpoint = this.getShoulderPotPos();
-        double elbowSetpoint = this.getElbowPotPos();
-        WristPosition wristPosition = this.getWristPosition();
-
-        switch (setpoint) {
-            case GroundPickUp:
-                shoulderSetpoint = GROUND_PICKUP_SHOULDER_POS;
-                elbowSetpoint = GROUND_PICKUP_ELBOW_POS;
-                wristPosition = GROUND_PICKUP_WRIST_POS;
-                break;
-            case HighCone:
-                break;
-            case HighCube:
-                break;
-            case LoadStationPickUp:
-                break;
-            case LowScore:
-                break;
-            case MiddleCone:
-                break;
-            case MiddleCube:
-                break;
-            case Stored:
-                break;
-            default:
-                // If we hit default that means we don't know what position we are in
-                // So we just wanna stay put until we get a new position
-                break;
-        }
-
-        this.shoulderMotorPIDInit(shoulderSetpoint);
-        this.elbowMotorPIDInit(elbowSetpoint);
-        this.setWristPosition(wristPosition);
-    }
-
-    public void moveArmToPositionExec() {
-        // FILL ME OUT!
-    }
-
     public void armAtSetpoint() {
         // FILL ME OUT!
+        shoulderAtSetpoint();
+        elbowAtSetpoint();
     }
 
     @Override
