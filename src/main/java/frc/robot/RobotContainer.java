@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.Button;
 import frc.robot.commands.DefaultDriveCommand;
 import frc.robot.subsystems.Drive;
+import frc.robot.subsystems.Vision;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -22,7 +23,8 @@ import frc.robot.subsystems.Drive;
  */
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
-  private final Drive m_drivetrainSubsystem = new Drive();
+  private final Vision _visionSubsystem = new Vision();
+  private final Drive _driveSubsystem = new Drive(_visionSubsystem);
 
   private final XboxController m_controller = new XboxController(0);
 
@@ -35,8 +37,8 @@ public class RobotContainer {
     // Left stick Y axis -> forward and backwards movement
     // Left stick X axis -> left and right movement
     // Right stick X axis -> rotation
-    m_drivetrainSubsystem.setDefaultCommand(new DefaultDriveCommand(
-            m_drivetrainSubsystem,
+    _driveSubsystem.setDefaultCommand(new DefaultDriveCommand(
+            _driveSubsystem,
             () -> (-modifyAxis(m_controller.getLeftY()) * Drive.MAX_VELOCITY_METERS_PER_SECOND),
             () -> (-modifyAxis(m_controller.getLeftX()) * Drive.MAX_VELOCITY_METERS_PER_SECOND),
             () -> (-modifyAxis(m_controller.getRightX()) * Drive.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND)

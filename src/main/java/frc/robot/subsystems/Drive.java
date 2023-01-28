@@ -28,7 +28,6 @@ import frc.robot.sds.SdsModuleConfigurations;
 import frc.robot.sds.SwerveModule;
 
 
-// TODO: add back in vision stuff
 public class Drive extends SubsystemBase {
     
     /** The width of the chassis from the centers of the swerve modules */
@@ -125,15 +124,14 @@ public class Drive extends SubsystemBase {
      * Last is the angular velocity, which is how fast we want to rotate cw/ccw.
      */
     private ChassisSpeeds _chassisSpeeds = new ChassisSpeeds(0.0, 0.0, 0.0);
-
-    // Vision code
-    private PhotonCamera _camera;
-
+    private final Vision _visionSubsystem;
     /**
      * Represents the drive chassis of the robot. Contains all of the code to
      * move in a swerve format using either a joystick or supplied values.
      */
-    public Drive() {
+    public Drive(Vision visionSubsystem) {
+        _visionSubsystem = visionSubsystem;
+
         ShuffleboardTab shuffleboardTab = Shuffleboard.getTab("Drivetrain");
 
         _frontLeftModule = Mk4iSwerveModuleHelper.createFalcon500(
@@ -175,9 +173,6 @@ public class Drive extends SubsystemBase {
             CanIDs.BACK_RIGHT_TURNING_ID,
             CanIDs.BACK_RIGHT_ENCODER_ID,
             BACK_RIGHT_MODULE_ENCODER_OFFSET);
-
-            // Vision Code
-             this._camera = new PhotonCamera("photonvision");
 
              // Odemetry Code
              this._odometry = new SwerveDrivePoseEstimator(_kinematics, this._navx.getRotation2d(),
@@ -239,7 +234,9 @@ public class Drive extends SubsystemBase {
                                                 _frontLeftModule.getModulePosition(),
                                                 _frontRightModule.getModulePosition(),
                                                 _backLeftModule.getModulePosition(),
-                                                _backRightModule.getModulePosition()});
+                                                _backRightModule.getModulePosition()
+                                            });
+        _odometry = _visionSubsystem.getVisionEstimatedRobotPose(_odometry);
     }
 }
 
