@@ -1,172 +1,230 @@
+// Copyright (c) FIRST and other WPILib contributors.
+// Open Source Software; you can modify and/or share it under the terms of
+// the WPILib BSD license file in the root directory of this project.
+
 package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.ctre.phoenix.sensors.CANCoder;
 
+import com.ctre.phoenix.sensors.AbsoluteSensorRange;
+import com.ctre.phoenix.sensors.CANCoder;
+import com.kauailabs.navx.frc.AHRS;
+
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants;
 import frc.robot.Constants.CanIDs;
-import frc.robot.subsystems.SwerveModule;
+import frc.robot.sds.Mk4iSwerveModuleHelper;
+import frc.robot.sds.SdsModuleConfigurations;
+import frc.robot.sds.SwerveModule;
 
-import org.photonvision.PhotonCamera;
-import org.photonvision.PhotonUtils;
-import org.photonvision.PhotonVersion;
 
-import com.kauailabs.navx.frc.AHRS;
-
-import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
-import edu.wpi.first.math.kinematics.SwerveModulePosition;
-import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.Command;
-
+// TODO: add back in vision stuff
 public class Drive extends SubsystemBase {
-    // Width and height of the robot chassis with the corners at the center of each swerve module
-    // We need these numbers to complete swerve math
-    private final double CHASSIS_WIDTH = Units.inchesToMeters(20.75);
-    private final double CHASSIS_HEIGHT = Units.inchesToMeters(24.75);
+    
+    /** The width of the chassis from the centers of the swerve modules */
+    private static final double CHASSIS_WIDTH_METERS = Units.inchesToMeters(20.75);
+    /** The height of the chassis from the centers of the swerve modules */
+    private static final double CHASSIS_HEIGHT_METERS = Units.inchesToMeters(24.75);
+    /**
+     * The maximum voltage that will be delivered to the drive motors.
+     * <p>
+     * This can be reduced to cap the robot's maximum speed.
+     */
+    public static final double MAX_VOLTAGE = 6.0;
 
-    PhotonCamera camera;
+    /**
+     * The maximum velocity of the robot in meters per second.
+     * <p>
+     * This is a measure of how fast the robot should be able to drive in a straight
+     * line.
+     * The formula for calculating the theoretical maximum velocity is:
+     * <p>
+     * Motor free speed RPM / 60 * Drive reduction * Wheel diameter meters * Pi
+     */
+    public static final double MAX_VELOCITY_METERS_PER_SECOND = 6380.0 / 60.0 *
+            SdsModuleConfigurations.MK4I_L2.getDriveReduction() *
+            SdsModuleConfigurations.MK4I_L2.getWheelDiameter() * Math.PI;
 
-    private AHRS m_gyro;
+    /**
+     * The maximum angular velocity of the robot in radians per second.
+     * <p>
+     * This is a measure of how fast the robot can rotate in place.
+     */
+    public static final double MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND = MAX_VELOCITY_METERS_PER_SECOND /
+            Math.hypot(CHASSIS_WIDTH_METERS / 2.0, CHASSIS_HEIGHT_METERS / 2.0);
 
+    /** The offset to get the encoder to read 0 when facing forward */
+    private static final double FRONT_LEFT_MODULE_ENCODER_OFFSET = -155.9;
+    /** The offset to get the encoder to read 0 when facing forward */
+    private static final double FRONT_RIGHT_MODULE_ENCODER_OFFSET = -241.17;
+    /** The offset to get the encoder to read 0 when facing forward */
+    private static final double BACK_LEFT_MODULE_ENCODER_OFFSET = -266.66;
+    /** The offset to get the encoder to read 0 when facing forward */
+    private static final double BACK_RIGHT_MODULE_ENCODER_OFFSET = -25.40;
 
-    // The encoders will likely not be exactly at 0 when the wheel is pointed forward, so this compensates for that
-    private final double FRONT_LEFT_ENCODER_OFFSET = 0;
-    private final double FRONT_RIGHT_ENCODER_OFFSET = 0;
-    private final double BACK_LEFT_ENCODER_OFFSET = 0;
-    private final double BACK_RIGHT_ENCODER_OFFSET = 0;
+    /**
+     * This object does the math to convert a motion vector into individual module
+     * vectors
+     * <p>
+     * See WPILib's documentation for more information
+     */
+    // We divide our chassis width and height by 2 so we can represent each module
+    // as a point relative to the
+    // center of the robot. Positive along x means going to the left from the
+    // center, and positive along
+    // y means going up from the center
+    private final SwerveDriveKinematics _kinematics = new SwerveDriveKinematics(
+            // Front left
+            new Translation2d(CHASSIS_WIDTH_METERS / 2.0, CHASSIS_HEIGHT_METERS / 2.0),
+            // Front right
+            new Translation2d(CHASSIS_WIDTH_METERS / 2.0, -CHASSIS_HEIGHT_METERS / 2.0),
+            // Back left
+            new Translation2d(-CHASSIS_WIDTH_METERS / 2.0, CHASSIS_HEIGHT_METERS / 2.0),
+            // Back right
+            new Translation2d(-CHASSIS_WIDTH_METERS / 2.0, -CHASSIS_HEIGHT_METERS / 2.0));
 
-    // These represent the centers of the swerve modules relative to the center of the robot
-    private Translation2d _frontLeftLocation;
-    private Translation2d _frontRightLocation;
-    private Translation2d _backLeftLocation;
-    private Translation2d _backRightLocation;
+    /**
+     * The gyro that we will use to keep track of our current rotation. The output
+     * of the gyro
+     * impacts the odometry of the robot, as well as field-oriented drive.
+     */
+    private final AHRS _navx = new AHRS();
 
-    // These hold the calculated velocity and angle for each swerve module
-    private SwerveModuleState _frontLeftModuleState;
-    private SwerveModuleState _frontRightModuleState;
-    private SwerveModuleState _backLeftModuleState;
-    private SwerveModuleState _backRightModuleState;
+    // These are our modules
+    private final SwerveModule _frontLeftModule;
+    private final SwerveModule _frontRightModule;
+    private final SwerveModule _backLeftModule;
+    private final SwerveModule _backRightModule;
 
+    // private CANCoder _frontLeft;
+    // private CANCoder _frontRight;
+    // private CANCoder _backLeft;
+    // private CANCoder _backRight;
 
-    // These are the actual swerve modules, we mainly set their speeds and angles using info in SwerveModuleState
-    private SwerveModule _frontLeftModule;
-    private SwerveModule _frontRightModule;
-    private SwerveModule _backLeftModule;
-    private SwerveModule _backRightModule;
+    /**
+     * This represents the desired vector of the robot.
+     * <p>
+     * The first part is the forwards velocity, which is how fast we want to go
+     * forward/backward.
+     * Second is the sideways velocity, which is how fast we want to strafe
+     * left/right.
+     * Last is the angular velocity, which is how fast we want to rotate cw/ccw.
+     */
+    private ChassisSpeeds _chassisSpeeds = new ChassisSpeeds(0.0, 0.0, 0.0);
 
-    // This does the swerve math
-    private SwerveDriveKinematics _kinematics;
-
-    SwerveDrivePoseEstimator _odometry;
-    Pose2d _pose;
-
-    // This helps us convert from generic velocities into swerve velocities
-    private ChassisSpeeds _chassisSpeeds;
-
+    /**
+     * Represents the drive chassis of the robot. Contains all of the code to
+     * move in a swerve format using either a joystick or supplied values.
+     */
     public Drive() {
-        // Need the distances from the center of the robot to each swerve in x and y, so half width and half height is used
-        double halfWidth = CHASSIS_WIDTH / 2;
-        double halfHeight = CHASSIS_HEIGHT / 2;
+        ShuffleboardTab shuffleboardTab = Shuffleboard.getTab("Drivetrain");
+        // _frontLeft = new CANCoder(CanIDs.FRONT_LEFT_ENCODER_ID);
+        // _frontLeft.configAbsoluteSensorRange(AbsoluteSensorRange.Unsigned_0_to_360);
+        // _frontLeft.configMagnetOffset(0);
+        // _frontRight = new CANCoder(CanIDs.FRONT_RIGHT_ENCODER_ID);
+        // _frontRight.configAbsoluteSensorRange(AbsoluteSensorRange.Unsigned_0_to_360);
+        // _frontRight.configMagnetOffset(0);
+        // _backLeft = new CANCoder(CanIDs.BACK_LEFT_ENCODER_ID);
+        // _backLeft.configAbsoluteSensorRange(AbsoluteSensorRange.Unsigned_0_to_360);
+        // _backLeft.configMagnetOffset(0);
+        // _backRight = new CANCoder(CanIDs.BACK_RIGHT_ENCODER_ID);
+        // _backRight.configAbsoluteSensorRange(AbsoluteSensorRange.Unsigned_0_to_360);
+        // _backRight.configMagnetOffset(0);
 
-        // Locations for the swerve drive modules relative to the robot center.
-        // Think of each module as being in a quadrant on a 2D graph with center as (0, 0) when looking at the points
-        _frontLeftLocation = new Translation2d(halfWidth, halfHeight);
-        _frontRightLocation = new Translation2d(halfWidth, -halfHeight);
-        _backLeftLocation = new Translation2d(-halfWidth, halfHeight);
-        _backRightLocation = new Translation2d(-halfWidth, -halfHeight);
+        _frontLeftModule = Mk4iSwerveModuleHelper.createFalcon500(
+            shuffleboardTab.getLayout("Front Left Module", BuiltInLayouts.kList)
+            .withSize(2, 4)
+            .withPosition(0, 0),
+            Mk4iSwerveModuleHelper.GearRatio.L2,
+            CanIDs.FRONT_LEFT_DRIVE_ID,
+            CanIDs.FRONT_LEFT_TURNING_ID,
+            CanIDs.FRONT_LEFT_ENCODER_ID,
+            FRONT_LEFT_MODULE_ENCODER_OFFSET);
 
-        PhotonCamera camera = new PhotonCamera("photonvision");
+        _frontRightModule = Mk4iSwerveModuleHelper.createFalcon500(
+            shuffleboardTab.getLayout("Front Right Module", BuiltInLayouts.kList)
+            .withSize(2, 4)
+            .withPosition(0, 0),
+            Mk4iSwerveModuleHelper.GearRatio.L2,
+            CanIDs.FRONT_RIGHT_DRIVE_ID,
+            CanIDs.FRONT_RIGHT_TURNING_ID,
+            CanIDs.FRONT_RIGHT_ENCODER_ID,
+            FRONT_RIGHT_MODULE_ENCODER_OFFSET);
 
-        _frontLeftModuleState = new SwerveModuleState();
-        _frontRightModuleState = new SwerveModuleState();
-        _backLeftModuleState = new SwerveModuleState();
-        _backRightModuleState = new SwerveModuleState();
+        _backLeftModule = Mk4iSwerveModuleHelper.createFalcon500(
+            shuffleboardTab.getLayout("Back Left Module", BuiltInLayouts.kList)
+            .withSize(2, 4)
+            .withPosition(0, 0),
+            Mk4iSwerveModuleHelper.GearRatio.L2,
+            CanIDs.BACK_LEFT_DRIVE_ID,
+            CanIDs.BACK_LEFT_TURNING_ID,
+            CanIDs.BACK_LEFT_ENCODER_ID,
+            BACK_LEFT_MODULE_ENCODER_OFFSET);
 
-        CANCoder backRightAbsoluteEncoder = new CANCoder(Constants.CanIDs.BACK_RIGHT_DRIVE_ID);
-        CANCoder frontLeftAbsoluteEncoder = new CANCoder(Constants.CanIDs.FRONT_LEFT_DRIVE_ID);
-        CANCoder frontRightAbsoluteEncoder = new CANCoder(Constants.CanIDs.FRONT_RIGHT_DRIVE_ID);
-        CANCoder backLeftAbsoluteEncoder = new CANCoder(Constants.CanIDs.BACK_LEFT_DRIVE_ID);
-
-
-        // Each module needs a drive motor, a turning motor, an encoder, and the encoder's offset from 0
-        _frontLeftModule = new SwerveModule(Constants.CanIDs.FRONT_LEFT_DRIVE_ENCODER_ID, 
-                                            Constants.CanIDs.FRONT_LEFT_DRIVE_ID, 
-                                            Constants.CanIDs.FRONT_LEFT_TURNING_ID, 
-                                            Constants.CanIDs.FRONT_LEFT_TURNING_ENCODER_ID, 
-                                            FRONT_LEFT_ENCODER_OFFSET);
-        _frontRightModule = new SwerveModule(Constants.CanIDs.FRONT_RIGHT_DRIVE_ENCODER_ID, 
-                                            Constants.CanIDs.FRONT_RIGHT_DRIVE_ID, 
-                                            Constants.CanIDs.FRONT_RIGHT_TURNING_ID, 
-                                            Constants.CanIDs.FRONT_RIGHT_TURNING_ENCODER_ID, 
-                                            FRONT_RIGHT_ENCODER_OFFSET);
-         _backLeftModule = new SwerveModule(Constants.CanIDs.BACK_LEFT_DRIVE_ENCODER_ID, 
-                                            Constants.CanIDs.BACK_LEFT_DRIVE_ID, 
-                                            Constants.CanIDs.BACK_LEFT_TURNING_ID, 
-                                            Constants.CanIDs.BACK_LEFT_TURNING_ENCODER_ID, 
-                                            BACK_LEFT_ENCODER_OFFSET);
-        _backRightModule = new SwerveModule(Constants.CanIDs.BACK_RIGHT_DRIVE_ENCODER_ID,
-                                            Constants.CanIDs.BACK_RIGHT_DRIVE_ID, 
-                                            Constants.CanIDs.BACK_RIGHT_TURNING_ID, 
-                                            Constants.CanIDs.BACK_RIGHT_DRIVE_ENCODER_ID, 
-                                            BACK_RIGHT_ENCODER_OFFSET);
-
-
-                                    
-
-        // Create the kinematics object using the module locations
-        _kinematics = new SwerveDriveKinematics(_frontLeftLocation, _frontRightLocation, _backLeftLocation, _backRightLocation);
-        SwerveDrivePoseEstimator _odometry = new SwerveDrivePoseEstimator(_kinematics, m_gyro.getRotation2d(), new SwerveModulePosition[] {_frontLeftModule.getPosition(), _frontRightModule.getPosition(), _backLeftModule.getPosition(), _backRightModule.getPosition()}, new Pose2d(Constants.Position.StartingXPosition, Constants.Position.StartingYPosition, new Rotation2d()));
+        _backRightModule = Mk4iSwerveModuleHelper.createFalcon500(
+            shuffleboardTab.getLayout("Back Right Module", BuiltInLayouts.kList)
+            .withSize(2, 4)
+            .withPosition(0, 0),
+            Mk4iSwerveModuleHelper.GearRatio.L2,
+            CanIDs.BACK_RIGHT_DRIVE_ID,
+            CanIDs.BACK_RIGHT_TURNING_ID,
+            CanIDs.BACK_RIGHT_ENCODER_ID,
+            BACK_RIGHT_MODULE_ENCODER_OFFSET);
     }
 
-    public void updateOdometry() {
-        _odometry.update(
-            m_gyro.getRotation2d(),
-            new SwerveModulePosition[] {
-              _frontLeftModule.getPosition(),
-              _frontRightModule.getPosition(),
-              _backLeftModule.getPosition(),
-              _backRightModule.getPosition()
-            });
-      }
+    /**
+     * Sets the gyroscope angle to zero. This can be used to set the direction the
+     * robot is currently facing to the
+     * 'forwards' direction.
+     */
+    public void zeroGyroscope() {
+        _navx.zeroYaw();
+    }
+
+    public Rotation2d getGyroscopeRotation() {
+        if (_navx.isMagnetometerCalibrated()) {
+            // We will only get valid fused headings if the magnetometer is calibrated
+            return Rotation2d.fromDegrees(_navx.getFusedHeading());
+        }
+
+        // We have to invert the angle of the NavX so that rotating the robot
+        // counter-clockwise makes the angle increase.
+        return Rotation2d.fromDegrees(360.0 - _navx.getYaw());
+    }
+
+    public void drive(ChassisSpeeds chassisSpeeds) {
+        _chassisSpeeds = chassisSpeeds;
+    }
 
     @Override
     public void periodic() {
-       
-      }
-
-    public void drive(double vx, double vy, double omega) {
-        // Update speed info based on inputs
-        _chassisSpeeds.vxMetersPerSecond = vx;
-        _chassisSpeeds.vyMetersPerSecond = vy;
-        _chassisSpeeds.omegaRadiansPerSecond = omega;
-
-        // Convert speeds into swerve velocity (basically do the fancy swerve math)
+        // Convert the drive base vector into module vectors
         SwerveModuleState[] states = _kinematics.toSwerveModuleStates(_chassisSpeeds);
+        // Normalize the wheel speeds so we aren't trying to set above the max
+        SwerveDriveKinematics.desaturateWheelSpeeds(states, MAX_VELOCITY_METERS_PER_SECOND);
 
-        // Update the swerve info and optimize it so that the modules don't flip around everywhere
-        _frontLeftModuleState = states[0];
-        _frontRightModuleState = states[1];
-        _backLeftModuleState = states[2];
-        _backRightModuleState = states[3];
+        // System.out.println("FL: " + _frontLeft.getAbsolutePosition() + " FR: " + _frontRight.getAbsolutePosition());
+        // System.out.printf("BL: %.5f BR: %.5f \n", _backLeft.getAbsolutePosition(), _backRight.getAbsolutePosition());
 
-
-
-        // Set each module's velocity and angle based on swerve info
-        _frontLeftModule.set(_frontLeftModuleState);
-        _frontRightModule.set(_frontRightModuleState);
-        _backLeftModule.set(_backLeftModuleState);
-        _backRightModule.set(_backRightModuleState);
+        // Set each module's speed and angle
+        _frontLeftModule.set(states[0].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE,
+                             states[0].angle.getRadians());
+        _frontRightModule.set(states[1].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE, 
+                              states[1].angle.getRadians());
+        _backLeftModule.set(states[2].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE, 
+                            states[2].angle.getRadians());
+        _backRightModule.set(states[3].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE, 
+                             states[3].angle.getRadians());
     }
 
 }
