@@ -12,6 +12,8 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
@@ -58,13 +60,13 @@ public class Drive extends SubsystemBase {
             Math.hypot(CHASSIS_WIDTH_METERS / 2.0, CHASSIS_HEIGHT_METERS / 2.0);
 
     /** The offset to get the encoder to read 0 when facing forward */
-    private static final double FRONT_LEFT_MODULE_ENCODER_OFFSET = -155.9;
+    private static final double FRONT_LEFT_MODULE_ENCODER_OFFSET = -207.94;
     /** The offset to get the encoder to read 0 when facing forward */
-    private static final double FRONT_RIGHT_MODULE_ENCODER_OFFSET = -241.17;
+    private static final double FRONT_RIGHT_MODULE_ENCODER_OFFSET = -85.25;
     /** The offset to get the encoder to read 0 when facing forward */
-    private static final double BACK_LEFT_MODULE_ENCODER_OFFSET = -266.66;
+    private static final double BACK_LEFT_MODULE_ENCODER_OFFSET = -55.98;
     /** The offset to get the encoder to read 0 when facing forward */
-    private static final double BACK_RIGHT_MODULE_ENCODER_OFFSET = -25.40;
+    private static final double BACK_RIGHT_MODULE_ENCODER_OFFSET = -333.28;
 
     /**
      * This object does the math to convert a motion vector into individual module
@@ -94,16 +96,13 @@ public class Drive extends SubsystemBase {
      */
     private final AHRS _navx = new AHRS();
 
+    private SwerveDriveOdometry _odometry;
+
     // These are our modules
     private final SwerveModule _frontLeftModule;
     private final SwerveModule _frontRightModule;
     private final SwerveModule _backLeftModule;
     private final SwerveModule _backRightModule;
-
-    // private CANCoder _frontLeft;
-    // private CANCoder _frontRight;
-    // private CANCoder _backLeft;
-    // private CANCoder _backRight;
 
     /**
      * This represents the desired vector of the robot.
@@ -122,23 +121,11 @@ public class Drive extends SubsystemBase {
      */
     public Drive() {
         ShuffleboardTab shuffleboardTab = Shuffleboard.getTab("Drivetrain");
-        // _frontLeft = new CANCoder(CanIDs.FRONT_LEFT_ENCODER_ID);
-        // _frontLeft.configAbsoluteSensorRange(AbsoluteSensorRange.Unsigned_0_to_360);
-        // _frontLeft.configMagnetOffset(0);
-        // _frontRight = new CANCoder(CanIDs.FRONT_RIGHT_ENCODER_ID);
-        // _frontRight.configAbsoluteSensorRange(AbsoluteSensorRange.Unsigned_0_to_360);
-        // _frontRight.configMagnetOffset(0);
-        // _backLeft = new CANCoder(CanIDs.BACK_LEFT_ENCODER_ID);
-        // _backLeft.configAbsoluteSensorRange(AbsoluteSensorRange.Unsigned_0_to_360);
-        // _backLeft.configMagnetOffset(0);
-        // _backRight = new CANCoder(CanIDs.BACK_RIGHT_ENCODER_ID);
-        // _backRight.configAbsoluteSensorRange(AbsoluteSensorRange.Unsigned_0_to_360);
-        // _backRight.configMagnetOffset(0);
 
         _frontLeftModule = Mk4iSwerveModuleHelper.createFalcon500(
             shuffleboardTab.getLayout("Front Left Module", BuiltInLayouts.kList)
-            .withSize(2, 4)
-            .withPosition(0, 0),
+                        .withSize(2, 4)
+                        .withPosition(0, 0),
             Mk4iSwerveModuleHelper.GearRatio.L2,
             CanIDs.FRONT_LEFT_DRIVE_ID,
             CanIDs.FRONT_LEFT_TURNING_ID,
@@ -147,8 +134,8 @@ public class Drive extends SubsystemBase {
 
         _frontRightModule = Mk4iSwerveModuleHelper.createFalcon500(
             shuffleboardTab.getLayout("Front Right Module", BuiltInLayouts.kList)
-            .withSize(2, 4)
-            .withPosition(0, 0),
+                        .withSize(2, 4)
+                        .withPosition(0, 0),
             Mk4iSwerveModuleHelper.GearRatio.L2,
             CanIDs.FRONT_RIGHT_DRIVE_ID,
             CanIDs.FRONT_RIGHT_TURNING_ID,
@@ -157,8 +144,8 @@ public class Drive extends SubsystemBase {
 
         _backLeftModule = Mk4iSwerveModuleHelper.createFalcon500(
             shuffleboardTab.getLayout("Back Left Module", BuiltInLayouts.kList)
-            .withSize(2, 4)
-            .withPosition(0, 0),
+                        .withSize(2, 4)
+                        .withPosition(0, 0),
             Mk4iSwerveModuleHelper.GearRatio.L2,
             CanIDs.BACK_LEFT_DRIVE_ID,
             CanIDs.BACK_LEFT_TURNING_ID,
@@ -167,8 +154,8 @@ public class Drive extends SubsystemBase {
 
         _backRightModule = Mk4iSwerveModuleHelper.createFalcon500(
             shuffleboardTab.getLayout("Back Right Module", BuiltInLayouts.kList)
-            .withSize(2, 4)
-            .withPosition(0, 0),
+                        .withSize(2, 4)
+                        .withPosition(0, 0),
             Mk4iSwerveModuleHelper.GearRatio.L2,
             CanIDs.BACK_RIGHT_DRIVE_ID,
             CanIDs.BACK_RIGHT_TURNING_ID,
@@ -183,6 +170,7 @@ public class Drive extends SubsystemBase {
      */
     public void zeroGyroscope() {
         _navx.zeroYaw();
+        _odometry.resetPosition(getGyroscopeRotation(), null, null);
     }
 
     public Rotation2d getGyroscopeRotation() {
@@ -206,9 +194,6 @@ public class Drive extends SubsystemBase {
         SwerveModuleState[] states = _kinematics.toSwerveModuleStates(_chassisSpeeds);
         // Normalize the wheel speeds so we aren't trying to set above the max
         SwerveDriveKinematics.desaturateWheelSpeeds(states, MAX_VELOCITY_METERS_PER_SECOND);
-
-        // System.out.println("FL: " + _frontLeft.getAbsolutePosition() + " FR: " + _frontRight.getAbsolutePosition());
-        // System.out.printf("BL: %.5f BR: %.5f \n", _backLeft.getAbsolutePosition(), _backRight.getAbsolutePosition());
 
         // Set each module's speed and angle
         _frontLeftModule.set(states[0].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE,
