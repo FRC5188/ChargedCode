@@ -45,6 +45,8 @@ public final class Constants {
 
         public static final int ARM_ELBOW_MOTOR_CANID = 14;
         public static final int ARM_SHOULDER_MOTOR_CANID = 13;
+        
+        public static final int CLAW_INTAKE_MOTOR_CANID = 20; // Change this value
     }
 
     public static class PHPorts {
