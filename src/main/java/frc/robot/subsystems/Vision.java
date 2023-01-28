@@ -12,17 +12,18 @@ import org.photonvision.targeting.PhotonPipelineResult;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants;
+import frc.robot.Constants.OperatorConstants.Field;
+import frc.robot.Constants.OperatorConstants.Vision.Camera;
+import frc.robot.Constants.OperatorConstants.Vision.PhotonVision;
 
 public class Vision extends SubsystemBase {    
     private PhotonCamera photonCamera;
     private PhotonPoseEstimator photonPoseEstimator;
 
     Vision(){
-        this.photonCamera = new PhotonCamera(Constants.Vision.PhotonVision.PHOTON_CAMERA_NAME);
-        this.photonPoseEstimator = new PhotonPoseEstimator(getApriltagFieldLayout(), PoseStrategy.AVERAGE_BEST_TARGETS, photonCamera, Constants.Vision.Camera.DIFFERENCE_BETWEEN_ROBOT_CAMERA);
+        this.photonCamera = new PhotonCamera(PhotonVision.PHOTON_CAMERA_NAME);
+        this.photonPoseEstimator = new PhotonPoseEstimator(getApriltagFieldLayout(), PoseStrategy.AVERAGE_BEST_TARGETS, photonCamera, Camera.DIFFERENCE_BETWEEN_ROBOT_CAMERA);
     }
 
     /**
@@ -57,7 +58,7 @@ public class Vision extends SubsystemBase {
     private static AprilTagFieldLayout getApriltagFieldLayout()
     {
         try {
-            return new AprilTagFieldLayout(Constants.Field.AprilTag.APRIL_TAG_FIELD_MAP_PATH);
+            return new AprilTagFieldLayout(Field.AprilTag.APRIL_TAG_FIELD_MAP_PATH);
         } 
         catch (IOException ioException) {
             System.out.println("ERROR: Cannot open file for Apriltag Field Map. File path may be incorrect.");
