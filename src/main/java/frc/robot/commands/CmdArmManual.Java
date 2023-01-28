@@ -4,6 +4,9 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import java.util.function.DoubleSupplier;
 import frc.robot.subsystems.Arm;
 
+/**
+ * {@summary} Takes in joystick values from the operator controller and set it to the shoulder and elbow. 
+ */
 public class CmdArmManual extends CommandBase {
     Arm _armSubsytem;
     // DoubleSupplier passes a method that is run when getAsDouble() is called. Dependency Injection????
