@@ -5,6 +5,7 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
+import com.revrobotics.CANSparkMax;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.AnalogInput;
@@ -70,6 +71,11 @@ public class Arm extends SubsystemBase {
     private final double LOW_GOAL_ELBOW_POS = -1.0;
     private final WristPosition LOW_GOAL_WRIST_POS = WristPosition.Parallel;
 
+    // CLAW
+    private CANSparkMax _intakeMotor;
+    private double _previousIntakeMotorCurrent;
+    private double _intakeMotorCurrent;
+
     /** Creates a new Arm. */
     private WPI_TalonFX _shoulderMotor;
     private WPI_TalonFX _elbowMotor;
@@ -108,6 +114,8 @@ public class Arm extends SubsystemBase {
         _wristSolenoid = new Solenoid(PneumaticsModuleType.REVPH, Constants.PHPorts.WRIST_SOLENOID_PORT);
         _elbowPotentiometer = new AnalogInput(Constants.AIO.ELBOW_PORT_POT);
         _shoulderPotentiometer = new AnalogInput(Constants.AIO.SHOULDER_PORT_POT);
+        // Claw
+        _previousIntakeMotorCurrent = 0;
 
         // Create PID controllers
         _shoulderMotorPID = new PIDController(Constants.PID.ShoulderMotorkP, Constants.PID.ShoulderMotorkI,
@@ -242,5 +250,24 @@ public class Arm extends SubsystemBase {
     @Override
     public void periodic() {
         // This method will be called once per scheduler run
+        _previousIntakeMotorCurrent = _intakeMotorCurrent;
+        _intakeMotorCurrent = _intakeMotor.getOutputCurrent();
     }
+
+    /*
+     * Sets the current speed of the intake motor on the claw
+     * @param speed between -1.0 and 1.0
+     */
+    public void setIntakeMotorSpeed(double speed){
+        _intakeMotor.set(speed);
+    }
+
+    /*
+     * Finds the difference in the current intake motor current and the previous one, which are updated in the periodic function
+     * @return the difference in the current intake motor current and the previously recorded one
+     */
+    public double getChangeInIntakeMotorCurrent(){
+        return _intakeMotorCurrent - _previousIntakeMotorCurrent;
+    }
+
 }
