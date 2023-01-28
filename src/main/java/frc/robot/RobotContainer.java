@@ -11,8 +11,10 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.Button;
+import frc.robot.commands.CmdArmManual;
 import frc.robot.commands.DefaultDriveCommand;
 import frc.robot.subsystems.Drive;
+import frc.robot.subsystems.Arm;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -22,9 +24,12 @@ import frc.robot.subsystems.Drive;
  */
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
-  private final Drive m_drivetrainSubsystem = new Drive();
+  private final Drive _drivetrainSubsystem = new Drive();
+  private final Arm _armSubsystem = new Arm();
+  private final XboxController _driverController = new XboxController(0);
+  private final XboxController _operatorController = new XboxController(1);
 
-  private final XboxController m_controller = new XboxController(0);
+  private static final double ARM_MULTIPLIER = 0.1;
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -35,13 +40,20 @@ public class RobotContainer {
     // Left stick Y axis -> forward and backwards movement
     // Left stick X axis -> left and right movement
     // Right stick X axis -> rotation
-    m_drivetrainSubsystem.setDefaultCommand(new DefaultDriveCommand(
-            m_drivetrainSubsystem,
-            () -> (-modifyAxis(m_controller.getLeftY()) * Drive.MAX_VELOCITY_METERS_PER_SECOND),
-            () -> (-modifyAxis(m_controller.getLeftX()) * Drive.MAX_VELOCITY_METERS_PER_SECOND),
-            () -> (-modifyAxis(m_controller.getRightX()) * Drive.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND)
+    _drivetrainSubsystem.setDefaultCommand(new DefaultDriveCommand(
+        _drivetrainSubsystem,
+            () -> (-modifyAxis(_driverController.getLeftY()) * Drive.MAX_VELOCITY_METERS_PER_SECOND),
+            () -> (-modifyAxis(_driverController.getLeftX()) * Drive.MAX_VELOCITY_METERS_PER_SECOND),
+            () -> (-modifyAxis(_driverController.getRightX()) * Drive.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND)
     ));
 
+    _armSubsystem.setDefaultCommand
+      (new CmdArmManual(
+        _armSubsystem, 
+        () -> (modifyAxis(_operatorController.getLeftX()) * ARM_MULTIPLIER), 
+        () -> (modifyAxis(_operatorController.getLeftY()) * ARM_MULTIPLIER)
+      ));
+    
     // Configure the button bindings
     configureButtonBindings();
   }

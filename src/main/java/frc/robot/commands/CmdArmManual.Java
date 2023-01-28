@@ -1,24 +1,37 @@
+package frc.robot.commands;
+
+import edu.wpi.first.wpilibj2.command.CommandBase;
+import java.util.function.DoubleSupplier;
 import frc.robot.subsystems.Arm;
 
 public class CmdArmManual extends CommandBase {
-    Arm
+    Arm _armSubsytem;
+    // DoubleSupplier passes a method that is run when getAsDouble() is called. Dependency Injection????
+    DoubleSupplier _upperJointSupplier;
+    DoubleSupplier _lowerJointSupplier;
 
-
-
-
-
-    Arm m_arm;
-    DoubleSupplier m_upperJointDouble;
-    DoubleSupplier m_lowerJointDouble;
-    public CmdArmManual(Arm system, DoubleSupplier upperJointDouble, DoubleSupplier lowerJointDouble){
-        m_arm = system;
-        m_upperJointDouble = upperJointDouble;
-        m_lowerJointDouble = lowerJointDouble;
+    public CmdArmManual(Arm armSubsystem, DoubleSupplier upperJointSupplier, DoubleSupplier lowerJointSupplier){
+        this._armSubsytem = armSubsystem;
+        this._upperJointSupplier = upperJointSupplier;
+        this._lowerJointSupplier = lowerJointSupplier;
+        // Add the required subsytems. 
+        this.addRequirements(_armSubsytem);
     }
+
+    @Override
+    public void initialize(){
+        
+    }
+
+    @Override
     public void execute(){
-
+        // Set the values give from the joystick to the shoulder and elbow. 
+        this._armSubsytem.setShoulderMotorSpeed(_lowerJointSupplier.getAsDouble());
+        this._armSubsytem.setElbowMotorSpeed(_upperJointSupplier.getAsDouble());
     }
-    public boolean end(){
+
+    @Override
+    public boolean isFinished() {
         return false;
     }
 }
