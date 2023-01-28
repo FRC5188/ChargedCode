@@ -235,8 +235,11 @@ public class Arm extends SubsystemBase {
         // FILL ME OUT!
     }
 
-    public void armAtSetpoint() {
+    public boolean isArmAtSetpoint() {
         // FILL ME OUT!
+
+        // placeholder
+        return true;
     }
 
     @Override
