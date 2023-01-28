@@ -4,15 +4,16 @@
 
 package frc.robot.subsystems;
 
-import com.ctre.phoenix.sensors.AbsoluteSensorRange;
-import com.ctre.phoenix.sensors.CANCoder;
+import org.photonvision.PhotonCamera;
+
 import com.kauailabs.navx.frc.AHRS;
 
+import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
-import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
@@ -20,11 +21,14 @@ import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants.CanIDs;
+import frc.robot.Constants.OperatorConstants.CanIDs;
+import frc.robot.Constants.OperatorConstants.Position;
 import frc.robot.sds.Mk4iSwerveModuleHelper;
 import frc.robot.sds.SdsModuleConfigurations;
 import frc.robot.sds.SwerveModule;
 
+
+// TODO: add back in vision stuff
 public class Drive extends SubsystemBase {
     
     /** The width of the chassis from the centers of the swerve modules */
@@ -103,7 +107,7 @@ public class Drive extends SubsystemBase {
      */
     private final AHRS _navx = new AHRS();
 
-    private SwerveDriveOdometry _odometry;
+    private SwerveDrivePoseEstimator _odometry;
 
     // These are our modules
     private final SwerveModule _frontLeftModule;
@@ -122,13 +126,20 @@ public class Drive extends SubsystemBase {
      */
     private ChassisSpeeds _chassisSpeeds = new ChassisSpeeds(0.0, 0.0, 0.0);
 
+    // Vision code
+    private PhotonCamera _camera;
+
     /**
      * Represents the drive chassis of the robot. Contains all of the code to
      * move in a swerve format using either a joystick or supplied values.
      */
     public Drive() {
+        ShuffleboardTab shuffleboardTab = Shuffleboard.getTab("Drivetrain");
 
         _frontLeftModule = Mk4iSwerveModuleHelper.createFalcon500(
+            shuffleboardTab.getLayout("Front Left Module", BuiltInLayouts.kList)
+                        .withSize(2, 4)
+                        .withPosition(0, 0),
             Mk4iSwerveModuleHelper.GearRatio.L2,
             CanIDs.FRONT_LEFT_DRIVE_ID,
             CanIDs.FRONT_LEFT_TURNING_ID,
@@ -136,6 +147,9 @@ public class Drive extends SubsystemBase {
             FRONT_LEFT_MODULE_ENCODER_OFFSET);
 
         _frontRightModule = Mk4iSwerveModuleHelper.createFalcon500(
+            shuffleboardTab.getLayout("Front Right Module", BuiltInLayouts.kList)
+                        .withSize(2, 4)
+                        .withPosition(0, 0),
             Mk4iSwerveModuleHelper.GearRatio.L2,
             CanIDs.FRONT_RIGHT_DRIVE_ID,
             CanIDs.FRONT_RIGHT_TURNING_ID,
@@ -143,6 +157,9 @@ public class Drive extends SubsystemBase {
             FRONT_RIGHT_MODULE_ENCODER_OFFSET);
 
         _backLeftModule = Mk4iSwerveModuleHelper.createFalcon500(
+            shuffleboardTab.getLayout("Back Left Module", BuiltInLayouts.kList)
+                        .withSize(2, 4)
+                        .withPosition(0, 0),
             Mk4iSwerveModuleHelper.GearRatio.L2,
             CanIDs.BACK_LEFT_DRIVE_ID,
             CanIDs.BACK_LEFT_TURNING_ID,
@@ -150,19 +167,30 @@ public class Drive extends SubsystemBase {
             BACK_LEFT_MODULE_ENCODER_OFFSET);
 
         _backRightModule = Mk4iSwerveModuleHelper.createFalcon500(
+            shuffleboardTab.getLayout("Back Right Module", BuiltInLayouts.kList)
+                        .withSize(2, 4)
+                        .withPosition(0, 0),
             Mk4iSwerveModuleHelper.GearRatio.L2,
             CanIDs.BACK_RIGHT_DRIVE_ID,
             CanIDs.BACK_RIGHT_TURNING_ID,
             CanIDs.BACK_RIGHT_ENCODER_ID,
             BACK_RIGHT_MODULE_ENCODER_OFFSET);
 
-        _odometry = new SwerveDriveOdometry(_kinematics, getGyroscopeRotation(), 
-                                            new SwerveModulePosition[] {
-                                                _frontLeftModule.getModulePosition(),
-                                                _frontRightModule.getModulePosition(),
-                                                _backLeftModule.getModulePosition(),
-                                                _backRightModule.getModulePosition()
-                                            });
+            // Vision Code
+             this._camera = new PhotonCamera("photonvision");
+
+             // Odemetry Code
+             this._odometry = new SwerveDrivePoseEstimator(_kinematics, this._navx.getRotation2d(),
+                                                         new SwerveModulePosition[] {
+                                                            _frontLeftModule.getModulePosition(), 
+                                                            _frontRightModule.getModulePosition(),
+                                                            _backLeftModule.getModulePosition(), 
+                                                            _backRightModule.getModulePosition()
+                                                        }, 
+                                                        new Pose2d(Position.StartingXPosition, 
+                                                                    Position.StartingYPosition, 
+                                                                    new Rotation2d())
+                                                        );
     }
 
     /**
@@ -214,3 +242,4 @@ public class Drive extends SubsystemBase {
                                                 _backRightModule.getModulePosition()});
     }
 }
+
