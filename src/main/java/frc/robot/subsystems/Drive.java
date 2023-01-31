@@ -4,16 +4,15 @@
 
 package frc.robot.subsystems;
 
-import org.photonvision.PhotonCamera;
-
+import com.ctre.phoenix.sensors.AbsoluteSensorRange;
+import com.ctre.phoenix.sensors.CANCoder;
 import com.kauailabs.navx.frc.AHRS;
 
-import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
@@ -22,11 +21,9 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.OperatorConstants.CanIDs;
-import frc.robot.Constants.OperatorConstants.Position;
 import frc.robot.sds.Mk4iSwerveModuleHelper;
 import frc.robot.sds.SdsModuleConfigurations;
 import frc.robot.sds.SwerveModule;
-
 
 public class Drive extends SubsystemBase {
     
@@ -39,7 +36,7 @@ public class Drive extends SubsystemBase {
      * <p>
      * This can be reduced to cap the robot's maximum speed.
      */
-    public static final double MAX_VOLTAGE = 6.0;
+    public static final double MAX_VOLTAGE = 12.0;
 
     /**
      * The maximum velocity of the robot in meters per second.
@@ -63,20 +60,13 @@ public class Drive extends SubsystemBase {
             Math.hypot(CHASSIS_WIDTH_METERS / 2.0, CHASSIS_HEIGHT_METERS / 2.0);
 
     /** The offset to get the encoder to read 0 when facing forward */
-    private static final double FRONT_LEFT_MODULE_ENCODER_OFFSET = -155.9;
+    private static final double FRONT_LEFT_MODULE_ENCODER_OFFSET = -207.94;
     /** The offset to get the encoder to read 0 when facing forward */
-    private static final double FRONT_RIGHT_MODULE_ENCODER_OFFSET = -241.17;
+    private static final double FRONT_RIGHT_MODULE_ENCODER_OFFSET = -85.25;
     /** The offset to get the encoder to read 0 when facing forward */
-    private static final double BACK_LEFT_MODULE_ENCODER_OFFSET = -266.66;
+    private static final double BACK_LEFT_MODULE_ENCODER_OFFSET = -55.98;
     /** The offset to get the encoder to read 0 when facing forward */
-    private static final double BACK_RIGHT_MODULE_ENCODER_OFFSET = -25.40;
-
-    public static final double ksVolts = 0.166;
-    public static final double kvVoltSecondsPerMeter = 2.237;
-    public static final double kaVoltSecondsSquaredPerMeter = 0.389;
-    public static final double kPDriveVel = 3.0166;
-    public static final double kRamseteB = 2;
-    public static final double kRamseteZeta = 0.7; 
+    private static final double BACK_RIGHT_MODULE_ENCODER_OFFSET = -333.28;
 
     /**
      * This object does the math to convert a motion vector into individual module
@@ -106,7 +96,7 @@ public class Drive extends SubsystemBase {
      */
     private final AHRS _navx = new AHRS();
 
-    private SwerveDrivePoseEstimator _odometry;
+    private SwerveDriveOdometry _odometry;
 
     // These are our modules
     private final SwerveModule _frontLeftModule;
@@ -124,14 +114,12 @@ public class Drive extends SubsystemBase {
      * Last is the angular velocity, which is how fast we want to rotate cw/ccw.
      */
     private ChassisSpeeds _chassisSpeeds = new ChassisSpeeds(0.0, 0.0, 0.0);
-    private final Vision _visionSubsystem;
+
     /**
      * Represents the drive chassis of the robot. Contains all of the code to
      * move in a swerve format using either a joystick or supplied values.
      */
-    public Drive(Vision visionSubsystem) {
-        _visionSubsystem = visionSubsystem;
-
+    public Drive() {
         ShuffleboardTab shuffleboardTab = Shuffleboard.getTab("Drivetrain");
 
         _frontLeftModule = Mk4iSwerveModuleHelper.createFalcon500(
@@ -173,21 +161,6 @@ public class Drive extends SubsystemBase {
             CanIDs.BACK_RIGHT_TURNING_ID,
             CanIDs.BACK_RIGHT_ENCODER_ID,
             BACK_RIGHT_MODULE_ENCODER_OFFSET);
-
-             // Odemetry Code
-             this._odometry = new SwerveDrivePoseEstimator(_kinematics, this._navx.getRotation2d(),
-                                                         new SwerveModulePosition[] {
-                                                            _frontLeftModule.getModulePosition(), 
-                                                            _frontRightModule.getModulePosition(),
-                                                            _backLeftModule.getModulePosition(), 
-                                                            _backRightModule.getModulePosition()
-                                                        }, 
-                                                        new Pose2d(Position.StartingXPosition, 
-                                                                    Position.StartingYPosition, 
-                                                                    new Rotation2d())
-                                                        );
-
-            this.zeroGyroscope();
     }
 
     /**
@@ -197,7 +170,7 @@ public class Drive extends SubsystemBase {
      */
     public void zeroGyroscope() {
         _navx.zeroYaw();
-        //_odometry.resetPosition(getGyroscopeRotation(), null, null);
+        _odometry.resetPosition(getGyroscopeRotation(), null, null);
     }
 
     public Rotation2d getGyroscopeRotation() {
@@ -217,7 +190,6 @@ public class Drive extends SubsystemBase {
 
     @Override
     public void periodic() {
-        System.out.println("Gyro: " + this.getGyroscopeRotation());
         // Convert the drive base vector into module vectors
         SwerveModuleState[] states = _kinematics.toSwerveModuleStates(_chassisSpeeds);
         // Normalize the wheel speeds so we aren't trying to set above the max
@@ -232,14 +204,5 @@ public class Drive extends SubsystemBase {
                             states[2].angle.getRadians());
         _backRightModule.set(states[3].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE, 
                              states[3].angle.getRadians());
-
-        _odometry.update(getGyroscopeRotation(), new SwerveModulePosition[] {
-                                                _frontLeftModule.getModulePosition(),
-                                                _frontRightModule.getModulePosition(),
-                                                _backLeftModule.getModulePosition(),
-                                                _backRightModule.getModulePosition()
-                                            });
-        _odometry = _visionSubsystem.getVisionEstimatedRobotPose(_odometry);
     }
 }
-

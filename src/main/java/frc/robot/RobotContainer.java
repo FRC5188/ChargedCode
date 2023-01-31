@@ -24,7 +24,7 @@ import frc.robot.subsystems.Vision;
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final Vision _visionSubsystem = new Vision();
-  private final Drive _driveSubsystem = new Drive(_visionSubsystem);
+  private final Drive _driveSubsystem = new Drive();
 
   private final XboxController _driveController = new XboxController(0);
 
