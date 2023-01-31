@@ -44,7 +44,6 @@ public class Vision extends SubsystemBase {
         }
     }
 
-
     private Optional<EstimatedRobotPose> getEstimatedRobotGlobalPose(Pose2d previousEstimatedRobotPose){
         photonPoseEstimator.setReferencePose(previousEstimatedRobotPose);
         return photonPoseEstimator.update();

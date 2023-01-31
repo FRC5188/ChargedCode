@@ -186,6 +186,8 @@ public class Drive extends SubsystemBase {
                                                                     Position.StartingYPosition, 
                                                                     new Rotation2d())
                                                         );
+
+            this.zeroGyroscope();
     }
 
     /**
@@ -195,7 +197,7 @@ public class Drive extends SubsystemBase {
      */
     public void zeroGyroscope() {
         _navx.zeroYaw();
-        _odometry.resetPosition(getGyroscopeRotation(), null, null);
+        //_odometry.resetPosition(getGyroscopeRotation(), null, null);
     }
 
     public Rotation2d getGyroscopeRotation() {
@@ -215,6 +217,7 @@ public class Drive extends SubsystemBase {
 
     @Override
     public void periodic() {
+        System.out.println("Gyro: " + this.getGyroscopeRotation());
         // Convert the drive base vector into module vectors
         SwerveModuleState[] states = _kinematics.toSwerveModuleStates(_chassisSpeeds);
         // Normalize the wheel speeds so we aren't trying to set above the max

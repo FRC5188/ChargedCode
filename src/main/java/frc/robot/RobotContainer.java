@@ -26,7 +26,7 @@ public class RobotContainer {
   private final Vision _visionSubsystem = new Vision();
   private final Drive _driveSubsystem = new Drive(_visionSubsystem);
 
-  private final XboxController m_controller = new XboxController(0);
+  private final XboxController _driveController = new XboxController(0);
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -39,9 +39,9 @@ public class RobotContainer {
     // Right stick X axis -> rotation
     _driveSubsystem.setDefaultCommand(new DefaultDriveCommand(
             _driveSubsystem,
-            () -> (-modifyAxis(m_controller.getLeftY()) * Drive.MAX_VELOCITY_METERS_PER_SECOND),
-            () -> (-modifyAxis(m_controller.getLeftX()) * Drive.MAX_VELOCITY_METERS_PER_SECOND),
-            () -> (-modifyAxis(m_controller.getRightX()) * Drive.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND)
+            () -> (-modifyAxis(_driveController.getLeftY()) * Drive.MAX_VELOCITY_METERS_PER_SECOND),
+            () -> (-modifyAxis(_driveController.getLeftX()) * Drive.MAX_VELOCITY_METERS_PER_SECOND),
+            () -> (-modifyAxis(_driveController.getRightX()) * Drive.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND)
     ));
 
     // Configure the button bindings
@@ -59,6 +59,7 @@ public class RobotContainer {
     // new Button(m_controller::getBackButton)
     //         // No requirements because we don't need to interrupt anything
     //         .whenPressed(m_drivetrainSubsystem::zeroGyroscope);
+
   }
 
   /**
