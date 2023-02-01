@@ -263,62 +263,6 @@ public class Arm extends SubsystemBase {
         return _elbowPotentiometer.getAverageValue();
     }
 
-    public void moveArmToPositionInit(ArmPosition setpoint) {
-        // Start with our values being where we currently are.
-        // That way, if there's an issue, the arm just stays where it is.
-        double shoulderSetpoint = this.getShoulderPotPos();
-        double elbowSetpoint = this.getElbowPotPos();
-        WristPosition wristPosition = this.getWristPosition();
-
-        switch (setpoint) {
-            case GroundPickUp:
-                shoulderSetpoint = GROUND_PICKUP_SHOULDER_POS;
-                elbowSetpoint = GROUND_PICKUP_ELBOW_POS;
-                wristPosition = GROUND_PICKUP_WRIST_POS;
-                break;
-            case HighCone:
-                break;
-            case HighCube:
-                break;
-            case LoadStationPickUp:
-                break;
-            case LowScore:
-                break;
-            case MiddleCone:
-                break;
-            case MiddleCube:
-                break;
-            case Stored:
-                break;
-            default:
-                // If we hit default that means we don't know what position we are in
-                // So we just wanna stay put until we get a new position
-                break;
-        }
-
-        this.shoulderMotorPIDInit(shoulderSetpoint);
-        this.elbowMotorPIDInit(elbowSetpoint);
-        this.setWristPosition(wristPosition);
-    }
-
-    public void moveArmToPositionExec() {
-        // FILL ME OUT!
-    }
-
-    public boolean isArmAtSetpoint() {
-        // FILL ME OUT!
-
-        // placeholder
-        return true;
-    }
-
-    @Override
-    public void periodic() {
-        // This method will be called once per scheduler run
-        _previousIntakeMotorCurrent = _intakeMotorCurrent;
-        _intakeMotorCurrent = _intakeMotor.getOutputCurrent();
-    }
-
     /*
      * Sets the current speed of the intake motor on the claw
      * @param speed between -1.0 and 1.0
@@ -335,4 +279,10 @@ public class Arm extends SubsystemBase {
         return _intakeMotorCurrent - _previousIntakeMotorCurrent;
     }
 
+    @Override
+    public void periodic() {
+        // This method will be called once per scheduler run
+        _previousIntakeMotorCurrent = _intakeMotorCurrent;
+        _intakeMotorCurrent = _intakeMotor.getOutputCurrent();
+    }
 }
