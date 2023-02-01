@@ -8,6 +8,7 @@ import com.ctre.phoenix.sensors.AbsoluteSensorRange;
 import com.ctre.phoenix.sensors.CANCoder;
 import com.kauailabs.navx.frc.AHRS;
 
+import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -50,7 +51,7 @@ public class Drive extends SubsystemBase {
     public static final double MAX_VELOCITY_METERS_PER_SECOND = 6380.0 / 60.0 *
             SdsModuleConfigurations.MK4I_L2.getDriveReduction() *
             SdsModuleConfigurations.MK4I_L2.getWheelDiameter() * Math.PI;
-
+    
     /**
      * The maximum angular velocity of the robot in radians per second.
      * <p>
@@ -67,6 +68,9 @@ public class Drive extends SubsystemBase {
     private static final double BACK_LEFT_MODULE_ENCODER_OFFSET = -55.98;
     /** The offset to get the encoder to read 0 when facing forward */
     private static final double BACK_RIGHT_MODULE_ENCODER_OFFSET = -333.28;
+
+    /** This value is the max amount we are willing to accelerate in 20ms, this will help make the robot easier to drive */
+    private static final double SLEW_RATE = 1;
 
     /**
      * This object does the math to convert a motion vector into individual module
@@ -97,6 +101,8 @@ public class Drive extends SubsystemBase {
     private final AHRS _navx = new AHRS();
 
     private SwerveDriveOdometry _odometry;
+
+    private SlewRateLimiter _limiter;
 
     // These are our modules
     private final SwerveModule _frontLeftModule;
@@ -161,6 +167,8 @@ public class Drive extends SubsystemBase {
             CanIDs.BACK_RIGHT_TURNING_ID,
             CanIDs.BACK_RIGHT_ENCODER_ID,
             BACK_RIGHT_MODULE_ENCODER_OFFSET);
+
+        _limiter = new SlewRateLimiter(SLEW_RATE);
     }
 
     /**
@@ -196,13 +204,13 @@ public class Drive extends SubsystemBase {
         SwerveDriveKinematics.desaturateWheelSpeeds(states, MAX_VELOCITY_METERS_PER_SECOND);
 
         // Set each module's speed and angle
-        _frontLeftModule.set(states[0].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE,
+        _frontLeftModule.set(_limiter.calculate(states[0].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE),
                              states[0].angle.getRadians());
-        _frontRightModule.set(states[1].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE, 
+        _frontRightModule.set(_limiter.calculate(states[1].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE), 
                               states[1].angle.getRadians());
-        _backLeftModule.set(states[2].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE, 
+        _backLeftModule.set(_limiter.calculate(states[2].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE), 
                             states[2].angle.getRadians());
-        _backRightModule.set(states[3].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE, 
+        _backRightModule.set(_limiter.calculate(states[3].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE), 
                              states[3].angle.getRadians());
     }
 }
