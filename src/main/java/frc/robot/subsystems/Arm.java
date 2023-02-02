@@ -130,6 +130,7 @@ public class Arm extends SubsystemBase {
 
     public void setWristPosition(WristPosition position) {
         _wristSolenoid.set(position == WristPosition.Parallel);
+        
     }
 
     public WristPosition getWristPosition() {
@@ -284,5 +285,8 @@ public class Arm extends SubsystemBase {
         // This method will be called once per scheduler run
         _previousIntakeMotorCurrent = _intakeMotorCurrent;
         _intakeMotorCurrent = _intakeMotor.getOutputCurrent();
+    }
+    public void setWristPosition() {
+        
     }
 }

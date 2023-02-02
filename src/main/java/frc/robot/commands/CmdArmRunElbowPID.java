@@ -18,7 +18,7 @@ public class CmdArmRunElbowPID extends CommandBase {
     this._armSubsystem = armSubsystem;
     this._setpoint = setpoint;
 
-    this.addRequirements(_armSubsystem);
+    this.addRequirements(_armSubsystem); //
   }
 
   // Called when the command is initially scheduled.

@@ -5,24 +5,34 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.subsystems.Arm;
+import frc.robot.subsystems.Arm.ArmPosition;
+import frc.robot.subsystems.Arm.WristPosition;
 
 public class CmdArmWristPosition extends CommandBase {
   /** Creates a new CmdArmWristPosition. */
-  public CmdArmWristPosition() {
+  private Arm _armSubsystem;
+  private ArmPosition _setpoint;
+  
+  public CmdArmWristPosition(Arm armSubsystem, ArmPosition setpoint) {
+    this._armSubsystem = armSubsystem;
+    this._setpoint = setpoint;
     // Use addRequirements() here to declare subsystem dependencies.
+    this.addRequirements(_armSubsystem); 
   }
-
-  // Called when the command is initially scheduled.
-  @Override
-  public void initialize() {}
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
-  public void execute() {}
+  public void execute() {
+    _armSubsystem.setWristPosition(_setpoint);
+
+  }
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {}
+  public void end(boolean interrupted) {
+
+  }
 
   // Returns true when the command should end.
   @Override
