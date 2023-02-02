@@ -8,6 +8,7 @@ import com.ctre.phoenix.sensors.AbsoluteSensorRange;
 import com.ctre.phoenix.sensors.CANCoder;
 import com.kauailabs.navx.frc.AHRS;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -16,6 +17,7 @@ import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
@@ -171,6 +173,20 @@ public class Drive extends SubsystemBase {
     public void zeroGyroscope() {
         _navx.zeroYaw();
         _odometry.resetPosition(getGyroscopeRotation(), null, null);
+    }
+
+    // NOT SURE IF THIS WORKS LOL
+    public void setGyroPose(Pose2d robotPosition){
+        _navx.zeroYaw();
+        _odometry.resetPosition(getGyroscopeRotation(), null, robotPosition);
+    }
+
+    public Pose2d getPose(){
+        return _odometry.getPoseMeters();
+    }
+
+    public RobotState getRobotState(){
+        return this.getRobotState();
     }
 
     public Rotation2d getGyroscopeRotation() {
