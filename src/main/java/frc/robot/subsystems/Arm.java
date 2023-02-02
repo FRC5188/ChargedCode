@@ -286,7 +286,63 @@ public class Arm extends SubsystemBase {
         _previousIntakeMotorCurrent = _intakeMotorCurrent;
         _intakeMotorCurrent = _intakeMotor.getOutputCurrent();
     }
-    public void setWristPosition() {
-        
+    public void setWristPosition(ArmPosition armPosition) {
+        //Sets Wrist Position based off of arm position
+        switch (armPosition) {
+            case GroundPickUp:
+                setWristPosition(GROUND_PICKUP_WRIST_POS);
+                break;
+            case HighCone:
+                setWristPosition(HIGH_GOAL_CONE_WRIST_POS);
+                break;
+            case HighCube:
+                setWristPosition(HIGH_GOAL_CUBE_WRIST_POS);
+                break;
+            case LoadStationPickUp:
+                setWristPosition(LOADING_STATION_WRIST_POS);
+                break;
+            case LowScore:
+                setWristPosition(LOW_GOAL_WRIST_POS);
+                break;
+            case MiddleCone:
+                setWristPosition(MIDDLE_GOAL_CONE_WRIST_POS);
+                break;
+            case MiddleCube:
+                setWristPosition(MIDDLE_GOAL_CUBE_WRIST_POS);
+                break;
+            case Stored:
+
+                break;
+            default:
+                break; 
+    }
+    public boolean checkWristPosition(ArmPosition positionOfArm) {
+        switch (positionOfArm) {
+            case GroundPickUp:
+                return getWristPosition() == GROUND_PICKUP_WRIST_POS;
+                break;
+            case HighCone:
+                return getWristPosition() == HIGH_GOAL_CONE_WRIST_POS;
+                break;
+            case HighCube:
+                return getWristPosition() == HIGH_GOAL_CUBE_WRIST_POS;
+                break;
+            case LoadStationPickUp:
+                return getWristPosition() == LOADING_STATION_WRIST_POS;
+                break;
+            case LowScore:
+                return getWristPosition() == LOW_GOAL_WRIST_POS;
+                break;
+            case MiddleCone:
+                return getWristPosition() == MIDDLE_GOAL_CONE_WRIST_POS;
+                break;
+            case MiddleCube:
+                return getWristPosition() == MIDDLE_GOAL_CUBE_WRIST_POS;
+                break;
+            case Stored:
+
+                break;
+            default:
+                break; 
     }
 }
