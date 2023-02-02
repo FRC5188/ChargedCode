@@ -27,7 +27,7 @@ import frc.robot.sds.SdsModuleConfigurations;
 import frc.robot.sds.SwerveModule;
 
 public class Drive extends SubsystemBase {
-    
+
     /** The width of the chassis from the centers of the swerve modules */
     private static final double CHASSIS_WIDTH_METERS = Units.inchesToMeters(20.75);
     /** The height of the chassis from the centers of the swerve modules */
@@ -51,7 +51,7 @@ public class Drive extends SubsystemBase {
     public static final double MAX_VELOCITY_METERS_PER_SECOND = 6380.0 / 60.0 *
             SdsModuleConfigurations.MK4I_L2.getDriveReduction() *
             SdsModuleConfigurations.MK4I_L2.getWheelDiameter() * Math.PI;
-    
+
     /**
      * The maximum angular velocity of the robot in radians per second.
      * <p>
@@ -99,8 +99,6 @@ public class Drive extends SubsystemBase {
 
     private SwerveDriveOdometry _odometry;
 
-    private SlewRateLimiter _limiter;
-
     // These are our modules
     private final SwerveModule _frontLeftModule;
     private final SwerveModule _frontRightModule;
@@ -126,44 +124,44 @@ public class Drive extends SubsystemBase {
         ShuffleboardTab shuffleboardTab = Shuffleboard.getTab("Drivetrain");
 
         _frontLeftModule = Mk4iSwerveModuleHelper.createFalcon500(
-            shuffleboardTab.getLayout("Front Left Module", BuiltInLayouts.kList)
+                shuffleboardTab.getLayout("Front Left Module", BuiltInLayouts.kList)
                         .withSize(2, 4)
                         .withPosition(0, 0),
-            Mk4iSwerveModuleHelper.GearRatio.L2,
-            CanIDs.FRONT_LEFT_DRIVE_ID,
-            CanIDs.FRONT_LEFT_TURNING_ID,
-            CanIDs.FRONT_LEFT_ENCODER_ID,
-            FRONT_LEFT_MODULE_ENCODER_OFFSET);
+                Mk4iSwerveModuleHelper.GearRatio.L2,
+                CanIDs.FRONT_LEFT_DRIVE_ID,
+                CanIDs.FRONT_LEFT_TURNING_ID,
+                CanIDs.FRONT_LEFT_ENCODER_ID,
+                FRONT_LEFT_MODULE_ENCODER_OFFSET);
 
         _frontRightModule = Mk4iSwerveModuleHelper.createFalcon500(
-            shuffleboardTab.getLayout("Front Right Module", BuiltInLayouts.kList)
+                shuffleboardTab.getLayout("Front Right Module", BuiltInLayouts.kList)
                         .withSize(2, 4)
                         .withPosition(0, 0),
-            Mk4iSwerveModuleHelper.GearRatio.L2,
-            CanIDs.FRONT_RIGHT_DRIVE_ID,
-            CanIDs.FRONT_RIGHT_TURNING_ID,
-            CanIDs.FRONT_RIGHT_ENCODER_ID,
-            FRONT_RIGHT_MODULE_ENCODER_OFFSET);
+                Mk4iSwerveModuleHelper.GearRatio.L2,
+                CanIDs.FRONT_RIGHT_DRIVE_ID,
+                CanIDs.FRONT_RIGHT_TURNING_ID,
+                CanIDs.FRONT_RIGHT_ENCODER_ID,
+                FRONT_RIGHT_MODULE_ENCODER_OFFSET);
 
         _backLeftModule = Mk4iSwerveModuleHelper.createFalcon500(
-            shuffleboardTab.getLayout("Back Left Module", BuiltInLayouts.kList)
+                shuffleboardTab.getLayout("Back Left Module", BuiltInLayouts.kList)
                         .withSize(2, 4)
                         .withPosition(0, 0),
-            Mk4iSwerveModuleHelper.GearRatio.L2,
-            CanIDs.BACK_LEFT_DRIVE_ID,
-            CanIDs.BACK_LEFT_TURNING_ID,
-            CanIDs.BACK_LEFT_ENCODER_ID,
-            BACK_LEFT_MODULE_ENCODER_OFFSET);
+                Mk4iSwerveModuleHelper.GearRatio.L2,
+                CanIDs.BACK_LEFT_DRIVE_ID,
+                CanIDs.BACK_LEFT_TURNING_ID,
+                CanIDs.BACK_LEFT_ENCODER_ID,
+                BACK_LEFT_MODULE_ENCODER_OFFSET);
 
         _backRightModule = Mk4iSwerveModuleHelper.createFalcon500(
-            shuffleboardTab.getLayout("Back Right Module", BuiltInLayouts.kList)
+                shuffleboardTab.getLayout("Back Right Module", BuiltInLayouts.kList)
                         .withSize(2, 4)
                         .withPosition(0, 0),
-            Mk4iSwerveModuleHelper.GearRatio.L2,
-            CanIDs.BACK_RIGHT_DRIVE_ID,
-            CanIDs.BACK_RIGHT_TURNING_ID,
-            CanIDs.BACK_RIGHT_ENCODER_ID,
-            BACK_RIGHT_MODULE_ENCODER_OFFSET);
+                Mk4iSwerveModuleHelper.GearRatio.L2,
+                CanIDs.BACK_RIGHT_DRIVE_ID,
+                CanIDs.BACK_RIGHT_TURNING_ID,
+                CanIDs.BACK_RIGHT_ENCODER_ID,
+                BACK_RIGHT_MODULE_ENCODER_OFFSET);
     }
 
     /**
@@ -199,13 +197,17 @@ public class Drive extends SubsystemBase {
         SwerveDriveKinematics.desaturateWheelSpeeds(states, MAX_VELOCITY_METERS_PER_SECOND);
 
         // Set each module's speed and angle
-        _frontLeftModule.set(_limiter.calculate(states[0].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE),
-                             states[0].angle.getRadians());
-        _frontRightModule.set(_limiter.calculate(states[1].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE), 
-                              states[1].angle.getRadians());
-        _backLeftModule.set(_limiter.calculate(states[2].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE), 
-                            states[2].angle.getRadians());
-        _backRightModule.set(_limiter.calculate(states[3].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE), 
-                             states[3].angle.getRadians());
+        _frontLeftModule.set(
+                states[0].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE,
+                states[0].angle.getRadians());
+        _frontRightModule.set(
+                states[1].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE,
+                states[1].angle.getRadians());
+        _backLeftModule.set(
+                states[2].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE,
+                states[2].angle.getRadians());
+        _backRightModule.set(
+                states[3].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE,
+                states[3].angle.getRadians());
     }
 }
