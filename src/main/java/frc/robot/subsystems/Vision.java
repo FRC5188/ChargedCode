@@ -1,7 +1,11 @@
 package frc.robot.subsystems;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
+
+import javax.management.relation.Relation;
 
 import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
@@ -12,6 +16,7 @@ import org.photonvision.targeting.PhotonPipelineResult;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.OperatorConstants.Field;
 import frc.robot.Constants.OperatorConstants.Vision.Camera;
@@ -44,9 +49,45 @@ public class Vision extends SubsystemBase {
         }
     }
 
-    private Optional<EstimatedRobotPose> getEstimatedRobotGlobalPose(Pose2d previousEstimatedRobotPose){
-        photonPoseEstimator.setReferencePose(previousEstimatedRobotPose);
-        return photonPoseEstimator.update();
+    /**
+     * {@summary} Uses Translations to compare the two Pose2d of the apriltag and robot and then find distance between them.
+     * @param apriltagID
+     * @param odometry
+     * @return Distance to apriltag given an ID. 
+     * @throws Exception
+     * @throws IOException
+     */
+    public static double getDistanceToApriltag(int apriltagID, SwerveDrivePoseEstimator odometry) throws Exception, IOException {
+        Pose2d robotPose = odometry.getEstimatedPosition();
+        Pose2d apriltagPose = getApriltagFieldLayout().getTagPose(apriltagID).isPresent() ? (getApriltagFieldLayout().getTagPose(apriltagID).get().toPose2d()) : null;
+
+        // Null check to ensure that we aren't working with a null value. 
+        if(apriltagPose == null){
+            System.out.println("Tag couldn't be found. Please ensure that ID for apriltag is correct.");
+            throw new Exception("Tag couldn't be found. Please ensure that ID for apriltag is correct.");
+        }
+        // Pretty sure this returns the distance betweeen the robot and the apriltag. 
+        return robotPose.relativeTo(apriltagPose).getTranslation().getDistance(apriltagPose.getTranslation());
+    }
+
+    /**
+     * {@summary} The angle of the apriltag from the robot based off odometry. 
+     * @param apriltagID
+     * @param odometry
+     * @return Angle in degrees to apriltag from robot. 
+     * @throws Exception
+     * @throws IOException
+     */
+    public static double getAngleToApriltag(int apriltagID, SwerveDrivePoseEstimator odometry) throws Exception, IOException {
+        Pose2d robotPose = odometry.getEstimatedPosition();
+        Pose2d apriltagPose = getApriltagFieldLayout().getTagPose(apriltagID).isPresent() ? (getApriltagFieldLayout().getTagPose(apriltagID).get().toPose2d()) : null;
+
+        if(apriltagPose == null){
+            System.out.println("Tag couldn't be found. Please ensure that ID for apriltag is correct.");
+            throw new Exception("Tag couldn't be found. Please ensure that ID for apriltag is correct.");
+        }
+
+        return robotPose.relativeTo(apriltagPose).getRotation().getDegrees();
     }
 
     /**
@@ -63,5 +104,10 @@ public class Vision extends SubsystemBase {
             System.out.println("ERROR: Cannot open file for Apriltag Field Map. File path may be incorrect.");
             return null;
         }
+    }
+
+    private Optional<EstimatedRobotPose> getEstimatedRobotGlobalPose(Pose2d previousEstimatedRobotPose){
+        photonPoseEstimator.setReferencePose(previousEstimatedRobotPose);
+        return photonPoseEstimator.update();
     }
 }
