@@ -61,16 +61,13 @@ public class Drive extends SubsystemBase {
             Math.hypot(CHASSIS_WIDTH_METERS / 2.0, CHASSIS_HEIGHT_METERS / 2.0);
 
     /** The offset to get the encoder to read 0 when facing forward */
-    private static final double FRONT_LEFT_MODULE_ENCODER_OFFSET = -324.052734375;
+    private static final double FRONT_LEFT_MODULE_ENCODER_OFFSET = -207.94;
     /** The offset to get the encoder to read 0 when facing forward */
-    private static final double FRONT_RIGHT_MODULE_ENCODER_OFFSET = -352.705078125;
+    private static final double FRONT_RIGHT_MODULE_ENCODER_OFFSET = -85.25;
     /** The offset to get the encoder to read 0 when facing forward */
-    private static final double BACK_LEFT_MODULE_ENCODER_OFFSET = -200.7421875;
+    private static final double BACK_LEFT_MODULE_ENCODER_OFFSET = -55.98;
     /** The offset to get the encoder to read 0 when facing forward */
-    private static final double BACK_RIGHT_MODULE_ENCODER_OFFSET = -311.8359375;
-
-    /** This value is the max amount we are willing to accelerate in 20ms, this will help make the robot easier to drive */
-    private static final double SLEW_RATE = 1;
+    private static final double BACK_RIGHT_MODULE_ENCODER_OFFSET = -333.28;
 
     /**
      * This object does the math to convert a motion vector into individual module
@@ -167,8 +164,6 @@ public class Drive extends SubsystemBase {
             CanIDs.BACK_RIGHT_TURNING_ID,
             CanIDs.BACK_RIGHT_ENCODER_ID,
             BACK_RIGHT_MODULE_ENCODER_OFFSET);
-
-        _limiter = new SlewRateLimiter(SLEW_RATE);
     }
 
     /**

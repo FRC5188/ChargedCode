@@ -38,4 +38,12 @@ public final class Constants {
         public static final int BACK_RIGHT_TURNING_ID = 11;
         public static final int BACK_RIGHT_ENCODER_ID = 12;
     }
+
+    /**
+     * Only put constants in this class if they are subsystem-specific but it would be hard to keep them in the subsystem
+     */
+    public static class AssortedConstants {
+        /** This value is the amount of time in seconds that we want the robot to take to get from 0 to max speed, this will help make the robot easier to drive */
+        public static final double DRIVE_RAMP_SECONDS = 3;
+    }
 }
