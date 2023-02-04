@@ -71,7 +71,7 @@ public class Drive extends SubsystemBase {
      * This is a measure of how fast the robot can rotate in place.
      */
     public static final double MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND = MAX_VELOCITY_METERS_PER_SECOND /
-            Math.hypot(CHASSIS_WIDTH_METERS / 2.0, CHASSIS_HEIGHT_METERS / 2.0);
+            Math.hypot(CHASSIS_WIDTH_METERS / 2.0, CHASSIS_HEIGHT_METERS / 2.0) * 0.5;
 
     /** The offset to get the encoder to read 0 when facing forward */
     private static final double FRONT_LEFT_MODULE_ENCODER_OFFSET = -323.7890625;
