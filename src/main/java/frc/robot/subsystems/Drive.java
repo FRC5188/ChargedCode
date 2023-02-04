@@ -168,6 +168,4 @@ public class Drive extends SubsystemBase {
         _backLeftModule.set(_backLeftModuleState);
         _backRightModule.set(_backRightModuleState);
     }
-
 }
-
