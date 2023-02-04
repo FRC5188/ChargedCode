@@ -174,7 +174,7 @@ public class Drive extends SubsystemBase {
             CanIDs.BACK_RIGHT_ENCODER_ID,
             BACK_RIGHT_MODULE_ENCODER_OFFSET);
 
-        final SwerveDrivePoseEstimator _odometry = new SwerveDrivePoseEstimator(_kinematics, getGyroscopeRotation(), new SwerveModulePosition[] {
+        SwerveDrivePoseEstimator _odometry = new SwerveDrivePoseEstimator(_kinematics, getGyroscopeRotation(), new SwerveModulePosition[] {
             _frontLeftModule.getModulePosition(), _frontRightModule.getModulePosition(),
             _backLeftModule.getModulePosition(), _backRightModule.getModulePosition()}, getPose());
     }
