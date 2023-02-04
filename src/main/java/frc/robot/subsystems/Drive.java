@@ -23,6 +23,7 @@ import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.subsystems.Vision.*;
 import frc.robot.subsystems.Vision;
 import frc.robot.Constants.OperatorConstants.CanIDs;
 import frc.robot.sds.Mk4iSwerveModuleHelper;
@@ -31,6 +32,7 @@ import frc.robot.sds.SwerveModule;
 
 public class Drive extends SubsystemBase {
     
+    Vision _visionSubsystem;
     /** The width of the chassis from the centers of the swerve modules */
     private static final double CHASSIS_WIDTH_METERS = Units.inchesToMeters(20.75);
     /** The height of the chassis from the centers of the swerve modules */
@@ -100,6 +102,7 @@ public class Drive extends SubsystemBase {
      */
     private final AHRS _navx = new AHRS();
 
+
     private SwerveDrivePoseEstimator _odometry;
 
     // These are our modules
@@ -125,6 +128,9 @@ public class Drive extends SubsystemBase {
      */
     public Drive() {
         ShuffleboardTab shuffleboardTab = Shuffleboard.getTab("Drivetrain");
+
+        Vision _visionSubsystem = new Vision();
+
 
         _frontLeftModule = Mk4iSwerveModuleHelper.createFalcon500(
             shuffleboardTab.getLayout("Front Left Module", BuiltInLayouts.kList)
@@ -212,6 +218,11 @@ public class Drive extends SubsystemBase {
         SwerveModuleState[] states = _kinematics.toSwerveModuleStates(_chassisSpeeds);
         // Normalize the wheel speeds so we aren't trying to set above the max
         SwerveDriveKinematics.desaturateWheelSpeeds(states, MAX_VELOCITY_METERS_PER_SECOND);
+
+        // Not sure if this will actually change _odometry because it's only passed in as an argument but Mitchell says so
+        _visionSubsystem.getVisionEstimatedRobotPose(_odometry);
+
+        System.out.printf("%.2f %.2f %.2f\n", _odometry.getEstimatedPosition().getX(), _odometry.getEstimatedPosition().getY(), _odometry.getEstimatedPosition().getRotation());
 
         // Set each module's speed and angle
         _frontLeftModule.set(states[0].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE,
