@@ -74,13 +74,13 @@ public class Drive extends SubsystemBase {
             Math.hypot(CHASSIS_WIDTH_METERS / 2.0, CHASSIS_HEIGHT_METERS / 2.0);
 
     /** The offset to get the encoder to read 0 when facing forward */
-    private static final double FRONT_LEFT_MODULE_ENCODER_OFFSET = -207.94;
+    private static final double FRONT_LEFT_MODULE_ENCODER_OFFSET = -323.7890625;
     /** The offset to get the encoder to read 0 when facing forward */
-    private static final double FRONT_RIGHT_MODULE_ENCODER_OFFSET = -85.25;
+    private static final double FRONT_RIGHT_MODULE_ENCODER_OFFSET = -351.73828125;
     /** The offset to get the encoder to read 0 when facing forward */
-    private static final double BACK_LEFT_MODULE_ENCODER_OFFSET = -55.98;
+    private static final double BACK_LEFT_MODULE_ENCODER_OFFSET = -201.533203125;
     /** The offset to get the encoder to read 0 when facing forward */
-    private static final double BACK_RIGHT_MODULE_ENCODER_OFFSET = -333.28;
+    private static final double BACK_RIGHT_MODULE_ENCODER_OFFSET = -312.355390125;
 
     /**
      * This object does the math to convert a motion vector into individual module
