@@ -54,8 +54,12 @@ public class RobotContainer {
                                                () -> (-modifyAxis(_driverController.getLeftY()) * Drive.MAX_VELOCITY_METERS_PER_SECOND),
                                                () -> (-modifyAxis(_driverController.getLeftX()) * Drive.MAX_VELOCITY_METERS_PER_SECOND),
                                                () -> (-modifyAxis(_driverController.getRightX()) * Drive.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND)));
-
-
+//this is a default cmd just for testing
+        _armSubsystem.setDefaultCommand(new CmdArmRunIntake(
+                                                _armSubsystem,
+                                                () -> (-modifyAxis(_operatorController.getLeftX()))));
+ 
+ 
                                             
         // Configure the button bindings
         configureButtonBindings();
@@ -75,8 +79,8 @@ public class RobotContainer {
         // // No requirements because we don't need to interrupt anything
         // .whenPressed(m_drivetrainSubsystem::zeroGyroscope);
 
-        _operatorAButton.onTrue(new CmdArmRunIntake(_armSubsystem));
-        
+        //_operatorAButton.onTrue(new CmdArmRunIntake(_armSubsystem));
+
 
     }
 
