@@ -193,6 +193,10 @@ public class Drive extends SubsystemBase {
         return _odometry.getEstimatedPosition();
     }
 
+    public Rotation2d getOdometryRotation2d(){
+        return _odometry.getEstimatedPosition().getRotation();
+    }
+
     public RobotState getRobotState(){
         return this.getRobotState();
     }
@@ -222,7 +226,7 @@ public class Drive extends SubsystemBase {
         // Not sure if this will actually change _odometry because it's only passed in as an argument but Mitchell says so
         _visionSubsystem.getVisionEstimatedRobotPose(_odometry);
 
-        System.out.printf("%.2f %.2f %.2f\n", _odometry.getEstimatedPosition().getX(), _odometry.getEstimatedPosition().getY(), _odometry.getEstimatedPosition().getRotation());
+        System.out.printf("X: %.2f Y: %.2f Rotation: %.2f\n", _odometry.getEstimatedPosition().getX(), _odometry.getEstimatedPosition().getY(), _odometry.getEstimatedPosition().getRotation());
 
         // Set each module's speed and angle
         _frontLeftModule.set(states[0].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE,
