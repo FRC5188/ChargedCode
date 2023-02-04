@@ -44,6 +44,6 @@ public final class Constants {
      */
     public static class AssortedConstants {
         /** This value is the amount of time in seconds that we want the robot to take to get from 0 to max speed, this will help make the robot easier to drive */
-        public static final double DRIVE_RAMP_SECONDS = 3;
+        public static final double DRIVE_RAMP_SECONDS = 0;
     }
 }
