@@ -72,7 +72,7 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     return _driveSubsystem.followTrajectoryCommand(
-      PathPlanner.loadPath("Straight Line", 3, 4), 
+      PathPlanner.loadPath("TEST_Straight_Line", 3, 4), 
       true);
   }
 
