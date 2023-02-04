@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.commands.DefaultDriveCommand;
 import frc.robot.commands.CmdArmRunIntake;
 import frc.robot.subsystems.Drive;
@@ -29,7 +30,13 @@ public class RobotContainer {
     private final Drive _driveSubsystem = new Drive();
     private final Arm _armSubsystem = new Arm();
     private final XboxController _driverController = new XboxController(0);
+    
+    
     private final XboxController _operatorController = new XboxController(1);
+    
+    private JoystickButton _operatorAButton = new JoystickButton(_operatorController, Constants.ButtonMappings.OPERATOR_A_BUTTON);
+    private JoystickButton _operatorBButton = new JoystickButton(_operatorController, Constants.ButtonMappings.OPERATOR_B_BUTTON);
+
 
     private static final double ARM_MULTIPLIER = 0.3;
 
@@ -48,9 +55,8 @@ public class RobotContainer {
                                                () -> (-modifyAxis(_driverController.getLeftX()) * Drive.MAX_VELOCITY_METERS_PER_SECOND),
                                                () -> (-modifyAxis(_driverController.getRightX()) * Drive.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND)));
 
-        _armSubsystem.setDefaultCommand(new CmdArmRunIntake(
-                                        _armSubsystem));
 
+                                            
         // Configure the button bindings
         configureButtonBindings();
     }
@@ -68,6 +74,10 @@ public class RobotContainer {
         // new Button(m_controller::getBackButton)
         // // No requirements because we don't need to interrupt anything
         // .whenPressed(m_drivetrainSubsystem::zeroGyroscope);
+
+        _operatorAButton.onTrue(new CmdArmRunIntake(_armSubsystem));
+        
+
     }
 
     /**
