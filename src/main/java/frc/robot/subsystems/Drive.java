@@ -8,6 +8,7 @@ import com.ctre.phoenix.sensors.AbsoluteSensorRange;
 import com.ctre.phoenix.sensors.CANCoder;
 import com.kauailabs.navx.frc.AHRS;
 
+import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -22,6 +23,7 @@ import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.subsystems.Vision;
 import frc.robot.Constants.OperatorConstants.CanIDs;
 import frc.robot.sds.Mk4iSwerveModuleHelper;
 import frc.robot.sds.SdsModuleConfigurations;
@@ -98,7 +100,7 @@ public class Drive extends SubsystemBase {
      */
     private final AHRS _navx = new AHRS();
 
-    private SwerveDriveOdometry _odometry;
+    private SwerveDrivePoseEstimator _odometry;
 
     // These are our modules
     private final SwerveModule _frontLeftModule;
@@ -182,7 +184,7 @@ public class Drive extends SubsystemBase {
     }
 
     public Pose2d getPose(){
-        return _odometry.getPoseMeters();
+        return _odometry.getEstimatedPosition();
     }
 
     public RobotState getRobotState(){
