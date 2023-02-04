@@ -129,6 +129,7 @@ public class Drive extends SubsystemBase {
     public Drive() {
         ShuffleboardTab shuffleboardTab = Shuffleboard.getTab("Drivetrain");
 
+
         Vision _visionSubsystem = new Vision();
 
 
@@ -171,6 +172,10 @@ public class Drive extends SubsystemBase {
             CanIDs.BACK_RIGHT_TURNING_ID,
             CanIDs.BACK_RIGHT_ENCODER_ID,
             BACK_RIGHT_MODULE_ENCODER_OFFSET);
+
+        final SwerveDrivePoseEstimator _odometry = new SwerveDrivePoseEstimator(_kinematics, getGyroscopeRotation(), new SwerveModulePosition[] {
+            _frontLeftModule.getModulePosition(), _frontRightModule.getModulePosition(),
+            _backLeftModule.getModulePosition(), _backRightModule.getModulePosition()}, getPose());
     }
 
     /**
@@ -181,6 +186,12 @@ public class Drive extends SubsystemBase {
     public void zeroGyroscope() {
         _navx.zeroYaw();
         _odometry.resetPosition(getGyroscopeRotation(), null, null);
+    }
+
+    public SwerveModulePosition[] getSwerveModulePositions(){
+        return new SwerveModulePosition[] {
+            _frontLeftModule.getModulePosition(), _frontRightModule.getModulePosition(),
+            _backLeftModule.getModulePosition(), _backRightModule.getModulePosition()};
     }
 
     // NOT SURE IF THIS WORKS LOL
@@ -219,12 +230,17 @@ public class Drive extends SubsystemBase {
     @Override
     public void periodic() {
         // Convert the drive base vector into module vectors
+        _visionSubsystem.getVisionEstimatedRobotPose(_odometry);
+        _odometry.updateWithTime(System.currentTimeMillis()/1000.0, getGyroscopeRotation(), new SwerveModulePosition[] {
+            _frontLeftModule.getModulePosition(), _frontRightModule.getModulePosition(),
+            _backLeftModule.getModulePosition(), _backRightModule.getModulePosition()
+        } );
         SwerveModuleState[] states = _kinematics.toSwerveModuleStates(_chassisSpeeds);
+
         // Normalize the wheel speeds so we aren't trying to set above the max
         SwerveDriveKinematics.desaturateWheelSpeeds(states, MAX_VELOCITY_METERS_PER_SECOND);
 
         // Not sure if this will actually change _odometry because it's only passed in as an argument but Mitchell says so
-        _visionSubsystem.getVisionEstimatedRobotPose(_odometry);
 
         System.out.printf("X: %.2f Y: %.2f Rotation: %.2f\n", _odometry.getEstimatedPosition().getX(), _odometry.getEstimatedPosition().getY(), _odometry.getEstimatedPosition().getRotation());
 
