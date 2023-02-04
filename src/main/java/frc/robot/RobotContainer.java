@@ -10,8 +10,8 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import frc.robot.commands.CmdArmManual;
 import frc.robot.commands.DefaultDriveCommand;
+import frc.robot.commands.CmdArmRunIntake;
 import frc.robot.subsystems.Drive;
 import frc.robot.subsystems.Arm;
 
@@ -48,10 +48,8 @@ public class RobotContainer {
                                                () -> (-modifyAxis(_driverController.getLeftX()) * Drive.MAX_VELOCITY_METERS_PER_SECOND),
                                                () -> (-modifyAxis(_driverController.getRightX()) * Drive.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND)));
 
-        _armSubsystem.setDefaultCommand(new CmdArmManual(
-                                        _armSubsystem,
-                                        () -> (modifyAxis(_operatorController.getLeftX()) * ARM_MULTIPLIER),
-                                        () -> (modifyAxis(_operatorController.getLeftY()) * ARM_MULTIPLIER)));
+        _armSubsystem.setDefaultCommand(new CmdArmRunIntake(
+                                        _armSubsystem));
 
         // Configure the button bindings
         configureButtonBindings();

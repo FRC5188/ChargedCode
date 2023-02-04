@@ -71,6 +71,11 @@ public class Arm extends SubsystemBase {
     private final double LOW_GOAL_ELBOW_POS = -1.0;
     private final WristPosition LOW_GOAL_WRIST_POS = WristPosition.Parallel;
 
+    //STORE
+    private final double STORE_SHOULDER_POS = -1.0;
+    private final double STORE_ELBOW_POS = -1.0;
+    private final WristPosition STORE_WRIST_POS = WristPosition.Parallel;
+
     // CLAW
     private CANSparkMax _intakeMotor;
     private double _previousIntakeMotorCurrent;
@@ -315,34 +320,29 @@ public class Arm extends SubsystemBase {
                 break;
             default:
                 break; 
+        }
     }
     public boolean checkWristPosition(ArmPosition positionOfArm) {
         switch (positionOfArm) {
             case GroundPickUp:
                 return getWristPosition() == GROUND_PICKUP_WRIST_POS;
-                break;
             case HighCone:
                 return getWristPosition() == HIGH_GOAL_CONE_WRIST_POS;
-                break;
             case HighCube:
                 return getWristPosition() == HIGH_GOAL_CUBE_WRIST_POS;
-                break;
             case LoadStationPickUp:
                 return getWristPosition() == LOADING_STATION_WRIST_POS;
-                break;
             case LowScore:
                 return getWristPosition() == LOW_GOAL_WRIST_POS;
-                break;
             case MiddleCone:
                 return getWristPosition() == MIDDLE_GOAL_CONE_WRIST_POS;
-                break;
             case MiddleCube:
                 return getWristPosition() == MIDDLE_GOAL_CUBE_WRIST_POS;
-                break;
             case Stored:
-
-                break;
+                return getWristPosition() == STORE_WRIST_POS; 
             default:
-                break; 
+                return false;
+             
+        }
     }
 }
