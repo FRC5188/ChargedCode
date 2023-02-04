@@ -14,6 +14,7 @@ import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 import org.photonvision.targeting.PhotonPipelineResult;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
@@ -44,7 +45,7 @@ public class Vision extends SubsystemBase {
         }
         else {
             EstimatedRobotPose robotEstimatedPose = photonResults.get();
-            poseEstimator.addVisionMeasurement(robotEstimatedPose.estimatedPose.toPose2d(), robotEstimatedPose.timestampSeconds);
+            poseEstimator.addVisionMeasurement(robotEstimatedPose.estimatedPose.toPose2d(), Timer.getFPGATimestamp());
             return poseEstimator;
         }
     }

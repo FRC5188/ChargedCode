@@ -11,8 +11,10 @@ import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.commands.PPSwerveControllerCommand;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
@@ -28,6 +30,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.subsystems.Vision.*;
+import frc.robot.subsystems.Vision;
 import frc.robot.Constants.OperatorConstants.CanIDs;
 import frc.robot.sds.Mk4iSwerveModuleHelper;
 import frc.robot.sds.SdsModuleConfigurations;
@@ -35,6 +39,7 @@ import frc.robot.sds.SwerveModule;
 
 public class Drive extends SubsystemBase {
     
+    Vision _visionSubsystem;
     /** The width of the chassis from the centers of the swerve modules */
     private static final double CHASSIS_WIDTH_METERS = Units.inchesToMeters(20.75);
     /** The height of the chassis from the centers of the swerve modules */
@@ -104,7 +109,8 @@ public class Drive extends SubsystemBase {
      */
     private final AHRS _navx = new AHRS();
 
-    private SwerveDriveOdometry _odometry;
+
+    private SwerveDrivePoseEstimator _odometry;
 
     private SwerveModuleState[] _states;
 
@@ -129,6 +135,11 @@ public class Drive extends SubsystemBase {
      */
     public Drive() {
         ShuffleboardTab shuffleboardTab = Shuffleboard.getTab("Drivetrain");
+
+
+        Vision _visionSubsystem = new Vision();
+
+
         _frontLeftModule = Mk4iSwerveModuleHelper.createFalcon500(
             shuffleboardTab.getLayout("Front Left Module", BuiltInLayouts.kList)
                         .withSize(2, 4)
@@ -170,6 +181,9 @@ public class Drive extends SubsystemBase {
             BACK_RIGHT_MODULE_ENCODER_OFFSET);
 
         _states = new SwerveModuleState[4];
+        SwerveDrivePoseEstimator _odometry = new SwerveDrivePoseEstimator(_kinematics, getGyroscopeRotation(), new SwerveModulePosition[] {
+            _frontLeftModule.getModulePosition(), _frontRightModule.getModulePosition(),
+            _backLeftModule.getModulePosition(), _backRightModule.getModulePosition()}, getPose());
     }
 
     /**
@@ -182,8 +196,18 @@ public class Drive extends SubsystemBase {
         _odometry.resetPosition(getGyroscopeRotation(), null, null);
     }
 
+    public SwerveModulePosition[] getSwerveModulePositions(){
+        return new SwerveModulePosition[] {
+            _frontLeftModule.getModulePosition(), _frontRightModule.getModulePosition(),
+            _backLeftModule.getModulePosition(), _backRightModule.getModulePosition()};
+    }
+
     public Pose2d getPose(){
-        return _odometry.getPoseMeters();
+        return _odometry.getEstimatedPosition();
+    }
+
+    public Rotation2d getOdometryRotation2d(){
+        return _odometry.getEstimatedPosition().getRotation();
     }
 
     public RobotState getRobotState(){
@@ -241,6 +265,16 @@ public class Drive extends SubsystemBase {
         // Normalize the wheel speeds so we aren't trying to set above the max
         SwerveDriveKinematics.desaturateWheelSpeeds(_states, MAX_VELOCITY_METERS_PER_SECOND);
         
+        _visionSubsystem.getVisionEstimatedRobotPose(_odometry);
+        _odometry.updateWithTime(Timer.getFPGATimestamp(), getGyroscopeRotation(), new SwerveModulePosition[] {
+            _frontLeftModule.getModulePosition(), _frontRightModule.getModulePosition(),
+            _backLeftModule.getModulePosition(), _backRightModule.getModulePosition()
+        } );
+
+        // Not sure if this will actually change _odometry because it's only passed in as an argument but Mitchell says so
+
+        System.out.printf("X: %.2f Y: %.2f Rotation: %.2f\n", _odometry.getEstimatedPosition().getX(), _odometry.getEstimatedPosition().getY(), _odometry.getEstimatedPosition().getRotation());
+
         // Set each module's speed and angle
         _frontLeftModule.set(_states[0].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE,
                                      _states[0].angle.getRadians());
