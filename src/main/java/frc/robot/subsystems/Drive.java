@@ -7,7 +7,10 @@ package frc.robot.subsystems;
 import com.ctre.phoenix.sensors.AbsoluteSensorRange;
 import com.ctre.phoenix.sensors.CANCoder;
 import com.kauailabs.navx.frc.AHRS;
+import com.pathplanner.lib.PathPlannerTrajectory;
+import com.pathplanner.lib.commands.PPSwerveControllerCommand;
 
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -21,6 +24,9 @@ import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.OperatorConstants.CanIDs;
 import frc.robot.sds.Mk4iSwerveModuleHelper;
@@ -100,12 +106,13 @@ public class Drive extends SubsystemBase {
 
     private SwerveDriveOdometry _odometry;
 
+    private SwerveModuleState[] _states;
+
     // These are our modules
     private final SwerveModule _frontLeftModule;
     private final SwerveModule _frontRightModule;
     private final SwerveModule _backLeftModule;
     private final SwerveModule _backRightModule;
-
     /**
      * This represents the desired vector of the robot.
      * <p>
@@ -116,14 +123,12 @@ public class Drive extends SubsystemBase {
      * Last is the angular velocity, which is how fast we want to rotate cw/ccw.
      */
     private ChassisSpeeds _chassisSpeeds = new ChassisSpeeds(0.0, 0.0, 0.0);
-
     /**
      * Represents the drive chassis of the robot. Contains all of the code to
      * move in a swerve format using either a joystick or supplied values.
      */
     public Drive() {
         ShuffleboardTab shuffleboardTab = Shuffleboard.getTab("Drivetrain");
-
         _frontLeftModule = Mk4iSwerveModuleHelper.createFalcon500(
             shuffleboardTab.getLayout("Front Left Module", BuiltInLayouts.kList)
                         .withSize(2, 4)
@@ -163,6 +168,8 @@ public class Drive extends SubsystemBase {
             CanIDs.BACK_RIGHT_TURNING_ID,
             CanIDs.BACK_RIGHT_ENCODER_ID,
             BACK_RIGHT_MODULE_ENCODER_OFFSET);
+
+        _states = new SwerveModuleState[4];
     }
 
     /**
@@ -173,12 +180,6 @@ public class Drive extends SubsystemBase {
     public void zeroGyroscope() {
         _navx.zeroYaw();
         _odometry.resetPosition(getGyroscopeRotation(), null, null);
-    }
-
-    // NOT SURE IF THIS WORKS LOL
-    public void setGyroPose(Pose2d robotPosition){
-        _navx.zeroYaw();
-        _odometry.resetPosition(getGyroscopeRotation(), null, robotPosition);
     }
 
     public Pose2d getPose(){
@@ -200,6 +201,35 @@ public class Drive extends SubsystemBase {
         return Rotation2d.fromDegrees(360.0 - _navx.getYaw());
     }
 
+    // Assuming this method is part of a drivetrain subsystem that provides the necessary methods
+    public Command followTrajectoryCommand(PathPlannerTrajectory traj, boolean isFirstPath) {
+        return new SequentialCommandGroup(
+            new InstantCommand(() -> {
+            // Reset odometry for the first path you run during auto
+            if(isFirstPath){
+                SwerveModulePosition modulePositionArray[] = {_frontLeftModule.getModulePosition(), _frontRightModule.getModulePosition(), _backLeftModule.getModulePosition(), _backRightModule.getModulePosition()};
+
+                this._odometry.resetPosition(
+                    getGyroscopeRotation(),
+                    modulePositionArray,
+                    traj.getInitialHolonomicPose());
+            }
+         }),
+
+         new PPSwerveControllerCommand(
+             traj, 
+             () -> getPose(), // Pose supplier
+             this._kinematics, // SwerveDriveKinematics
+             new PIDController(0, 0, 0), // X controller. Tune these values for your robot. Leaving them 0 will only use feedforwards.
+             new PIDController(0, 0, 0), // Y controller (usually the same values as X controller)
+             new PIDController(0, 0, 0), // Rotation controller. Tune these values for your robot. Leaving them 0 will only use feedforwards.
+             (SwerveModuleState[] states) -> {_states = states.clone();},
+             true, // Should the path be automatically mirrored depending on alliance color. Optional, defaults to true
+             this // Requires this drive subsystem
+         )
+     );
+    };
+    
     public void drive(ChassisSpeeds chassisSpeeds) {
         _chassisSpeeds = chassisSpeeds;
     }
@@ -207,18 +237,18 @@ public class Drive extends SubsystemBase {
     @Override
     public void periodic() {
         // Convert the drive base vector into module vectors
-        SwerveModuleState[] states = _kinematics.toSwerveModuleStates(_chassisSpeeds);
+        _states = _kinematics.toSwerveModuleStates(_chassisSpeeds);
         // Normalize the wheel speeds so we aren't trying to set above the max
-        SwerveDriveKinematics.desaturateWheelSpeeds(states, MAX_VELOCITY_METERS_PER_SECOND);
-
+        SwerveDriveKinematics.desaturateWheelSpeeds(_states, MAX_VELOCITY_METERS_PER_SECOND);
+        
         // Set each module's speed and angle
-        _frontLeftModule.set(states[0].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE,
-                             states[0].angle.getRadians());
-        _frontRightModule.set(states[1].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE, 
-                              states[1].angle.getRadians());
-        _backLeftModule.set(states[2].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE, 
-                            states[2].angle.getRadians());
-        _backRightModule.set(states[3].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE, 
-                             states[3].angle.getRadians());
+        _frontLeftModule.set(_states[0].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE,
+                                     _states[0].angle.getRadians());
+        _frontRightModule.set(_states[1].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE, 
+                                      _states[1].angle.getRadians());
+        _backLeftModule.set(_states[2].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE, 
+                                    _states[2].angle.getRadians());
+        _backRightModule.set(_states[3].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE, 
+                                     _states[3].angle.getRadians());
     }
 }
