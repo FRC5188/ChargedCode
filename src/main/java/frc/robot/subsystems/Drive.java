@@ -1,7 +1,3 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
-
 package frc.robot.subsystems;
 
 import com.ctre.phoenix.sensors.AbsoluteSensorRange;
@@ -38,6 +34,9 @@ import frc.robot.sds.Mk4iSwerveModuleHelper;
 import frc.robot.sds.SdsModuleConfigurations;
 import frc.robot.sds.SwerveModule;
 
+/**
+ * Singleton subsystem for Drivebase. 
+ */
 public class Drive extends SubsystemBase {
     
     Vision _visionSubsystem;
@@ -110,7 +109,6 @@ public class Drive extends SubsystemBase {
      */
     private final AHRS _navx = new AHRS();
 
-
     private SwerveDrivePoseEstimator _odometry;
 
     private SwerveModuleState[] _states;
@@ -130,11 +128,12 @@ public class Drive extends SubsystemBase {
      * Last is the angular velocity, which is how fast we want to rotate cw/ccw.
      */
     private ChassisSpeeds _chassisSpeeds = new ChassisSpeeds(0.0, 0.0, 0.0);
+    private static Drive _instance = null;
     /**
      * Represents the drive chassis of the robot. Contains all of the code to
      * move in a swerve format using either a joystick or supplied values.
      */
-    public Drive(Vision visionSubsystem) {
+    private Drive(Vision visionSubsystem) {
         _visionSubsystem = visionSubsystem;
 
         ShuffleboardTab shuffleboardTab = Shuffleboard.getTab("Drivetrain");
@@ -186,7 +185,13 @@ public class Drive extends SubsystemBase {
             VecBuilder.fill(0.05, 0.05, Units.degreesToRadians(5)),
             VecBuilder.fill(0.5, 0.5, Units.degreesToRadians(30)));
     }
+    public static void setInstance(Vision visionSubsytem){
+        _instance = (_instance == null) ? (new Drive(visionSubsytem)) : (_instance);
+    }
 
+    public static Drive getInstace(){
+        return _instance;
+    }
     /**
      * Sets the gyroscope angle to zero. This can be used to set the direction the
      * robot is currently facing to the

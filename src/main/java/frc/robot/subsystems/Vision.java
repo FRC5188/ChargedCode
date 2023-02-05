@@ -23,13 +23,25 @@ import frc.robot.Constants.OperatorConstants.Field;
 import frc.robot.Constants.OperatorConstants.Vision.Camera;
 import frc.robot.Constants.OperatorConstants.Vision.PhotonVision;
 
+/**
+ * Singleton subsystem for Vision. 
+ */
 public class Vision extends SubsystemBase {    
     private PhotonCamera photonCamera;
     private PhotonPoseEstimator photonPoseEstimator;
+    private static Vision _instance = null;
 
-    public Vision(){
+    private Vision(){
         this.photonCamera = new PhotonCamera(PhotonVision.PHOTON_CAMERA_NAME);
         this.photonPoseEstimator = new PhotonPoseEstimator(getApriltagFieldLayout(), PoseStrategy.AVERAGE_BEST_TARGETS, photonCamera, Camera.DIFFERENCE_BETWEEN_ROBOT_CAMERA);
+    }
+
+    public static void setInstance(){
+        _instance = (_instance ==  null) ? (new Vision()) : (_instance);
+    }
+
+    public static Vision getInstance(){
+        return _instance;
     }
 
     /**
