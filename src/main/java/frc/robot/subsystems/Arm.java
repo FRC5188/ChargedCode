@@ -20,66 +20,84 @@ import frc.robot.Constants;
 
 
 public class Arm extends SubsystemBase {
-    public enum WristPosition {
+
+    /**
+         * A list of possible wrist positions.
+         * Parallel = the piston is extended and the intake is parallel with the ground
+         * Perpendicular = the piston is retracted and the intake is pointing "up"
+     */
+    public enum WristPosition{
         Parallel,
         Perpendicular
     }
+   
+    /**
+     * Represents a setpoint for the wrist (the joint at the end of the arm) to
+     * be in. The setpoint is a combination of y,x, and a wristpositon. UNITS ARE
+     * IN INCHES.
+     * 
+     * @param y represents how far out and away from the robot the wrist is in inches. 
+     * @param z represents how far above the ground the robot claw is in inches.
+     * @param wristPosition represents a wrist state, either parallel or perpendicular.
+     */
+    public class Setpoint{
+        // y represents how far away from the robot the claw is
+        // z represents how high above the ground the claw is
+        // wrist positons represents if the wrist is extended or retracted
+        private double y, z;
+        private WristPosition wristPosition;
+        public Setpoint(double y, double z, WristPosition wristPosition){
+            this.y = y;
+            this.z = z;
+            this.wristPosition = wristPosition;
+        }
 
-    public enum ArmPosition {
-        Stored,
-        /* GAME PIECE PICKUP */
-        LoadStationPickUp,
+        /**
+         * Returns the y position of the setpoint, in inches. Y is the distance out and away from the robot.
+         * @return y in inches
+         */
+        public double gety(){
+            return this.y;
+        }
+        /**
+         * Return the z position of the setpoint, in inches. Z is the height above the ground.
+         * @return x in inches
+         */
+        public double getz(){
+            return this.z;
+        }
+        /**
+         * Return the wristposition of the setpoint as a WristPosition enum.
+         * @return wristPosition
+         */
+        public WristPosition geWristPosition(){
+            return this.wristPosition;
+        }
+
+       }
+
+
+    /**
+     * Represents the preprogrammed setpoints that the arm should be in during a match.
+     */
+    public enum ArmPosition{
+        Stored, // used while driving across the field or starting a match
         GroundPickUp,
-
-        /* GAME PIECE SCORING */
-        // High Goal
+        HighCube, 
         HighCone,
-        HighCube,
-        // Middle Goal
+        LoadStationPickUp,
+        LowScore,
         MiddleCone,
-        MiddleCube,
-        // Low Goal
-        LowScore
+        MiddleCube
     }
 
-    // LOAD STATION
-    private final double LOADING_STATION_SHOULDER_POS = -1.0;
-    private final double LOADING_STATION_ELBOW_POS = -1.0;
-    private final WristPosition LOADING_STATION_WRIST_POS = WristPosition.Parallel;
-    // GROUND PICKUP
-    private final double GROUND_PICKUP_SHOULDER_POS = -1.0;
-    private final double GROUND_PICKUP_ELBOW_POS = -1.0;
+    private final double GROUND_PICKUP_Y_POS = 0.0;
+    private final double GROUND_PICKUP_X_POS = 0.0;
     private final WristPosition GROUND_PICKUP_WRIST_POS = WristPosition.Parallel;
-    // HIGH GOAL
-    private final double HIGH_GOAL_CONE_SHOULDER_POS = -1.0;
-    private final double HIGH_GOAL_CONE_ELBOW_POS = -1.0;
-    private final WristPosition HIGH_GOAL_CONE_WRIST_POS = WristPosition.Parallel;
+    private final Setpoint GROUND_PICKUP_SETPOINT = new Setpoint(GROUND_PICKUP_Y_POS,
+                                                                GROUND_PICKUP_X_POS,
+                                                                GROUND_PICKUP_WRIST_POS);
 
-    private final double HIGH_GOAL_CUBE_SHOULDER_POS = -1.0;
-    private final double HIGH_GOAL_CUBE_ELBOW_POS = -1.0;
-    private final WristPosition HIGH_GOAL_CUBE_WRIST_POS = WristPosition.Parallel;
-    // MIDDLE GOAL
-    private final double MIDDLE_GOAL_CONE_SHOULDER_POS = -1.0;
-    private final double MIDDLE_GOAL_CONE_ELBOW_POS = -1.0;
-    private final WristPosition MIDDLE_GOAL_CONE_WRIST_POS = WristPosition.Parallel;
-
-    private final double MIDDLE_GOAL_CUBE_SHOULDER_POS = -1.0;
-    private final double MIDDLE_GOAL_CUBE_ELBOW_POS = -1.0;
-    private final WristPosition MIDDLE_GOAL_CUBE_WRIST_POS = WristPosition.Parallel;
-    // LOW GOAL
-    private final double LOW_GOAL_SHOULDER_POS = -1.0;
-    private final double LOW_GOAL_ELBOW_POS = -1.0;
-    private final WristPosition LOW_GOAL_WRIST_POS = WristPosition.Parallel;
-
-    //STORE
-    private final double STORE_SHOULDER_POS = -1.0;
-    private final double STORE_ELBOW_POS = -1.0;
-    private final WristPosition STORE_WRIST_POS = WristPosition.Parallel;
-
-    // CLAW
-    private CANSparkMax _intakeMotor;
-    private double _previousIntakeMotorCurrent;
-    private double _intakeMotorCurrent;
 
     /** Creates a new Arm. */
     private WPI_TalonFX _shoulderMotor;
@@ -105,6 +123,9 @@ public class Arm extends SubsystemBase {
     private double ElbowMotorkI = 0.0;
     private double ElbowMotorkD = 0.0;
     private double ElbowMotorkTolerance = 0.0;
+    
+    private int _previousIntakeMotorCurrent;
+    private CANSparkMax _intakeMotor;
 
     public enum ArmPositionState {
         Stored,
