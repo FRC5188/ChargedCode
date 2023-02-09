@@ -11,7 +11,10 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.Button;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.DefaultDriveCommand;
+import frc.robot.subsystems.CANdleLEDS;
 import frc.robot.subsystems.Drive;
 
 /**
@@ -25,7 +28,10 @@ public class RobotContainer {
   private final Drive m_drivetrainSubsystem = new Drive();
 
   private final XboxController m_controller = new XboxController(0);
-
+  public final CANdleLEDS _candleSubsystem = new CANdleLEDS(); 
+Trigger bButton = new JoystickButton(m_controller, XboxController.Button.kB.value); 
+Trigger yButton = new JoystickButton(m_controller, XboxController.Button.kY.value); 
+Trigger aButton = new JoystickButton(m_controller, XboxController.Button.kA.value); 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
@@ -57,6 +63,10 @@ public class RobotContainer {
     // new Button(m_controller::getBackButton)
     //         // No requirements because we don't need to interrupt anything
     //         .whenPressed(m_drivetrainSubsystem::zeroGyroscope);
+
+    
+    bButton.onTrue(new InstantCommand(_candleSubsystem::turnOnLEDS));
+    yButton.onTrue(new InstantCommand(_candleSubsystem::turnOffLEDS));
   }
 
   /**
