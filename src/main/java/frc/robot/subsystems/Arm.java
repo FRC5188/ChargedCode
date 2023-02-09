@@ -20,66 +20,102 @@ import frc.robot.Constants;
 
 
 public class Arm extends SubsystemBase {
-    public enum WristPosition {
+    
+    public enum WristPosition{
         Parallel,
         Perpendicular
     }
 
-    public enum ArmPosition {
+    /*
+     * 
+     */
+    
+    
+    public class SetPoint{
+        //y represents how far away from the robot the claw is
+        //z represents how high above the ground the claw is
+        // wristposition represent if the wrist is extended or retracted
+        private double y, z;
+        private WristPosition wristPosition;
+        public SetPoint(double y, double z, WristPosition wristPosition) {
+            this.y = y;
+            this.z = z;
+            this.wristPosition = wristPosition;
+        }
+
+            public double getY() {
+                return this.y;
+            }
+
+            public double getZ() {
+                return this.z;
+            }
+
+            public WristPosition getWristPosition() {
+                return this.wristPosition;
+            }
+
+        }
+
+    public enum ArmSetPoints{
         Stored,
-        /* GAME PIECE PICKUP */
-        LoadStationPickUp,
         GroundPickUp,
-
-        /* GAME PIECE SCORING */
-        // High Goal
-        HighCone,
-        HighCube,
-        // Middle Goal
-        MiddleCone,
-        MiddleCube,
-        // Low Goal
-        LowScore
     }
-
-    // LOAD STATION
-    private final double LOADING_STATION_SHOULDER_POS = -1.0;
-    private final double LOADING_STATION_ELBOW_POS = -1.0;
-    private final WristPosition LOADING_STATION_WRIST_POS = WristPosition.Parallel;
-    // GROUND PICKUP
-    private final double GROUND_PICKUP_SHOULDER_POS = -1.0;
-    private final double GROUND_PICKUP_ELBOW_POS = -1.0;
+    
+    private final double GROUND_PICKUP_Y_POSITION = 0.0;
+    private final double GROUND_PICKUP_Z_POSITION = 0.0;
     private final WristPosition GROUND_PICKUP_WRIST_POS = WristPosition.Parallel;
-    // HIGH GOAL
-    private final double HIGH_GOAL_CONE_SHOULDER_POS = -1.0;
-    private final double HIGH_GOAL_CONE_ELBOW_POS = -1.0;
-    private final WristPosition HIGH_GOAL_CONE_WRIST_POS = WristPosition.Parallel;
+    private final SetPoint GROUND_PICKUP_SETPOINT = new SetPoint(GROUND_PICKUP_Y_POSITION, 
+                                                                 GROUND_PICKUP_Z_POSITION, 
+                                                                 GROUND_PICKUP_WRIST_POS);
+    
+    private final double HIGH_CONE_Y_POSITION = 0.0;
+    private final double HIGH_CONE_Z_POSITION = 0.0;
+    private final WristPosition HIGH_CONE_WRIST_POS = WristPosition.Perpendicular;
+    private final SetPoint HIGH_CONE_SETPOINT = new SetPoint(HIGH_CONE_Y_POSITION, 
+                                                             HIGH_CONE_Z_POSITION, 
+                                                             HIGH_CONE_WRIST_POS);
 
-    private final double HIGH_GOAL_CUBE_SHOULDER_POS = -1.0;
-    private final double HIGH_GOAL_CUBE_ELBOW_POS = -1.0;
-    private final WristPosition HIGH_GOAL_CUBE_WRIST_POS = WristPosition.Parallel;
-    // MIDDLE GOAL
-    private final double MIDDLE_GOAL_CONE_SHOULDER_POS = -1.0;
-    private final double MIDDLE_GOAL_CONE_ELBOW_POS = -1.0;
-    private final WristPosition MIDDLE_GOAL_CONE_WRIST_POS = WristPosition.Parallel;
+    private final double HIGH_CUBE_Y_POSITION = 0.0;
+    private final double HIGH_CUBE_Z_POSITION = 0.0;
+    private final WristPosition HIGH_CUBE_WRIST_POS = WristPosition.Perpendicular;
+    private final SetPoint HIGH_CUBE_SETPOINT = new SetPoint(HIGH_CUBE_Y_POSITION, 
+                                                             HIGH_CUBE_Z_POSITION, 
+                                                             HIGH_CUBE_WRIST_POS);
 
-    private final double MIDDLE_GOAL_CUBE_SHOULDER_POS = -1.0;
-    private final double MIDDLE_GOAL_CUBE_ELBOW_POS = -1.0;
-    private final WristPosition MIDDLE_GOAL_CUBE_WRIST_POS = WristPosition.Parallel;
-    // LOW GOAL
-    private final double LOW_GOAL_SHOULDER_POS = -1.0;
-    private final double LOW_GOAL_ELBOW_POS = -1.0;
-    private final WristPosition LOW_GOAL_WRIST_POS = WristPosition.Parallel;
+    private final double LOAD_STATION_PICKUP_Y_POSITION = 0.0;
+    private final double LOAD_STATION_PICKUP_Z_POSITION = 0.0;
+    private final WristPosition LOAD_STATION_PICKUP_WRIST_POS = WristPosition.Perpendicular;
+    private final SetPoint LOAD_STATION_PICKUP_SETPOINT = new SetPoint(LOAD_STATION_PICKUP_Y_POSITION, 
+                                                                      LOAD_STATION_PICKUP_Z_POSITION, 
+                                                                      LOAD_STATION_PICKUP_WRIST_POS);
 
-    //STORE
-    private final double STORE_SHOULDER_POS = -1.0;
-    private final double STORE_ELBOW_POS = -1.0;
-    private final WristPosition STORE_WRIST_POS = WristPosition.Parallel;
+    private final double LOW_SCORE_Y_POSITION = 0.0;
+    private final double LOW_SCORE_Z_POSITION = 0.0;
+    private final WristPosition LOW_SCORE_WRIST_POS = WristPosition.Perpendicular;
+    private final SetPoint LOW_SCORE_SETPOINT = new SetPoint(LOW_SCORE_Y_POSITION, 
+                                                             LOW_SCORE_Z_POSITION, 
+                                                             LOW_SCORE_WRIST_POS);
+    private final double MIDDLE_CONE_Y_POSITION = 0.0;
+    private final double MIDDLE_CONE_Z_POSITION = 0.0;
+    private final WristPosition MIDDLE_CONE_WRIST_POS = WristPosition.Perpendicular;
+    private final SetPoint MIDDLE_CONE_SETPOINT = new SetPoint(MIDDLE_CONE_Y_POSITION, 
+                                                               MIDDLE_CONE_Z_POSITION, 
+                                                               MIDDLE_CONE_WRIST_POS);
+                                                             
+    private final double MIDDLE_CUBE_Y_POSITION = 0.0;
+    private final double MIDDLE_CUBE_Z_POSITION = 0.0;
+    private final WristPosition MIDDLE_CUBE_WRIST_POS = WristPosition.Perpendicular;
+    private final SetPoint MIDDLE_CUBE_SETPOINT = new SetPoint(MIDDLE_CUBE_Y_POSITION, 
+                                                               MIDDLE_CUBE_Z_POSITION, 
+                                                               MIDDLE_CUBE_WRIST_POS);
 
-    // CLAW
-    private CANSparkMax _intakeMotor;
-    private double _previousIntakeMotorCurrent;
-    private double _intakeMotorCurrent;
+    private final double STORED_Y_POSITION = 0.0;
+    private final double STORED_Z_POSITION = 0.0;
+    private final WristPosition STORED_WRIST_POS = WristPosition.Perpendicular;
+    private final SetPoint STORED_SETPOINT = new SetPoint(STORED_Y_POSITION, 
+                                                          STORED_Z_POSITION, 
+                                                          STORED_WRIST_POS);
 
     /** Creates a new Arm. */
     private WPI_TalonFX _shoulderMotor;
