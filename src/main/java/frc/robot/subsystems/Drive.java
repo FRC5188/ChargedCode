@@ -16,7 +16,6 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
@@ -24,7 +23,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants.OperatorConstants.CanIDs;
+import frc.robot.Constants;
 import frc.robot.sds.Mk4iSwerveModuleHelper;
 import frc.robot.sds.SdsModuleConfigurations;
 import frc.robot.sds.SwerveModule;
@@ -134,9 +133,9 @@ public class Drive extends SubsystemBase {
                         .withSize(6, 8)
                         .withPosition(0, 0),
                 Mk4iSwerveModuleHelper.GearRatio.L2,
-                CanIDs.FRONT_LEFT_DRIVE_ID,
-                CanIDs.FRONT_LEFT_TURNING_ID,
-                CanIDs.FRONT_LEFT_ENCODER_ID,
+                Constants.CanIDs.FRONT_LEFT_DRIVE_ID,
+                Constants.CanIDs.FRONT_LEFT_TURNING_ID,
+                Constants.CanIDs.FRONT_LEFT_ENCODER_ID,
                 FRONT_LEFT_MODULE_ENCODER_OFFSET);
 
         _frontRightModule = Mk4iSwerveModuleHelper.createFalcon500(
@@ -144,9 +143,9 @@ public class Drive extends SubsystemBase {
                         .withSize(6, 8)
                         .withPosition(6, 0),
                 Mk4iSwerveModuleHelper.GearRatio.L2,
-                CanIDs.FRONT_RIGHT_DRIVE_ID,
-                CanIDs.FRONT_RIGHT_TURNING_ID,
-                CanIDs.FRONT_RIGHT_ENCODER_ID,
+                Constants.CanIDs.FRONT_RIGHT_DRIVE_ID,
+                Constants.CanIDs.FRONT_RIGHT_TURNING_ID,
+                Constants.CanIDs.FRONT_RIGHT_ENCODER_ID,
                 FRONT_RIGHT_MODULE_ENCODER_OFFSET);
 
         _backLeftModule = Mk4iSwerveModuleHelper.createFalcon500(
@@ -154,9 +153,9 @@ public class Drive extends SubsystemBase {
                         .withSize(6, 8)
                         .withPosition(0, 8),
                 Mk4iSwerveModuleHelper.GearRatio.L2,
-                CanIDs.BACK_LEFT_DRIVE_ID,
-                CanIDs.BACK_LEFT_TURNING_ID,
-                CanIDs.BACK_LEFT_ENCODER_ID,
+                Constants.CanIDs.BACK_LEFT_DRIVE_ID,
+                Constants.CanIDs.BACK_LEFT_TURNING_ID,
+                Constants.CanIDs.BACK_LEFT_ENCODER_ID,
                 BACK_LEFT_MODULE_ENCODER_OFFSET);
 
         _backRightModule = Mk4iSwerveModuleHelper.createFalcon500(
@@ -164,9 +163,9 @@ public class Drive extends SubsystemBase {
                         .withSize(6, 8)
                         .withPosition(6, 8),
                 Mk4iSwerveModuleHelper.GearRatio.L2,
-                CanIDs.BACK_RIGHT_DRIVE_ID,
-                CanIDs.BACK_RIGHT_TURNING_ID,
-                CanIDs.BACK_RIGHT_ENCODER_ID,
+                Constants.CanIDs.BACK_RIGHT_DRIVE_ID,
+                Constants.CanIDs.BACK_RIGHT_TURNING_ID,
+                Constants.CanIDs.BACK_RIGHT_ENCODER_ID,
                 BACK_RIGHT_MODULE_ENCODER_OFFSET);
 
         _kinematics = new SwerveDriveKinematics(

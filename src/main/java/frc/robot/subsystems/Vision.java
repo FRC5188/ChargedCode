@@ -1,27 +1,21 @@
 package frc.robot.subsystems;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
-
-import javax.management.relation.Relation;
 
 import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
-import org.photonvision.targeting.PhotonPipelineResult;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants.OperatorConstants.Field;
-import frc.robot.Constants.OperatorConstants.Vision.Camera;
-import frc.robot.Constants.OperatorConstants.Vision.PhotonVision;
+import frc.robot.Constants;
+import frc.robot.Constants.Field;
+import frc.robot.Constants.Vision.Camera;
 
 /**
  * Singleton subsystem for Vision. 
@@ -32,7 +26,7 @@ public class Vision extends SubsystemBase {
     private static Vision _instance = null;
 
     private Vision(){
-        this.photonCamera = new PhotonCamera(PhotonVision.PHOTON_CAMERA_NAME);
+        this.photonCamera = new PhotonCamera(Constants.Vision.PhotonVision.PHOTON_CAMERA_NAME);
         this.photonPoseEstimator = new PhotonPoseEstimator(getApriltagFieldLayout(), PoseStrategy.AVERAGE_BEST_TARGETS, photonCamera, Camera.DIFFERENCE_BETWEEN_ROBOT_CAMERA);
     }
 
