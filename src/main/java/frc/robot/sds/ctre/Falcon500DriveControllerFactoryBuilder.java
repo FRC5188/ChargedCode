@@ -109,6 +109,12 @@ public final class Falcon500DriveControllerFactoryBuilder {
             return motor.getSelectedSensorVelocity() * sensorVelocityCoefficient;
         }
 
+        @Override
+        public double getEncoderValue() {
+            // getSelectedSensorPosition gives back ticks, so divide by ticks per rotation to get number of rotations
+            // then multiply by wheel circumference to find how far we've driven
+            return (motor.getSelectedSensorPosition() / 2048) * (4 * Math.PI);
+        }
         public double getDriveEncoderPosition() {
             return motor.getSelectedSensorPosition();
         }

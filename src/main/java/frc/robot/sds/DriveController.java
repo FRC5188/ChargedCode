@@ -5,5 +5,6 @@ public interface DriveController {
 
     double getStateVelocity();
 
+    double getEncoderValue();
     double getDriveEncoderPosition();
 }

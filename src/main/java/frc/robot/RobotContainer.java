@@ -4,6 +4,9 @@
 
 package frc.robot;
 
+import com.pathplanner.lib.PathPlanner;
+import com.pathplanner.lib.PathPlannerTrajectory;
+
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 
@@ -13,6 +16,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.Button;
 import frc.robot.commands.DefaultDriveCommand;
 import frc.robot.subsystems.Drive;
+import frc.robot.subsystems.Vision;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -22,9 +26,15 @@ import frc.robot.subsystems.Drive;
  */
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
-  private final Drive m_drivetrainSubsystem = new Drive();
+  static 
+  {
+  Vision.setInstance();
+  Drive.setInstance(Vision.getInstance());
+  }
+  private final Vision _visionSubsystem = Vision.getInstance();
+  private final Drive _driveSubsystem = Drive.getInstance();
 
-  private final XboxController m_controller = new XboxController(0);
+  private final XboxController _driveController = new XboxController(0);
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -35,11 +45,11 @@ public class RobotContainer {
     // Left stick Y axis -> forward and backwards movement
     // Left stick X axis -> left and right movement
     // Right stick X axis -> rotation
-    m_drivetrainSubsystem.setDefaultCommand(new DefaultDriveCommand(
-            m_drivetrainSubsystem,
-            () -> (-modifyAxis(m_controller.getLeftY()) * Drive.MAX_VELOCITY_METERS_PER_SECOND),
-            () -> (-modifyAxis(m_controller.getLeftX()) * Drive.MAX_VELOCITY_METERS_PER_SECOND),
-            () -> (-modifyAxis(m_controller.getRightX()) * Drive.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND)
+    _driveSubsystem.setDefaultCommand(new DefaultDriveCommand(
+            _driveSubsystem,
+            () -> (-modifyAxis(_driveController.getLeftY()) * Drive.MAX_VELOCITY_METERS_PER_SECOND),
+            () -> (-modifyAxis(_driveController.getLeftX()) * Drive.MAX_VELOCITY_METERS_PER_SECOND),
+            () -> (-modifyAxis(_driveController.getRightX()) * Drive.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND)
     ));
 
     // Configure the button bindings
@@ -57,6 +67,7 @@ public class RobotContainer {
     // new Button(m_controller::getBackButton)
     //         // No requirements because we don't need to interrupt anything
     //         .whenPressed(m_drivetrainSubsystem::zeroGyroscope);
+
   }
 
   /**
@@ -65,8 +76,9 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    // An ExampleCommand will run in autonomous
-    return new InstantCommand();
+    return _driveSubsystem.followTrajectoryCommand(
+      PathPlanner.loadPath("TEST_Straight_Line", 3, 4), 
+      true);
   }
 
   private static double deadband(double value, double deadband) {
