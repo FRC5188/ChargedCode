@@ -10,13 +10,13 @@ import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.interfaces.Gyro;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
@@ -89,15 +89,6 @@ public class Drive extends SubsystemBase {
     // center, and positive along
     // y means going up from the center
     private SwerveDriveKinematics _kinematics;
-
-    /**
-     * The gyro that we will use to keep track of our current rotation. The output
-     * of the gyro
-     * impacts the odometry of the robot, as well as field-oriented drive.
-     */
-    private AHRS _navx;
-
-    private SwerveDrivePoseEstimator _odometry;
 
     // These are our modules
     private SwerveModule _frontLeftModule;
@@ -177,17 +168,8 @@ public class Drive extends SubsystemBase {
                 // Back right
                 new Translation2d(-CHASSIS_WIDTH_METERS / 2.0, -CHASSIS_HEIGHT_METERS / 2.0));
 
-        _navx = new AHRS();
-
         _chassisSpeeds = new ChassisSpeeds(0.0, 0.0, 0.0);
 
-        _odometry = new SwerveDrivePoseEstimator(_kinematics, getGyroscopeRotation(), new SwerveModulePosition[] {
-                _frontLeftModule.getModulePosition(), _frontRightModule.getModulePosition(),
-                _backLeftModule.getModulePosition(), _backRightModule.getModulePosition() }, new Pose2d(),
-                VecBuilder.fill(0.05, 0.05, Units.degreesToRadians(5)),
-                VecBuilder.fill(0.5, 0.5, Units.degreesToRadians(30)));
-
-        _navx.reset();
     }
 
     public static void setInstance(Vision visionSubsystem) {
@@ -198,39 +180,10 @@ public class Drive extends SubsystemBase {
         return _instance;
     }
 
-    /**
-     * Sets the gyroscope angle to zero. This can be used to set the direction the
-     * robot is currently facing to the
-     * 'forwards' direction.
-     */
-    public void zeroGyroscope() {
-        _navx.zeroYaw();
-        _odometry.resetPosition(getGyroscopeRotation(), null, null);
-    }
-
     public SwerveModulePosition[] getSwerveModulePositions() {
         return new SwerveModulePosition[] {
                 _frontLeftModule.getModulePosition(), _frontRightModule.getModulePosition(),
                 _backLeftModule.getModulePosition(), _backRightModule.getModulePosition() };
-    }
-
-    public Rotation2d getOdometryRotation2d() {
-        return _odometry.getEstimatedPosition().getRotation();
-    }
-
-    public Pose2d getPose() {
-        return _odometry.getEstimatedPosition();
-    }
-
-    public Rotation2d getGyroscopeRotation() {
-        if (_navx.isMagnetometerCalibrated()) {
-            // We will only get valid fused headings if the magnetometer is calibrated
-            return Rotation2d.fromDegrees(_navx.getFusedHeading());
-        }
-
-        // We have to invert the angle of the NavX so that rotating the robot
-        // counter-clockwise makes the angle increase.
-        return Rotation2d.fromDegrees(360.0 - _navx.getYaw());
     }
 
     public Command followTrajectoryCommand(PathPlannerTrajectory traj, boolean isFirstPath) {
@@ -282,5 +235,75 @@ public class Drive extends SubsystemBase {
                 states[2].angle.getRadians());
         _backRightModule.set(states[3].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE,
                 states[3].angle.getRadians());
+    }
+    private class Gyroscope {
+        private Gyroscope _instance = null;
+        /**
+        * The gyro that we will use to keep track of our current rotation. The output
+        * of the gyro
+        * impacts the odometry of the robot, as well as field-oriented drive.
+        */
+        private AHRS _navx;
+
+        private Gyroscope(){
+                _navx = new AHRS();
+                _navx.reset();
+        }
+
+        public void setInstance(){
+                this._instance = (this._instance == null) ? (this._instance = new Gyroscope()) : (this._instance);
+        }
+
+        public Gyroscope getInstance(){
+                return this._instance;
+        }
+
+        public AHRS getGyroscope(){
+                return this.getInstance()._navx;
+        }
+
+        public Rotation2d getGyroscopeRotation() {
+                if (_navx.isMagnetometerCalibrated()) {
+                    // We will only get valid fused headings if the magnetometer is calibrated
+                    return Rotation2d.fromDegrees(_navx.getFusedHeading());
+                }
+        
+                // We have to invert the angle of the NavX so that rotating the robot
+                // counter-clockwise makes the angle increase.
+                return Rotation2d.fromDegrees(360.0 - _navx.getYaw());
+        }
+    }
+    private class Autonomous {
+
+    }
+    private class Odometry  {
+        private Odometry _instance = null;
+        private SwerveDrivePoseEstimator _odometry;
+        private Gyroscope _gyroscope;
+
+        private Odometry(Gyroscope gyroscope){
+                this._gyroscope = gyroscope;
+                _odometry = new SwerveDrivePoseEstimator(_kinematics, this._gyroscope.getGyroscopeRotation(), new SwerveModulePosition[] {
+                        _frontLeftModule.getModulePosition(), _frontRightModule.getModulePosition(),
+                        _backLeftModule.getModulePosition(), _backRightModule.getModulePosition() }, new Pose2d(),
+                        VecBuilder.fill(0.05, 0.05, Units.degreesToRadians(5)),
+                        VecBuilder.fill(0.5, 0.5, Units.degreesToRadians(30)));
+                _gyroscope.getGyroscope().reset();
+        }
+
+        public void setInstance(Gyroscope gyroscope){this._instance = (this._instance == null) ? (new Odometry(gyroscope)) : (this._instance);}
+        public Odometry getInstance(){return this._instance;}
+        public SwerveDrivePoseEstimator getOdometry(){return _odometry;}
+        public Pose2d getPose() {return _odometry.getEstimatedPosition();}
+        public Rotation2d getOdometryRotation2d() {return _odometry.getEstimatedPosition().getRotation();}
+        /**
+        * Sets the gyroscope angle to zero. This can be used to set the direction the
+        * robot is currently facing to the
+        * 'forwards' direction.
+        */
+        public void zeroGyroscope() {
+                _gyroscope.getGyroscope().zeroYaw();
+                _odometry.resetPosition(_gyroscope.getGyroscopeRotation(), null, null);
+        }
     }
 }
