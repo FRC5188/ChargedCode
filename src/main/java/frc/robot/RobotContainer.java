@@ -5,13 +5,15 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.GenericHID;
+import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
-
+import edu.wpi.first.wpilibj.PS4Controller.Button;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.commands.DefaultDriveCommand;
+import frc.robot.commands.CmdArmRunElbowPID;
 import frc.robot.commands.CmdArmRunIntake;
 import frc.robot.subsystems.Drive;
 import frc.robot.subsystems.Arm;
@@ -34,8 +36,8 @@ public class RobotContainer {
     
     private final XboxController _operatorController = new XboxController(1);
     
-    private JoystickButton _operatorAButton = new JoystickButton(_operatorController, Constants.ButtonMappings.OPERATOR_A_BUTTON);
-    private JoystickButton _operatorBButton = new JoystickButton(_operatorController, Constants.ButtonMappings.OPERATOR_B_BUTTON);
+    private JoystickButton _operatorAButton = new JoystickButton(_operatorController, XboxController.Button.kA.value);
+    private JoystickButton _operatorBButton = new JoystickButton(_operatorController, XboxController.Button.kB.value);
 
 
     private static final double ARM_MULTIPLIER = 0.3;
@@ -79,7 +81,9 @@ public class RobotContainer {
         // // No requirements because we don't need to interrupt anything
         // .whenPressed(m_drivetrainSubsystem::zeroGyroscope);
 
-        //_operatorAButton.onTrue(new CmdArmRunIntake(_armSubsystem));
+        double manual_setpoint = 20;
+        Command elbow = new CmdArmRunElbowPID(_armSubsystem, manual_setpoint);
+        _operatorAButton.whileTrue(elbow);
 
 
     }

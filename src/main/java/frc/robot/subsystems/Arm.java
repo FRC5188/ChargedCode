@@ -6,20 +6,29 @@ package frc.robot.subsystems;
 
 import java.util.function.DoubleSupplier;
 
+import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
-import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Solenoid;
-
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
 
 public class Arm extends SubsystemBase {
+
+    private final double SHOULDER_0_DEGREE_POT_OFFSET = 1;
+    private final double SHOULDER_90_DEGREE_POT_OFFSET = 10;
+    private final double ELBOW_0_DEGREE_POT_OFFSET = 1;
+    private final double ELBOW_90_DEGREE_POT_OFFSET = 10;
+    private double SHOULDER_POT_SCALE = 0;
+    private double ELBOW_POT_SCALE = 0;
 
     /**
          * A list of possible wrist positions.
@@ -30,9 +39,19 @@ public class Arm extends SubsystemBase {
         Parallel,
         Perpendicular
     }
+
+    /**
+     * Not actually sure what this is for, Garrett
+     */
+    public enum ArmPositionState {
+        Stored,
+        /* GAME PIECE PICKUP */
+        LoadStationPickUp,
+        GroundPickUp,
+    }
    
     /**
-     * Represents a setpoint for the wrist (the joint at the end of the arm) to
+     * Represents a 2D position in space for the wrist (the joint at the end of the arm) to
      * be in. The setpoint is a combination of y,x, and a wristpositon. UNITS ARE
      * IN INCHES.
      * 
@@ -40,13 +59,13 @@ public class Arm extends SubsystemBase {
      * @param z represents how far above the ground the robot claw is in inches.
      * @param wristPosition represents a wrist state, either parallel or perpendicular.
      */
-    public class Setpoint{
+    public class Arm2DPosition{
         // y represents how far away from the robot the claw is
         // z represents how high above the ground the claw is
         // wrist positons represents if the wrist is extended or retracted
         private double y, z;
         private WristPosition wristPosition;
-        public Setpoint(double y, double z, WristPosition wristPosition){
+        public Arm2DPosition(double y, double z, WristPosition wristPosition){
             this.y = y;
             this.z = z;
             this.wristPosition = wristPosition;
@@ -76,6 +95,30 @@ public class Arm extends SubsystemBase {
 
        }
 
+    /**
+     * A small container to store and pass around the elbow and joint angles.
+     * Have not decided what units the angles are yet. -Garrett
+     * 
+     * @param shoulderJointAngle The angle of the shoulder joint
+     * @param elbowJointAngle The angle of the elbow joint.
+     */
+    private class ArmJointAngles{
+        private double shoulderJointAngle;
+        private double elbowJointAngle;
+
+        public double getShoulderJointAngle() {
+            return shoulderJointAngle;
+        }
+
+        public double getElbowJointAngle(){
+            return elbowJointAngle;
+        }
+
+        public ArmJointAngles(double shoulderJointAngle, double elbowJointAngle){
+            this.shoulderJointAngle = shoulderJointAngle;
+            this.elbowJointAngle = elbowJointAngle;
+        }
+    }
 
     /**
      * Represents the preprogrammed setpoints that the arm should be in during a match.
@@ -91,167 +134,396 @@ public class Arm extends SubsystemBase {
         MiddleCube
     }
 
+    /** 
+     * constants for the above defined in the ArmPosition Enum.
+     * This is the place to make edits to setpoints.
+     */
+    private final double STORED_Y_POS = 0.0;
+    private final double STORED_X_POS = 0.0;
+    private final WristPosition STORED_WRIST_POS = WristPosition.Parallel;
+    private final Arm2DPosition STORED_SETPOINT = new Arm2DPosition(STORED_Y_POS,
+                                                                STORED_X_POS,
+                                                                STORED_WRIST_POS);
+
     private final double GROUND_PICKUP_Y_POS = 0.0;
     private final double GROUND_PICKUP_X_POS = 0.0;
     private final WristPosition GROUND_PICKUP_WRIST_POS = WristPosition.Parallel;
-    private final Setpoint GROUND_PICKUP_SETPOINT = new Setpoint(GROUND_PICKUP_Y_POS,
+    private final Arm2DPosition GROUND_PICKUP_SETPOINT = new Arm2DPosition(GROUND_PICKUP_Y_POS,
                                                                 GROUND_PICKUP_X_POS,
                                                                 GROUND_PICKUP_WRIST_POS);
 
+    private final double HIGH_CUBE_Y_POS = 0.0;
+    private final double HIGH_CUBE_X_POS = 0.0;
+    private final WristPosition HIGH_CUBE_WRIST_POS = WristPosition.Parallel;
+    private final Arm2DPosition HIGH_CUBE_SETPOINT = new Arm2DPosition(HIGH_CUBE_Y_POS,
+                                                                HIGH_CUBE_X_POS,
+                                                                HIGH_CUBE_WRIST_POS);
 
-    /** Creates a new Arm. */
+    private final double HIGH_CONE_Y_POS = 0.0;
+    private final double HIGH_CONE_X_POS = 0.0;
+    private final WristPosition HIGH_CONE_WRIST_POS = WristPosition.Parallel;
+    private final Arm2DPosition HIGH_CONE_SETPOINT = new Arm2DPosition(HIGH_CONE_Y_POS,
+                                                                HIGH_CONE_X_POS,
+                                                                HIGH_CONE_WRIST_POS);
+
+    private final double LOAD_STATION_PICKUP_Y_POS = 0.0;
+    private final double LOAD_STATION_PICKUP_X_POS = 0.0;
+    private final WristPosition LOAD_STATION_PICKUP_WRIST_POS = WristPosition.Parallel;
+    private final Arm2DPosition LOAD_STATION_PICKUP_SETPOINT = new Arm2DPosition(LOAD_STATION_PICKUP_Y_POS,
+                                                                LOAD_STATION_PICKUP_X_POS,
+                                                                LOAD_STATION_PICKUP_WRIST_POS);
+
+    private final double LOW_SCORE_Y_POS = 0.0;
+    private final double LOW_SCORE_X_POS = 0.0;
+    private final WristPosition LOW_SCORE_WRIST_POS = WristPosition.Parallel;
+    private final Arm2DPosition LOW_SCORE_SETPOINT = new Arm2DPosition(LOW_SCORE_Y_POS,
+                                                                LOW_SCORE_X_POS,
+                                                                LOW_SCORE_WRIST_POS);
+    
+    private final double MIDDLE_CONE_Y_POS = 0.0;
+    private final double MIDDLE_CONE_X_POS = 0.0;
+    private final WristPosition MIDDLE_CONE_WRIST_POS = WristPosition.Parallel;
+    private final Arm2DPosition MIDDLE_CONE_SETPOINT = new Arm2DPosition(MIDDLE_CONE_Y_POS,
+                                                                MIDDLE_CONE_X_POS,
+                                                                MIDDLE_CONE_WRIST_POS);        
+    
+    private final double MIDDLE_CUBE_Y_POS = 0.0;
+    private final double MIDDLE_CUBE_X_POS = 0.0;
+    private final WristPosition MIDDLE_CUBE_WRIST_POS = WristPosition.Parallel;
+    private final Arm2DPosition MIDDLE_CUBE_SETPOINT = new Arm2DPosition(MIDDLE_CUBE_Y_POS,
+                                                                MIDDLE_CUBE_X_POS,
+                                                                MIDDLE_CUBE_WRIST_POS);
+    /** Arm Motor Controllers and Pnuematics. */
     private WPI_TalonFX _shoulderMotor;
     private WPI_TalonFX _elbowMotor;
+    private final double MAX_MOTOR_VOLTAGE = 11.5; // May want to adjust -Garrett
+    private CANSparkMax _intakeMotor;
+    private double _previousIntakeMotorCurrent; // we use this to detect if we have collected a game piece
+    private double _intakeMotorCurrent; // this is the current motor current
     private Solenoid _wristSolenoid;
+
+    /** Arm elbow and wrist potentionmeters. Measurers arm angle */
     private AnalogInput _elbowPotentiometer;
     private AnalogInput _shoulderPotentiometer;
 
     // Arm PID controllers
-    private PIDController _shoulderMotorPID;
-    private PIDController _elbowMotorPID;
+    private ProfiledPIDController _shoulderMotorPID;
+    private ProfiledPIDController _elbowMotorPID;
 
-    // internal PID constants
-    private double _shoulderMotorPIDMaxSpeed = 0.6;
-    private double _elbowMotorPIDMaxSpeed = 0.6;
+    /** Arm PID constants */
+    //these shold use the maxvelocity below
+    //private double _shoulderMotorPIDMaxSpeed = 0.6;
+    //private double _elbowMotorPIDMaxSpeed = 0.6;
 
-    private double ShoulderMotorkP = 0.0;
-    private double ShoulderMotorkI = 0.0;
-    private double ShoulderMotorkD = 0.0;
-    private double ShoulderMotorkTolerance = 0.0;
+    // shoulder PID constants
+    private final double SHOULD_MOTOR_KP = 0.0;
+    private final double SHOLDER_MOTOR_KI = 0.0;
+    private final double SHOULDER_MOTOR_KD = 0.0;
+    private final double SHOULDER_MOTOR_TOLERANCE = 0.0;
 
-    private double ElbowMotorkP = 0.0;
-    private double ElbowMotorkI = 0.0;
-    private double ElbowMotorkD = 0.0;
-    private double ElbowMotorkTolerance = 0.0;
-    
-    private int _previousIntakeMotorCurrent;
-    private CANSparkMax _intakeMotor;
+    // shoulder motion profile constraints
+    // Velocity is m/s and acceleration is m/s^2
+    private final double SHOULDER_MAX_VELOCITY = 0.0; // max speed that this joint should move at
+    private final double SHOULDER_MAX_ACCELERATION = 0.0; // max acceleration this joint should move at
+    private final TrapezoidProfile.Constraints SHOLDER_MOTION_PROFILE_CONSTRAINTS =
+                                            new TrapezoidProfile.Constraints(SHOULDER_MAX_VELOCITY, 
+                                                                             SHOULDER_MAX_ACCELERATION);
 
-    public enum ArmPositionState {
-        Stored,
-        /* GAME PIECE PICKUP */
-        LoadStationPickUp,
-        GroundPickUp,
-    }
+    // Elbow constants
+    private final double ELBOW_MOTOR_KP = 0.0;
+    private final double ELBOW_MOTOR_KI = 0.0;
+    private final double ELBOW_MOTOR_KD = 0.0;
+    private final double ELBOW_MOTOR_TOLERANCE = 0.0;
+
+    // shoulder motion profile constraints
+    // Velocity is m/s and acceleration is m/s^2
+    private final double ELBOW_MAX_VELOCITY = 0.0; // max speed that this joint should move at
+    private final double ELBOW_MAX_ACCELERATION = 0.0; // max acceleration this joint should move at
+    private final TrapezoidProfile.Constraints ELBOW_MOTION_PORFILE_CONSTRAINTS =
+                                            new TrapezoidProfile.Constraints(ELBOW_MAX_VELOCITY, 
+                                                                             ELBOW_MAX_ACCELERATION);
 
     public Arm() {
+        // Motor Controllers and pnuematics
         _shoulderMotor = new WPI_TalonFX(Constants.CanIDs.ARM_SHOULDER_MOTOR_CANID);
         _elbowMotor = new WPI_TalonFX(Constants.CanIDs.ARM_ELBOW_MOTOR_CANID);
         _wristSolenoid = new Solenoid(PneumaticsModuleType.REVPH, Constants.PHPorts.WRIST_SOLENOID_PORT);
-        _elbowPotentiometer = new AnalogInput(Constants.AIO.ELBOW_PORT_POT);
-        _shoulderPotentiometer = new AnalogInput(Constants.AIO.SHOULDER_PORT_POT);
+
+        // Set the motors to adjust their output based on battery voltage
+        _shoulderMotor.configVoltageCompSaturation(this.MAX_MOTOR_VOLTAGE);
+        _shoulderMotor.enableVoltageCompensation(true);
+        _elbowMotor.configVoltageCompSaturation(this.MAX_MOTOR_VOLTAGE);
+        _elbowMotor.enableVoltageCompensation(true);
+
+        //set motor breaking
+        _shoulderMotor.setNeutralMode(NeutralMode.Brake);
+        _elbowMotor.setNeutralMode(NeutralMode.Brake);
+
         // Claw
         _previousIntakeMotorCurrent = 0;
+        _intakeMotorCurrent = 0;
         _intakeMotor = new CANSparkMax(Constants.CanIDs.CLAW_INTAKE_MOTOR_CANID, MotorType.kBrushless);
 
-        // Create PID controllers
-        _shoulderMotorPID = new PIDController(Constants.PID.ShoulderMotorkP, Constants.PID.ShoulderMotorkI,
-                Constants.PID.ShoulderMotorkD);
-        _shoulderMotorPID.setTolerance(Constants.PID.ShoulderMotorkTolerance);
+        // Potentiometer
+        _elbowPotentiometer = new AnalogInput(Constants.AIO.ELBOW_PORT_POT);
+        _shoulderPotentiometer = new AnalogInput(Constants.AIO.SHOULDER_PORT_POT);
 
-        _elbowMotorPID = new PIDController(ElbowMotorkP, ElbowMotorkI,
-                ElbowMotorkD);
-        _elbowMotorPID.setTolerance(ElbowMotorkTolerance);  
+        // Create Sholder PID controllers
+        _shoulderMotorPID = new ProfiledPIDController(this.SHOULD_MOTOR_KP, 
+                                                      this.SHOLDER_MOTOR_KI,
+                                                      this.SHOULDER_MOTOR_KD,
+                                                      this.SHOLDER_MOTION_PROFILE_CONSTRAINTS);
+        _shoulderMotorPID.setTolerance(this.SHOULDER_MOTOR_TOLERANCE);
+
+        // create elbow PID controller
+        _elbowMotorPID = new ProfiledPIDController( this.ELBOW_MOTOR_KP, 
+                                                    this.ELBOW_MOTOR_KI,
+                                                    this.ELBOW_MOTOR_KD, 
+                                                    this.ELBOW_MOTION_PORFILE_CONSTRAINTS);
+        _elbowMotorPID.setTolerance(this.ELBOW_MOTOR_TOLERANCE);  
+
+
+        SmartDashboard.putNumber("Elbow Angle", this.getElbowJointAngle());
+        SmartDashboard.putNumber("Sholder Angle", this.getShoulderJointAngle());
+        SmartDashboard.putNumber("Sholder Angle Setpoint", this.getShoulderSetpoint());
+        SmartDashboard.putNumber("Elbow Angle Setpoint", this.getElbowSetpoint());
     }
 
+    private double getElbowSetpoint() {
+        //TODO: This might be the wrong thing to return
+        return this._elbowMotorPID.getSetpoint().position;
+    }
+
+    private double getShoulderSetpoint() {
+        return this._shoulderMotorPID.getSetpoint().position;
+    }
+
+    /**
+     * Sets the arm position
+     * @param position Position to set the arm wrist to.
+     */
     public void setWristPosition(WristPosition position) {
         _wristSolenoid.set(position == WristPosition.Parallel);
-        
     }
 
+    /**
+     * @return the current position of the wrist
+     */
     public WristPosition getWristPosition() {
         return _wristSolenoid.get() ? WristPosition.Parallel : WristPosition.Perpendicular;
     }
 
     /**
-     * Initializes the PID controller for moving the shoulder motor
+     * Initializes the PID controller for moving the shoulder motor. 
      * 
-     * @param setpoint setpoint of the shoulder motor
-     * @param maxSpeed the max speed of motor, in percent output
+     * This method takes a setpoint for the arm wrist from the this.setpoint class. It then
+     * calculates what elbow and shoulder angles are needed to reach the provided setpoint
+     * and set its PID controller for that setpoint. 
+     * 
+     * This method may eventually need to do other work.
+     * 
+     * @param setpoint Setpoint of the wrist of the arm.
      */
-    public void shoulderMotorPIDInit(ArmPosition setpoint) {
+    public void shoulderMotorPIDInit(ArmPosition armPosition) {
 
-        double shoulderSetpoint = this.getShoulderPotPos();
-
-        switch (setpoint) {
+        Arm2DPosition setpoint;
+        switch (armPosition) {
             case GroundPickUp:
-                shoulderSetpoint = GROUND_PICKUP_SHOULDER_POS;
+                setpoint = GROUND_PICKUP_SETPOINT;
                 break;
             case HighCone:
+                setpoint = HIGH_CONE_SETPOINT;
                 break;
             case HighCube:
+                setpoint = HIGH_CUBE_SETPOINT;
                 break;
             case LoadStationPickUp:
+                setpoint = LOAD_STATION_PICKUP_SETPOINT;
                 break;
             case LowScore:
+                setpoint = LOW_SCORE_SETPOINT;
                 break;
             case MiddleCone:
+                setpoint = MIDDLE_CONE_SETPOINT;
                 break;
             case MiddleCube:
+                setpoint = MIDDLE_CUBE_SETPOINT;
                 break;
             case Stored:
+                setpoint = STORED_SETPOINT;
                 break;
             default:
                 // If we hit default that means we don't know what position we are in
                 // So we just wanna stay put until we get a new position
+                setpoint = this.getArm2DPosition();
                 break;
         }
-        _shoulderMotorPID.setSetpoint(shoulderSetpoint);
+        //TODO: make sure this is what we want
+        ArmJointAngles jointAngles = this.jointAnglesFrom2DPose(setpoint);
+        _shoulderMotorPID.setGoal(jointAngles.getShoulderJointAngle());
     }
 
-    public void elbowMotorPIDInit(ArmPosition setpoint) {
 
-        double elbowSetpoint = this.getElbowPotPos();
+    /**
+     * This function will do the math to calculate what combination of elbow and wrist angles
+     * will put the wrist in the desired 2D postion
+     * 
+     * @param arm2DPosition A Arm2DPosition object representing the 2D point in space we want the wrist
+     *                      to be in. This also includes a wrist state but is unused.
+     * 
+     * @return An ArmJointAngles object representing a shoulder and elbow angle which yields
+     *          the desired wrist 2D position.
+     */
+    private ArmJointAngles jointAnglesFrom2DPose(Arm2DPosition arm2DPosition) {
+        //TODO: write me. Main thing to write
+        return null;
+    }
 
-        switch (setpoint) {
+    /**
+     * Get the current position of the arm in 2d space and return in
+     * @return a Arm2DPosition that represents the wrist position in 2D space
+     */
+    public Arm2DPosition getArm2DPosition() {
+        double currentShoulder = this.getShoulderJointAngle();
+        double currentElbow = this.getElbowJointAngle();
+        WristPosition wristPos = this.getWristPosition();
+        Arm2DPosition currentPos = this.arm2DPositionFromAngles(currentShoulder, currentElbow, wristPos);
+
+        return currentPos;
+    }
+
+    /**
+     * Convert the current pot value of the eblow into an angle.
+     * 
+     * @return Current elbow joint angle in xx units.
+     */
+    private double getElbowJointAngle() {
+        //TODO check this is correct
+        double diff = this.ELBOW_90_DEGREE_POT_OFFSET - this.ELBOW_0_DEGREE_POT_OFFSET;
+        double potValPerDegree = diff/90;
+        double curAnglePot = this.getElbowPotPos() - this.ELBOW_0_DEGREE_POT_OFFSET;
+        return curAnglePot / potValPerDegree; // returns degrees
+    }
+
+    /**
+     * Convert the current pot value of the shoulder into an angle.
+     * 
+     * @return Current shoulder joint anlge in xx units.
+     */
+    private double getShoulderJointAngle() {
+        //TODO check this is correct
+        double diff = this.SHOULDER_90_DEGREE_POT_OFFSET - this.SHOULDER_0_DEGREE_POT_OFFSET;
+        double potValPerDegree = diff/90;
+        double curAnglePot = this.getShoulderPotPos() - this.SHOULDER_0_DEGREE_POT_OFFSET;
+        return curAnglePot / potValPerDegree; // returns degrees
+    }
+
+    /**
+     * This method will do the math to calculate the wrist position in 2D space from a given shoulder and 
+     * elbow joint angle. This method still needs a current wristposition passed into it so a proper Arm2DPosition
+     * can be returned. 
+     * 
+     * @param currentShoulder The current shoulder angle. Use {@link getShoulderJointAngle} and not the pot value.
+     * @param currentElbow the current elbow anlge. Use {@link getElbowJointAngle} and not the pot value.
+     * @param wristPos The current wrist position. Use {@link getWristPosition}
+     * @return A Arm2DPosition that represents the current point in 2D space of the wrist of the arm, including the wrist state.
+     */
+    private Arm2DPosition arm2DPositionFromAngles(double currentShoulder, double currentElbow, WristPosition wristPos) {
+        //TODO Write me
+        // 3rd to write
+        return null;
+    }
+
+    /**
+     * Initializes the PID controller for moving the elbow motor. 
+     * 
+     * This method takes a setpoint for the arm wrist from the this.setpoint class. It then
+     * calculates what elbow and shoulder angles are needed to reach the provided setpoint
+     * and set its PID controller for that setpoint. 
+     * 
+     * This method may eventually need to do other work.
+     * 
+     * @param setpoint Setpoint of the arm as a whole.
+     */
+    public void elbowMotorPIDInit(ArmPosition armPosition) {
+
+        Arm2DPosition setpoint;
+        switch (armPosition) {
             case GroundPickUp:
-                elbowSetpoint = GROUND_PICKUP_ELBOW_POS;
+                setpoint = GROUND_PICKUP_SETPOINT;
                 break;
             case HighCone:
+                setpoint = HIGH_CONE_SETPOINT;
                 break;
             case HighCube:
+                setpoint = HIGH_CUBE_SETPOINT;
                 break;
             case LoadStationPickUp:
+                setpoint = LOAD_STATION_PICKUP_SETPOINT;
                 break;
             case LowScore:
+                setpoint = LOW_SCORE_SETPOINT;
                 break;
             case MiddleCone:
+                setpoint = MIDDLE_CONE_SETPOINT;
                 break;
             case MiddleCube:
+                setpoint = MIDDLE_CUBE_SETPOINT;
                 break;
             case Stored:
+                setpoint = STORED_SETPOINT;
                 break;
             default:
                 // If we hit default that means we don't know what position we are in
                 // So we just wanna stay put until we get a new position
+                setpoint = this.getArm2DPosition();
                 break;
         }
-        _elbowMotorPID.setSetpoint(elbowSetpoint);
+        //TODO: make sure this is what we want
+        ArmJointAngles jointAngles = this.jointAnglesFrom2DPose(setpoint);
+        _elbowMotorPID.setGoal(jointAngles.getElbowJointAngle());
     }
     
+    /**
+     * 
+     * @return
+     */
     public boolean shoulderMotorPIDIsFinished() {
         return _shoulderMotorPID.atSetpoint();
     }
 
+    /**
+     * 
+     * @return
+     */
     public boolean elbowMotorPIDIsFinished() {
         return _elbowMotorPID.atSetpoint();
     }
 
     /**
-     * Executes the shoulder motor PID controller
+     * Executes the shoulder motor PID controller. This PID controller will handle 
+     * ramping the PID output and setting any limits.
      */
     public void shoulderMotorPIDExec() {
-        double position = getShoulderPotPos();
-        double power = _shoulderMotorPID.calculate(position) * _shoulderMotorPIDMaxSpeed;
+        // i think we want to work in angles and not pot values -garrett 2/9
+        double angle = getShoulderJointAngle();
+        // double position = getShoulderPotPos();
+        double voltage = _shoulderMotorPID.calculate(angle);
         
-        setShoulderMotorSpeed(power);
+        setShoulderMotorSpeed(voltage);
     }
 
+    /**
+     * Executes the elbow motor PID controller. This PID controller will handle 
+     * ramping the PID output and setting any limits.
+     */
     public void elbowMotorPIDExec() {
-        double position = getElbowPotPos();
-        double power = _elbowMotorPID.calculate(position) * _elbowMotorPIDMaxSpeed;
+        // i think we want to work in angles and not pot values -garrett 2/9
+        double angle = getElbowJointAngle();
+        // double position = getElbowPotPos();
+        double voltage = _elbowMotorPID.calculate(angle);
         
-        setElbowMotorSpeed(power);
+        setElbowMotorSpeed(voltage);
     }
 
     /** Checks if the joint motors are at their setpoints **/
@@ -262,11 +534,15 @@ public class Arm extends SubsystemBase {
     /**
      * Initializes the PID controller for moving the elbow motor
      * 
-     * @param setpoint setpoint of the elbow motor
+     * @param setpointAngle setpoint of the elbow motor
      * @param maxSpeed the max speed of motor, in percent output
      */
-    public void elbowMotorPIDInit(double setpoint) {
-        _elbowMotorPID.setSetpoint(setpoint);
+    public void elbowMotorPIDInit(double setpointAngle) {
+        _elbowMotorPID.setGoal(setpointAngle);
+    }
+
+    public void shoulderMotorPIDInit(double setpointAngle){
+        _shoulderMotorPID.setGoal(setpointAngle);
     }
 
     /** Checks if the joint motors are at their setpoints **/
@@ -311,6 +587,11 @@ public class Arm extends SubsystemBase {
         // This method will be called once per scheduler run
         _previousIntakeMotorCurrent = _intakeMotorCurrent;
         _intakeMotorCurrent = _intakeMotor.getOutputCurrent();
+
+        SmartDashboard.putNumber("Elbow Angle", this.getElbowJointAngle());
+        SmartDashboard.putNumber("Sholder Angle", this.getShoulderJointAngle());
+        SmartDashboard.putNumber("Sholder Angle Setpoint", this.getShoulderSetpoint());
+        SmartDashboard.putNumber("Elbow Angle Setpoint", this.getElbowSetpoint());        
     }
     public void setWristPosition(ArmPosition armPosition) {
         //Sets Wrist Position based off of arm position
@@ -319,22 +600,22 @@ public class Arm extends SubsystemBase {
                 setWristPosition(GROUND_PICKUP_WRIST_POS);
                 break;
             case HighCone:
-                setWristPosition(HIGH_GOAL_CONE_WRIST_POS);
+                setWristPosition(HIGH_CONE_WRIST_POS);
                 break;
             case HighCube:
-                setWristPosition(HIGH_GOAL_CUBE_WRIST_POS);
+                setWristPosition(HIGH_CUBE_WRIST_POS);
                 break;
             case LoadStationPickUp:
-                setWristPosition(LOADING_STATION_WRIST_POS);
+                setWristPosition(LOAD_STATION_PICKUP_WRIST_POS);
                 break;
             case LowScore:
-                setWristPosition(LOW_GOAL_WRIST_POS);
+                setWristPosition(LOW_SCORE_WRIST_POS);
                 break;
             case MiddleCone:
-                setWristPosition(MIDDLE_GOAL_CONE_WRIST_POS);
+                setWristPosition(MIDDLE_CONE_WRIST_POS);
                 break;
             case MiddleCube:
-                setWristPosition(MIDDLE_GOAL_CUBE_WRIST_POS);
+                setWristPosition(MIDDLE_CUBE_WRIST_POS);
                 break;
             case Stored:
 
@@ -348,19 +629,19 @@ public class Arm extends SubsystemBase {
             case GroundPickUp:
                 return getWristPosition() == GROUND_PICKUP_WRIST_POS;
             case HighCone:
-                return getWristPosition() == HIGH_GOAL_CONE_WRIST_POS;
+                return getWristPosition() == HIGH_CONE_WRIST_POS;
             case HighCube:
-                return getWristPosition() == HIGH_GOAL_CUBE_WRIST_POS;
+                return getWristPosition() == HIGH_CUBE_WRIST_POS;
             case LoadStationPickUp:
-                return getWristPosition() == LOADING_STATION_WRIST_POS;
+                return getWristPosition() == LOAD_STATION_PICKUP_WRIST_POS;
             case LowScore:
-                return getWristPosition() == LOW_GOAL_WRIST_POS;
+                return getWristPosition() == LOW_SCORE_WRIST_POS;
             case MiddleCone:
-                return getWristPosition() == MIDDLE_GOAL_CONE_WRIST_POS;
+                return getWristPosition() == MIDDLE_CONE_WRIST_POS;
             case MiddleCube:
-                return getWristPosition() == MIDDLE_GOAL_CUBE_WRIST_POS;
+                return getWristPosition() == MIDDLE_CUBE_WRIST_POS;
             case Stored:
-                return getWristPosition() == STORE_WRIST_POS; 
+                return getWristPosition() == STORED_WRIST_POS; 
             default:
                 return false;
              

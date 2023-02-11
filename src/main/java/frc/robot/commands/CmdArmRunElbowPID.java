@@ -12,19 +12,33 @@ public class CmdArmRunElbowPID extends CommandBase {
 
   private Arm _armSubsystem;
   private ArmPosition _setpoint;
+  private double _manualSetpoint;
 
   /** Creates a new CmdArmRunElbowPID. */
   public CmdArmRunElbowPID(Arm armSubsystem, ArmPosition setpoint) {
     this._armSubsystem = armSubsystem;
     this._setpoint = setpoint;
 
-    this.addRequirements(_armSubsystem); //
+    this.addRequirements(_armSubsystem);
+  }
+
+
+  public CmdArmRunElbowPID(Arm armSubsystem, Double manualDouble) {
+    this._armSubsystem = armSubsystem;
+    this._manualSetpoint = manualDouble;
+
+    this.addRequirements(_armSubsystem);
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    _armSubsystem.elbowMotorPIDInit(_setpoint);
+    if(this._manualSetpoint != -1000){
+      _armSubsystem.elbowMotorPIDInit(this._manualSetpoint);
+    }
+    else{
+      _armSubsystem.elbowMotorPIDInit(_setpoint);
+    }
   }
 
   // Called every time the scheduler runs while the command is scheduled.
