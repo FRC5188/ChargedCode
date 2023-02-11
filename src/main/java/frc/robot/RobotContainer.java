@@ -32,7 +32,7 @@ public class RobotContainer {
   Drive.setInstance(Vision.getInstance());
   }
   private final Vision _visionSubsystem = Vision.getInstance();
-  private final Drive _driveSubsystem = Drive.getInstace();
+  private final Drive _driveSubsystem = Drive.getInstance();
 
   private final XboxController _driveController = new XboxController(0);
 
