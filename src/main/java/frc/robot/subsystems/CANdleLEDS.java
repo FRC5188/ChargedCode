@@ -24,6 +24,9 @@ public class CANdleLEDS extends SubsystemBase {
     public void turnOffLEDS() {
         _candle.configBrightnessScalar(0.0); 
     }
+    // colors
+    private final int[] PURPLE = {145, 15, 255};
+    private final int[] YELLOW = {255, 255, 0};
 
     public double getVbat() { return _candle.getBusVoltage(); }
     public double get5V() { return _candle.get5VRailVoltage(); }
