@@ -51,7 +51,7 @@ public final class Constants {
     }
 
     public static class PHPorts {
-        public static int WRIST_SOLENOID_PORT = 999;
+        public static int WRIST_SOLENOID_PORT = 0;
     }
 
     /** added PID constants+ */

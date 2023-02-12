@@ -8,6 +8,7 @@ import java.util.function.DoubleSupplier;
 
 import org.opencv.core.Mat;
 
+import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.revrobotics.CANSparkMax;
@@ -24,30 +25,26 @@ import frc.robot.Constants;
 
 
 public class Arm extends SubsystemBase {
-
-    
-    private final double SHOULDER_0_DEGREE_POT_OFFSET = 1;
-    private final double SHOULDER_90_DEGREE_POT_OFFSET = 10;
-    private final double ELBOW_0_DEGREE_POT_OFFSET = 1;
-    private final double ELBOW_90_DEGREE_POT_OFFSET = 10;
+    private final double SHOULDER_0_DEGREE_POT_OFFSET = 2310;
+    private final double SHOULDER_90_DEGREE_POT_OFFSET = 1956;
+    private final double ELBOW_0_DEGREE_POT_OFFSET = 1581;
+    private final double ELBOW_neg90_DEGREE_POT_OFFSET = 1980;
     private double SHOULDER_POT_SCALE = 0;
     private double ELBOW_POT_SCALE = 0;
 
-
+    // All in degrees
     private final double SHOULDER_UPPER_SOFT_STOP = 80;
     private final double SHOULDER_LOWER_SOFT_STOP = -1;
     private final double ELBOW_UPPER_SOFT_STOP = 30;
     private final double ELBOW_LOWER_SOFT_STOP = -10;
 
     // The y,z position of the shoulder joint relative to the floor
-    private final double SHOULDER_JOINT_Y_POS = 0.0; //inches
-    private final double SHOULDER_JOINT_X_POS = 0.0; //inches
+    private final double SHOULDER_JOINT_Z_POS = 17; //inches
+    private final double SHOULDER_JOINT_Y_POS = -15; //inches
 
     // arm segments lengths
-    private final double SHOULDER_ARM_LENGTH = 12; //inches
-    private final double ELBOW_ARM_LENGTH = 20; //inches
-
-
+    private final double SHOULDER_ARM_LENGTH = 27.75; //inches
+    private final double ELBOW_ARM_LENGTH = 28.75; //inches
 
     /**
          * A list of possible wrist positions.
@@ -57,16 +54,6 @@ public class Arm extends SubsystemBase {
     public enum WristPosition{
         Parallel,
         Perpendicular
-    }
-
-    /**
-     * Not actually sure what this is for, Garrett
-     */
-    public enum ArmPositionState {
-        Stored,
-        /* GAME PIECE PICKUP */
-        LoadStationPickUp,
-        GroundPickUp,
     }
    
     /**
@@ -275,8 +262,11 @@ public class Arm extends SubsystemBase {
         _elbowMotor.enableVoltageCompensation(true);
 
         //set motor breaking
-        _shoulderMotor.setNeutralMode(NeutralMode.Brake);
-        _elbowMotor.setNeutralMode(NeutralMode.Brake);
+        _shoulderMotor.setNeutralMode(NeutralMode.Coast);
+        _elbowMotor.setNeutralMode(NeutralMode.Coast);
+
+        // Invert shoulder
+        _shoulderMotor.setInverted(InvertType.InvertMotorOutput);
 
         // Claw
         _previousIntakeMotorCurrent = 0;
@@ -285,7 +275,11 @@ public class Arm extends SubsystemBase {
 
         // Potentiometer
         _elbowPotentiometer = new AnalogInput(Constants.AIO.ELBOW_PORT_POT);
+        _elbowPotentiometer.setAverageBits(2);
+        _elbowPotentiometer.setOversampleBits(0);
         _shoulderPotentiometer = new AnalogInput(Constants.AIO.SHOULDER_PORT_POT);
+        _shoulderPotentiometer.setAverageBits(2);
+        _shoulderPotentiometer.setOversampleBits(0);
 
         // Create Sholder PID controllers
         _shoulderMotorPID = new ProfiledPIDController(this.SHOULD_MOTOR_KP, 
@@ -441,10 +435,10 @@ public class Arm extends SubsystemBase {
      */
     private double getElbowJointAngle() {
         //TODO check this is correct
-        double diff = this.ELBOW_90_DEGREE_POT_OFFSET - this.ELBOW_0_DEGREE_POT_OFFSET;
+        double diff = this.ELBOW_neg90_DEGREE_POT_OFFSET - this.ELBOW_0_DEGREE_POT_OFFSET;
         double potValPerDegree = diff/90;
         double curAnglePot = this.getElbowPotPos() - this.ELBOW_0_DEGREE_POT_OFFSET;
-        return curAnglePot / potValPerDegree; // returns degrees
+        return -curAnglePot / potValPerDegree; // returns degrees
     }
 
     /**
@@ -473,11 +467,11 @@ public class Arm extends SubsystemBase {
     private Arm2DPosition arm2DPositionFromAngles(double currentShoulder, double currentElbow, WristPosition wristPos) {
         //TODO check this math
 
-        double y = this.SHOULDER_JOINT_X_POS;
+        double y = this.SHOULDER_JOINT_Y_POS;
         y += this.SHOULDER_ARM_LENGTH * Math.cos(currentShoulder);
         y += this.ELBOW_ARM_LENGTH * Math.cos(currentElbow);
 
-        double z = this.SHOULDER_JOINT_Y_POS;
+        double z = this.SHOULDER_JOINT_Z_POS;
         z += this.SHOULDER_ARM_LENGTH * Math.sin(currentShoulder);
         z += this.ELBOW_ARM_LENGTH * Math.sin(currentElbow);
 
@@ -600,6 +594,7 @@ public class Arm extends SubsystemBase {
         return _elbowMotorPID.atSetpoint();
     }
 
+    // TODO: UPDATE SOFT LIMITS BASED ON ARM_DEV BRANCH CODE
     public void setShoulderMotorSpeed(double speed) {
         if(this.getShoulderJointAngle() <= this.SHOULDER_LOWER_SOFT_STOP && speed < 0){
             speed = 0;
@@ -609,6 +604,8 @@ public class Arm extends SubsystemBase {
         }
         _shoulderMotor.set(speed);
     }
+
+        // TODO: UPDATE SOFT LIMITS BASED ON ARM_DEV BRANCH CODE
 
     public void setElbowMotorSpeed(double speed) {
         if(this.getElbowJointAngle() <= this.ELBOW_LOWER_SOFT_STOP && speed < 0){
@@ -649,6 +646,9 @@ public class Arm extends SubsystemBase {
         // This method will be called once per scheduler run
         _previousIntakeMotorCurrent = _intakeMotorCurrent;
         _intakeMotorCurrent = _intakeMotor.getOutputCurrent();
+
+        //System.out.println("Shoulder: " + this.getShoulderPotPos() + " Elbow: " + this.getElbowPotPos());
+        System.out.println("Shoulder Angle: " + this.getShoulderJointAngle() + " Elbow Angle: " + this.getElbowJointAngle());
 
         SmartDashboard.putNumber("Elbow Angle", this.getElbowJointAngle());
         SmartDashboard.putNumber("Sholder Angle", this.getShoulderJointAngle());
