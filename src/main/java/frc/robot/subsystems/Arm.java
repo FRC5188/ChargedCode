@@ -6,6 +6,8 @@ package frc.robot.subsystems;
 
 import java.util.function.DoubleSupplier;
 
+import org.opencv.core.Mat;
+
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.revrobotics.CANSparkMax;
@@ -36,6 +38,16 @@ public class Arm extends SubsystemBase {
     private final double SHOULDER_LOWER_SOFT_STOP = -1;
     private final double ELBOW_UPPER_SOFT_STOP = 30;
     private final double ELBOW_LOWER_SOFT_STOP = -10;
+
+    // The y,z position of the shoulder joint relative to the floor
+    private final double SHOULDER_JOINT_Y_POS = 0.0; //inches
+    private final double SHOULDER_JOINT_X_POS = 0.0; //inches
+
+    // arm segments lengths
+    private final double SHOULDER_ARM_LENGTH = 12; //inches
+    private final double ELBOW_ARM_LENGTH = 20; //inches
+
+
 
     /**
          * A list of possible wrist positions.
@@ -382,8 +394,31 @@ public class Arm extends SubsystemBase {
      *          the desired wrist 2D position.
      */
     private ArmJointAngles jointAnglesFrom2DPose(Arm2DPosition arm2DPosition) {
-        //TODO: write me. Main thing to write
-        return null;
+        // q2 = elbow angle (upper joint). note the angle is relative to the shoulder angle in this form.
+        // See this link https://robotacademy.net.au/lesson/inverse-kinematics-for-a-2-joint-robot-arm-using-geometry/
+        // we will convert it to be relative to the ground after
+        // q1 = shoulder angle, a1 = shoulder arm length, a2 = elbow arm length
+        // this math uses y as up and x as "out". But we defined Z as up and y as out in our robot positions
+
+        // grab the points
+        double z = arm2DPosition.getz();
+        double y = arm2DPosition.gety();
+        double elbowLen = this.ELBOW_ARM_LENGTH;
+        double shoulderLen = this.SHOULDER_ARM_LENGTH;
+
+        // q2 = -acos(x^2 + y^2 - a1^2 - a2^2) / (2*a1*a2)
+        double elbowAngle = -1 * Math.acos((Math.pow(y, 2) + Math.pow(z, 2) - 
+                                    Math.pow(elbowLen, 2) - Math.pow(shoulderLen, 2)) / 
+                                    (2 * elbowLen * shoulderLen));
+
+        // q1 = atan(y/x) + atan(a2*sin(q2))/(a1 + a2*cos(q2))
+        double shoulderAngle = Math.atan(z/y) + 
+                               Math.atan((elbowLen * Math.sin(elbowAngle))   /
+                                        shoulderLen + elbowLen * Math.cos(elbowAngle)); 
+
+
+
+        return new ArmJointAngles(shoulderAngle, elbowAngle);
     }
 
     /**
@@ -436,9 +471,17 @@ public class Arm extends SubsystemBase {
      * @return A Arm2DPosition that represents the current point in 2D space of the wrist of the arm, including the wrist state.
      */
     private Arm2DPosition arm2DPositionFromAngles(double currentShoulder, double currentElbow, WristPosition wristPos) {
-        //TODO Write me
-        // 3rd to write
-        return null;
+        //TODO check this math
+
+        double y = this.SHOULDER_JOINT_X_POS;
+        y += this.SHOULDER_ARM_LENGTH * Math.cos(currentShoulder);
+        y += this.ELBOW_ARM_LENGTH * Math.cos(currentElbow);
+
+        double z = this.SHOULDER_JOINT_Y_POS;
+        z += this.SHOULDER_ARM_LENGTH * Math.sin(currentShoulder);
+        z += this.ELBOW_ARM_LENGTH * Math.sin(currentElbow);
+
+        return new Arm2DPosition(y, z, wristPos);
     }
 
     /**
