@@ -5,16 +5,12 @@
 package frc.robot;
 
 import com.pathplanner.lib.PathPlanner;
-import com.pathplanner.lib.PathPlannerTrajectory;
-
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.FunctionalCommand;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.button.Button;
-import frc.robot.commands.DefaultDriveCommand;
+import frc.robot.subsystem_builders.Drive.Drivetrain;
+import frc.robot.subsystem_builders.Drive.Autonomous;
 import frc.robot.subsystems.Drive;
 import frc.robot.subsystems.Vision;
 
@@ -40,18 +36,7 @@ public class RobotContainer {
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
   public RobotContainer() {
-    // Set up the default command for the drivetrain.
-    // The controls are for field-oriented driving:
-    // Left stick Y axis -> forward and backwards movement
-    // Left stick X axis -> left and right movement
-    // Right stick X axis -> rotation
-    _driveSubsystem.setDefaultCommand(new DefaultDriveCommand(
-            _driveSubsystem,
-            () -> (-modifyAxis(_driveController.getLeftY()) * Drive.MAX_VELOCITY_METERS_PER_SECOND),
-            () -> (-modifyAxis(_driveController.getLeftX()) * Drive.MAX_VELOCITY_METERS_PER_SECOND),
-            () -> (-modifyAxis(_driveController.getRightX()) * Drive.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND)
-    ));
-
+    Drivetrain.setJoystickDrive(_driveSubsystem, _driveController);
     // Configure the button bindings
     configureButtonBindings();
   }
@@ -76,30 +61,8 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    return _driveSubsystem.followTrajectoryCommand(
+    return Autonomous.getTrajectoryCommand(
       PathPlanner.loadPath("TEST_Straight_Line", 3, 4), 
-      true);
-  }
-
-  private static double deadband(double value, double deadband) {
-    if (Math.abs(value) > deadband) {
-      if (value > 0.0) {
-        return (value - deadband) / (1.0 - deadband);
-      } else {
-        return (value + deadband) / (1.0 - deadband);
-      }
-    } else {
-      return 0.0;
-    }
-  }
-
-  private static double modifyAxis(double value) {
-    // Deadband
-    value = deadband(value, 0.05);
-
-    // Square the axis
-    value = Math.copySign(value * value, value);
-
-    return value;
+      true, _driveSubsystem);
   }
 }
