@@ -27,8 +27,8 @@ import frc.robot.Constants;
 public class Arm extends SubsystemBase {
     private final double SHOULDER_0_DEGREE_POT_OFFSET = 2310;
     private final double SHOULDER_90_DEGREE_POT_OFFSET = 1956;
-    private final double ELBOW_0_DEGREE_POT_OFFSET = 1581;
-    private final double ELBOW_neg90_DEGREE_POT_OFFSET = 1980;
+    private final double ELBOW_0_DEGREE_POT_OFFSET = 1478;
+    private final double ELBOW_neg90_DEGREE_POT_OFFSET = 1833;
     private double SHOULDER_POT_SCALE = 0;
     private double ELBOW_POT_SCALE = 0;
 
@@ -420,8 +420,9 @@ public class Arm extends SubsystemBase {
 
 
         // this is converting the elbow angle to be an angle relative to the floor;
-        // the math above gives an angle relative to the shoulder angle.                                        
-        elbowAngle = shoulderAngle = elbowAngle;
+        // the math above gives an angle relative to the shoulder angle.                                       
+        elbowAngle = Math.toDegrees(shoulderAngle - elbowAngle);
+        shoulderAngle = Math.toDegrees(shoulderAngle); 
 
         return new ArmJointAngles(shoulderAngle, elbowAngle);
     }
@@ -449,7 +450,7 @@ public class Arm extends SubsystemBase {
         double diff = this.ELBOW_neg90_DEGREE_POT_OFFSET - this.ELBOW_0_DEGREE_POT_OFFSET;
         double potValPerDegree = diff/90;
         double curAnglePot = this.getElbowPotPos() - this.ELBOW_0_DEGREE_POT_OFFSET;
-        return -curAnglePot / potValPerDegree; // returns degrees
+        return -curAnglePot / potValPerDegree + this.getShoulderJointAngle(); // returns degrees
     }
 
     /**
@@ -659,7 +660,10 @@ public class Arm extends SubsystemBase {
         _intakeMotorCurrent = _intakeMotor.getOutputCurrent();
 
         //System.out.println("Shoulder: " + this.getShoulderPotPos() + " Elbow: " + this.getElbowPotPos());
-        System.out.println("Shoulder Angle: " + this.getShoulderJointAngle() + " Elbow Angle: " + this.getElbowJointAngle());
+        //System.out.println("Shoulder Angle: " + this.getShoulderJointAngle() + " Elbow Angle: " + this.getElbowJointAngle());
+        ArmJointAngles angles = this.jointAnglesFrom2DPose(new Arm2DPosition(10, 30, GROUND_PICKUP_WRIST_POS));
+
+        System.out.println("Setpoint: (" + angles.shoulderJointAngle + ", " + angles.elbowJointAngle + ") Shoulder: " + this.getShoulderJointAngle() + " Elbow: " + this.getElbowJointAngle());
 
         SmartDashboard.putNumber("Elbow Angle", this.getElbowJointAngle());
         SmartDashboard.putNumber("Sholder Angle", this.getShoulderJointAngle());
