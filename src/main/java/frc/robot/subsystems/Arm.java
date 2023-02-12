@@ -400,6 +400,14 @@ public class Arm extends SubsystemBase {
         // q1 = shoulder angle, a1 = shoulder arm length, a2 = elbow arm length
         // this math uses y as up and x as "out". But we defined Z as up and y as out in our robot positions
 
+        // Note:   if you got to 5:13 in the video linked above you can see the math used for this. 
+        // Note 2: There are exactly 2 solutions of arm angles to reach any given point. We choose to 
+        //          use the solution on the right side because they will put the shoulder joint in the
+        //          most upright position. This is valuable because that is closest to our "stored"
+        //          position and means we can quickly move back to having the arm inside the robot frame.
+        // Note 3: Here is a the post on CD that gave this info. This team is doing cool stuff!
+        // https://www.chiefdelphi.com/t/frc-6328-mechanical-advantage-2023-build-thread/420691/58 
+
         // grab the points
         double z = arm2DPosition.getz();
         double y = arm2DPosition.gety();
@@ -417,6 +425,9 @@ public class Arm extends SubsystemBase {
                                         shoulderLen + elbowLen * Math.cos(elbowAngle)); 
 
 
+        // this is converting the elbow angle to be an angle relative to the floor;
+        // the math above gives an angle relative to the shoulder angle.                                        
+        elbowAngle = shoulderAngle = elbowAngle;
 
         return new ArmJointAngles(shoulderAngle, elbowAngle);
     }
