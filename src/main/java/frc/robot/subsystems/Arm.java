@@ -23,12 +23,19 @@ import frc.robot.Constants;
 
 public class Arm extends SubsystemBase {
 
+    
     private final double SHOULDER_0_DEGREE_POT_OFFSET = 1;
     private final double SHOULDER_90_DEGREE_POT_OFFSET = 10;
     private final double ELBOW_0_DEGREE_POT_OFFSET = 1;
     private final double ELBOW_90_DEGREE_POT_OFFSET = 10;
     private double SHOULDER_POT_SCALE = 0;
     private double ELBOW_POT_SCALE = 0;
+
+
+    private final double SHOULDER_UPPER_SOFT_STOP = 80;
+    private final double SHOULDER_LOWER_SOFT_STOP = -1;
+    private final double ELBOW_UPPER_SOFT_STOP = 30;
+    private final double ELBOW_LOWER_SOFT_STOP = -10;
 
     /**
          * A list of possible wrist positions.
@@ -551,11 +558,23 @@ public class Arm extends SubsystemBase {
     }
 
     public void setShoulderMotorSpeed(double speed) {
+        if(this.getShoulderJointAngle() <= this.SHOULDER_LOWER_SOFT_STOP && speed < 0){
+            speed = 0;
+        }
+        else if(this.getShoulderJointAngle() >= this.SHOULDER_UPPER_SOFT_STOP && speed > 0){
+            speed = 0;
+        }
         _shoulderMotor.set(speed);
     }
 
     public void setElbowMotorSpeed(double speed) {
-        _elbowMotor.set(speed);
+        if(this.getElbowJointAngle() <= this.ELBOW_LOWER_SOFT_STOP && speed < 0){
+            speed = 0;
+        }
+        else if(this.getElbowJointAngle() >= this.ELBOW_UPPER_SOFT_STOP && speed > 0){
+            speed = 0;
+        }
+        _shoulderMotor.set(speed);
     }
 
     public int getShoulderPotPos() {
