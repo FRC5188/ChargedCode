@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.commands.DefaultDriveCommand;
 import frc.robot.commands.CmdArmRunIntake;
+import frc.robot.commands.CmdArmManual;
 import frc.robot.subsystems.Drive;
 import frc.robot.subsystems.Arm;
 
@@ -34,8 +35,8 @@ public class RobotContainer {
     
     private final XboxController _operatorController = new XboxController(1);
     
-    private JoystickButton _operatorAButton = new JoystickButton(_operatorController, Constants.ButtonMappings.OPERATOR_A_BUTTON);
-    private JoystickButton _operatorBButton = new JoystickButton(_operatorController, Constants.ButtonMappings.OPERATOR_B_BUTTON);
+    private JoystickButton _operatorAButton = new JoystickButton(_operatorController, Constants.ButtonMappings.A_BUTTON);
+    private JoystickButton _operatorBButton = new JoystickButton(_operatorController, Constants.ButtonMappings.B_BUTTON);
 
 
     private static final double ARM_MULTIPLIER = 0.3;
@@ -55,9 +56,10 @@ public class RobotContainer {
                                                () -> (-modifyAxis(_driverController.getLeftX()) * Drive.MAX_VELOCITY_METERS_PER_SECOND),
                                                () -> (-modifyAxis(_driverController.getRightX()) * Drive.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND)));
 //this is a default cmd just for testing
-        _armSubsystem.setDefaultCommand(new CmdArmRunIntake(
+        _armSubsystem.setDefaultCommand(new CmdArmManual(
                                                 _armSubsystem,
-                                                () -> (-modifyAxis(_operatorController.getLeftX()))));
+                                                () -> (0.3*-modifyAxis(_operatorController.getRightY())),
+                                                () -> (0.3*-modifyAxis(_operatorController.getLeftY()))));
  
  
                                             

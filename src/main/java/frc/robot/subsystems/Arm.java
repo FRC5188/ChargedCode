@@ -6,6 +6,8 @@ package frc.robot.subsystems;
 
 import java.util.function.DoubleSupplier;
 
+import com.ctre.phoenix.motorcontrol.InvertType;
+import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
@@ -106,6 +108,11 @@ public class Arm extends SubsystemBase {
     private double ElbowMotorkD = 0.0;
     private double ElbowMotorkTolerance = 0.0;
 
+    private int SHOULDER_UPPER_SOFT_STOP = 1920;
+    private int SHOULDER_LOWER_SOFT_STOP = 2150;
+    private int ELBOW_UPPER_SOFT_STOP = 2130;
+    private int ELBOW_LOWER_SOFT_STOP = 1680;
+
     public enum ArmPositionState {
         Stored,
         /* GAME PIECE PICKUP */
@@ -116,9 +123,18 @@ public class Arm extends SubsystemBase {
     public Arm() {
         _shoulderMotor = new WPI_TalonFX(Constants.CanIDs.ARM_SHOULDER_MOTOR_CANID);
         _elbowMotor = new WPI_TalonFX(Constants.CanIDs.ARM_ELBOW_MOTOR_CANID);
+        _shoulderMotor.setNeutralMode(NeutralMode.Brake);
+        _shoulderMotor.setInverted(InvertType.InvertMotorOutput);
+        _elbowMotor.setNeutralMode(NeutralMode.Brake);
+
         _wristSolenoid = new Solenoid(PneumaticsModuleType.REVPH, Constants.PHPorts.WRIST_SOLENOID_PORT);
+
         _elbowPotentiometer = new AnalogInput(Constants.AIO.ELBOW_PORT_POT);
         _shoulderPotentiometer = new AnalogInput(Constants.AIO.SHOULDER_PORT_POT);
+        _elbowPotentiometer.setAverageBits(2);
+        _elbowPotentiometer.setOversampleBits(0);
+        _shoulderPotentiometer.setAverageBits(2);
+        _shoulderPotentiometer.setOversampleBits(0);
         // Claw
         _previousIntakeMotorCurrent = 0;
         _intakeMotor = new CANSparkMax(Constants.CanIDs.CLAW_INTAKE_MOTOR_CANID, MotorType.kBrushless);
@@ -254,10 +270,20 @@ public class Arm extends SubsystemBase {
     }
 
     public void setShoulderMotorSpeed(double speed) {
+        if ((this.getShoulderPotPos() < this.SHOULDER_UPPER_SOFT_STOP && speed < 0) || (this.getShoulderPotPos() > this.SHOULDER_LOWER_SOFT_STOP && speed > 0)) {
+            _shoulderMotor.set(0);
+            return;
+        }
+
         _shoulderMotor.set(speed);
     }
 
     public void setElbowMotorSpeed(double speed) {
+        if ((this.getElbowPotPos() > this.ELBOW_UPPER_SOFT_STOP && speed < 0) || (this.getElbowPotPos() < this.ELBOW_LOWER_SOFT_STOP && speed > 0)) {
+            _elbowMotor.set(0);
+            return;
+        }
+
         _elbowMotor.set(speed);
     }
 
@@ -290,7 +316,10 @@ public class Arm extends SubsystemBase {
         // This method will be called once per scheduler run
         _previousIntakeMotorCurrent = _intakeMotorCurrent;
         _intakeMotorCurrent = _intakeMotor.getOutputCurrent();
+
+        System.out.println("Shoulder Pot: " + this.getShoulderPotPos() + " Elbow Pot: " + this.getElbowPotPos());
     }
+
     public void setWristPosition(ArmPosition armPosition) {
         //Sets Wrist Position based off of arm position
         switch (armPosition) {
@@ -322,6 +351,7 @@ public class Arm extends SubsystemBase {
                 break; 
         }
     }
+
     public boolean checkWristPosition(ArmPosition positionOfArm) {
         switch (positionOfArm) {
             case GroundPickUp:
