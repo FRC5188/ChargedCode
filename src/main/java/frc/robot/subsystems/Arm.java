@@ -433,9 +433,10 @@ public class Arm extends SubsystemBase {
         double shoulderLen = this.SHOULDER_ARM_LENGTH;
 
         // alpha = acos((x^2 + y^2 - a1^2 - a2^2) / (-2*a1*a2))
-        double alpha = 1 * Math.acos((Math.pow(y, 2) + Math.pow(z, 2) - 
+        double alpha = Math.acos((Math.pow(y, 2) + Math.pow(z, 2) - 
                                     Math.pow(elbowLen, 2) - Math.pow(shoulderLen, 2)) / 
                                     (-2 * elbowLen * shoulderLen));
+        
 
         // this is a temp variable. following my math sheet
         double t1 = Math.atan(z/y);
