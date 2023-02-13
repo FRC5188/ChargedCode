@@ -417,8 +417,8 @@ public class Arm extends SubsystemBase {
 
         // NOTE: 2/13/23 garrett
         //      As the math currently stands there are some extra variables and steps (like variable t1 and gamma).
-        //      i have not simplified it yet. I tested it with this form though and don't want to change it until we test
-        //      and confirm it works.
+        //      i have not simplified it yet. I started testing it with this form though and don't want to change it until we test
+        //      more and confirm it works.
 
         // NOTE: 2/13/23 garrett
         //      While rewriting the math from the previous commit i realize i was missing parenthesis on line 419. that might
