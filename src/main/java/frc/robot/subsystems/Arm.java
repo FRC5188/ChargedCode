@@ -4,10 +4,6 @@
 
 package frc.robot.subsystems;
 
-import java.util.function.DoubleSupplier;
-
-import org.opencv.core.Mat;
-
 import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
@@ -29,8 +25,6 @@ public class Arm extends SubsystemBase {
     private final double SHOULDER_90_DEGREE_POT_OFFSET = 1956;
     private final double ELBOW_0_DEGREE_POT_OFFSET = 1478;
     private final double ELBOW_neg90_DEGREE_POT_OFFSET = 1833;
-    private double SHOULDER_POT_SCALE = 0;
-    private double ELBOW_POT_SCALE = 0;
 
     // All in degrees
     private final double SHOULDER_UPPER_SOFT_STOP = 80;
@@ -368,7 +362,7 @@ public class Arm extends SubsystemBase {
             default:
                 // If we hit default that means we don't know what position we are in
                 // So we just wanna stay put until we get a new position
-                
+                System.out.println("PASSED A ARM POSITION THAT DID NOT MATCH ANY PRESET. Defaulting to setting the setpint to the current arm position.");
                 setpoint = this.getArm2DPosition();
                 break;
         }
