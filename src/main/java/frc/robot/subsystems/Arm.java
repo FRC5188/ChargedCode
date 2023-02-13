@@ -43,8 +43,8 @@ public class Arm extends SubsystemBase {
     private final double SHOULDER_JOINT_Y_POS = -15; //inches
 
     // arm segments lengths
-    private final double SHOULDER_ARM_LENGTH = 27.75; //inches
-    private final double ELBOW_ARM_LENGTH = 28.75; //inches
+    private final double SHOULDER_ARM_LENGTH = 28; //inches
+    private final double ELBOW_ARM_LENGTH = 28.5; //inches
 
     /**
          * A list of possible wrist positions.
@@ -368,6 +368,7 @@ public class Arm extends SubsystemBase {
             default:
                 // If we hit default that means we don't know what position we are in
                 // So we just wanna stay put until we get a new position
+                
                 setpoint = this.getArm2DPosition();
                 break;
         }
@@ -402,29 +403,53 @@ public class Arm extends SubsystemBase {
         // Note 3: Here is a the post on CD that gave this info. This team is doing cool stuff!
         // https://www.chiefdelphi.com/t/frc-6328-mechanical-advantage-2023-build-thread/420691/58 
 
+        // NOTE:
+        // remember the wrist position is the combination of the arm angles plus the position of shoulder joint!
+        // So the arm2dpose.y = arm_kinematics + sholder_start_y and arm2dpose.z = arm_kinematics + shoulder_start_z
+        // reworked, arm_kinematics = arm2dpose.y - shoulders_start_y
+    
+        //NOTE: 2/13/23 garrett
+        // Just using the math above did not work. Not sure why. But I followed along the vidoe and redid the math myself and 
+        // got a new set of equations. Its very similar to the first set though. (which makes sense) I need to find a place to 
+        // upload my math and steps I took. Its still only basic geometry and trig. Most high school sphomomores can do it. 
+        // for now, see zoe or garrett for the math. it should be in slack. The math gives the elbow angle relative the axis 
+        // and not relative to the shoulder.
+
+        // NOTE: 2/13/23 garrett
+        //      As the math currently stands there are some extra variables and steps (like variable t1 and gamma).
+        //      i have not simplified it yet. I tested it with this form though and don't want to change it until we test
+        //      and confirm it works.
+
+        // NOTE: 2/13/23 garrett
+        //      While rewriting the math from the previous commit i realize i was missing parenthesis on line 419. that might
+        //      have been the issue... :( Still moving forward with this code for now since I have more confidance in it. 
+        //      Here is the commit I refered to: https://github.com/FRC5188/ChargedCode/commit/a35d8567eb73343b4be02176031213db640c6627
+    
+
         // grab the points
-        double z = arm2DPosition.getz();
-        double y = arm2DPosition.gety();
+        double z = arm2DPosition.getz() - this.SHOULDER_JOINT_Z_POS;
+        double y = arm2DPosition.gety() - this.SHOULDER_JOINT_Y_POS;
         double elbowLen = this.ELBOW_ARM_LENGTH;
         double shoulderLen = this.SHOULDER_ARM_LENGTH;
 
-        // q2 = -acos(x^2 + y^2 - a1^2 - a2^2) / (2*a1*a2)
-        double elbowAngle = -1 * Math.acos((Math.pow(y, 2) + Math.pow(z, 2) - 
+        // alpha = acos((x^2 + y^2 - a1^2 - a2^2) / (-2*a1*a2))
+        double alpha = 1 * Math.acos((Math.pow(y, 2) + Math.pow(z, 2) - 
                                     Math.pow(elbowLen, 2) - Math.pow(shoulderLen, 2)) / 
-                                    (2 * elbowLen * shoulderLen));
+                                    (-2 * elbowLen * shoulderLen));
 
-        // q1 = atan(y/x) + atan(a2*sin(q2))/(a1 + a2*cos(q2))
-        double shoulderAngle = Math.atan(z/y) + 
-                               Math.atan((elbowLen * Math.sin(elbowAngle))   /
-                                        shoulderLen + elbowLen * Math.cos(elbowAngle)); 
+        // this is a temp variable. following my math sheet
+        double t1 = Math.atan(z/y);
+        // this is also a temp variable. following my math sheet
+        double gamma = Math.PI - alpha;
 
+        // t2 = atan(a2*sin(q2))/(a1 + a2*cos(q2))
+        double t2 = Math.atan((elbowLen * Math.sin(gamma))   /
+                                        (shoulderLen + elbowLen * Math.cos(gamma))); 
+        
+        double shoulderAngle = t1 + t2;
+        double elbowAngle = (-1 * Math.PI + shoulderAngle + alpha);
 
-        // this is converting the elbow angle to be an angle relative to the floor;
-        // the math above gives an angle relative to the shoulder angle.                                       
-        elbowAngle = Math.toDegrees(shoulderAngle - elbowAngle);
-        shoulderAngle = Math.toDegrees(shoulderAngle); 
-
-        return new ArmJointAngles(shoulderAngle, elbowAngle);
+        return new ArmJointAngles(Math.toDegrees(shoulderAngle), Math.toDegrees(elbowAngle));
     }
 
     /**
