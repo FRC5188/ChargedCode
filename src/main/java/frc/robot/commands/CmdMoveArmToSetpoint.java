@@ -9,7 +9,7 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Arm.ArmPosition;
 
-public class CmdMoveArmToSetpoint extends SequentialCommandGroup {
+public class CmdMoveArmToSetpoint extends CommandBase {
 
   private Arm _armSubsystem;
   private ArmPosition _setpoint;

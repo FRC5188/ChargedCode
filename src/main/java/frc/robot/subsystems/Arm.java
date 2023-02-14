@@ -15,6 +15,8 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Solenoid;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -27,10 +29,10 @@ public class Arm extends SubsystemBase {
     private final double ELBOW_neg90_DEGREE_POT_OFFSET = 1833;
 
     // All in degrees
-    private final double SHOULDER_UPPER_SOFT_STOP = 80;
-    private final double SHOULDER_LOWER_SOFT_STOP = -1;
-    private final double ELBOW_UPPER_SOFT_STOP = 30;
-    private final double ELBOW_LOWER_SOFT_STOP = -10;
+    private final double SHOULDER_UPPER_SOFT_STOP = 1920;
+    private final double SHOULDER_LOWER_SOFT_STOP = 2150;
+    private final double ELBOW_UPPER_SOFT_STOP = 2130;
+    private final double ELBOW_LOWER_SOFT_STOP = 1680;
 
     // The y,z position of the shoulder joint relative to the floor
     private final double SHOULDER_JOINT_Z_POS = 17; //inches
@@ -216,29 +218,30 @@ public class Arm extends SubsystemBase {
     //private double _elbowMotorPIDMaxSpeed = 0.6;
 
     // shoulder PID constants
-    private final double SHOULD_MOTOR_KP = 0.0;
+    private final double SHOULD_MOTOR_KP = 0.3;
     private final double SHOLDER_MOTOR_KI = 0.0;
     private final double SHOULDER_MOTOR_KD = 0.0;
     private final double SHOULDER_MOTOR_TOLERANCE = 0.0;
 
     // shoulder motion profile constraints
     // Velocity is m/s and acceleration is m/s^2
-    private final double SHOULDER_MAX_VELOCITY = 0.0; // max speed that this joint should move at
-    private final double SHOULDER_MAX_ACCELERATION = 0.0; // max acceleration this joint should move at
+    private final double SHOULDER_MAX_VELOCITY = 70; // max speed that this joint should move at
+    private final double SHOULDER_MAX_ACCELERATION = 120; // max acceleration this joint should move at
     private final TrapezoidProfile.Constraints SHOLDER_MOTION_PROFILE_CONSTRAINTS =
                                             new TrapezoidProfile.Constraints(SHOULDER_MAX_VELOCITY, 
                                                                              SHOULDER_MAX_ACCELERATION);
 
     // Elbow constants
-    private final double ELBOW_MOTOR_KP = 0.0;
+    private final double ELBOW_MOTOR_KP = 0.5;
     private final double ELBOW_MOTOR_KI = 0.0;
     private final double ELBOW_MOTOR_KD = 0.0;
     private final double ELBOW_MOTOR_TOLERANCE = 0.0;
 
+
     // shoulder motion profile constraints
     // Velocity is m/s and acceleration is m/s^2
-    private final double ELBOW_MAX_VELOCITY = 0.0; // max speed that this joint should move at
-    private final double ELBOW_MAX_ACCELERATION = 0.0; // max acceleration this joint should move at
+    private final double ELBOW_MAX_VELOCITY = 70; // max speed that this joint should move at
+    private final double ELBOW_MAX_ACCELERATION = 120; // max acceleration this joint should move at
     private final TrapezoidProfile.Constraints ELBOW_MOTION_PORFILE_CONSTRAINTS =
                                             new TrapezoidProfile.Constraints(ELBOW_MAX_VELOCITY, 
                                                                              ELBOW_MAX_ACCELERATION);
@@ -289,11 +292,24 @@ public class Arm extends SubsystemBase {
                                                     this.ELBOW_MOTION_PORFILE_CONSTRAINTS);
         _elbowMotorPID.setTolerance(this.ELBOW_MOTOR_TOLERANCE);  
 
+        
+        this.updateShuffleBoard();
+    }
 
+    private void updateShuffleBoard(){
         SmartDashboard.putNumber("Elbow Angle", this.getElbowJointAngle());
         SmartDashboard.putNumber("Sholder Angle", this.getShoulderJointAngle());
         SmartDashboard.putNumber("Sholder Angle Setpoint", this.getShoulderSetpoint());
         SmartDashboard.putNumber("Elbow Angle Setpoint", this.getElbowSetpoint());
+        SmartDashboard.putNumber("Elbow Angle Setpoint", this.getElbowSetpoint());
+        SmartDashboard.putNumber("Elbow Angle Setpoint", this.getElbowSetpoint());
+        SmartDashboard.putNumber("Elbow Motor Output", this._elbowMotor.get());
+        SmartDashboard.putNumber("Shoulder Motor Output", this._shoulderMotor.get());
+
+    }
+
+    private void shuffleBoardInit(){
+        ShuffleboardTab tab = Shuffleboard.getTab("Arm");
     }
 
     private double getElbowSetpoint() {
@@ -646,7 +662,7 @@ public class Arm extends SubsystemBase {
         else if(this.getElbowJointAngle() >= this.ELBOW_UPPER_SOFT_STOP && speed > 0){
             speed = 0;
         }
-        _shoulderMotor.set(speed);
+        _elbowMotor.set(speed);
     }
 
     public int getShoulderPotPos() {
@@ -680,15 +696,12 @@ public class Arm extends SubsystemBase {
         _intakeMotorCurrent = _intakeMotor.getOutputCurrent();
 
         //System.out.println("Shoulder: " + this.getShoulderPotPos() + " Elbow: " + this.getElbowPotPos());
-        //System.out.println("Shoulder Angle: " + this.getShoulderJointAngle() + " Elbow Angle: " + this.getElbowJointAngle());
-        ArmJointAngles angles = this.jointAnglesFrom2DPose(new Arm2DPosition(10, 30, GROUND_PICKUP_WRIST_POS));
+        // System.out.println("Shoulder Angle: " + this.getShoulderJointAngle() + " Elbow Angle: " + this.getElbowJointAngle());
+        // ArmJointAngles angles = this.jointAnglesFrom2DPose(new Arm2DPosition(10, 30, GROUND_PICKUP_WRIST_POS));
 
-        System.out.println("Setpoint: (" + angles.shoulderJointAngle + ", " + angles.elbowJointAngle + ") Shoulder: " + this.getShoulderJointAngle() + " Elbow: " + this.getElbowJointAngle());
+        // System.out.println("Setpoint: (" + angles.shoulderJointAngle + ", " + angles.elbowJointAngle + ") Shoulder: " + this.getShoulderJointAngle() + " Elbow: " + this.getElbowJointAngle());
 
-        SmartDashboard.putNumber("Elbow Angle", this.getElbowJointAngle());
-        SmartDashboard.putNumber("Sholder Angle", this.getShoulderJointAngle());
-        SmartDashboard.putNumber("Sholder Angle Setpoint", this.getShoulderSetpoint());
-        SmartDashboard.putNumber("Elbow Angle Setpoint", this.getElbowSetpoint());        
+        this.updateShuffleBoard();
     }
     public void setWristPosition(ArmPosition armPosition) {
         //Sets Wrist Position based off of arm position

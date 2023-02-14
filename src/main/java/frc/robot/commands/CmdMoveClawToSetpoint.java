@@ -24,12 +24,14 @@ public class CmdMoveClawToSetpoint extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
+    this._armSubsystem.elbowMotorPIDInit(this._setpoint);
     
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
+    this._armSubsystem.elbowMotorPIDExec();
     
   }
 

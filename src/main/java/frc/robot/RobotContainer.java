@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.PS4Controller.Button;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -82,6 +83,8 @@ public class RobotContainer {
         // .whenPressed(m_drivetrainSubsystem::zeroGyroscope);
 
         double manual_setpoint = 20;
+        manual_setpoint = SmartDashboard.getNumber("Manual Elbow Setpoint", manual_setpoint);
+        SmartDashboard.putNumber("Manual Elbow Setpoint", manual_setpoint);
         Command elbow = new CmdArmRunElbowPID(_armSubsystem, manual_setpoint);
         _operatorAButton.whileTrue(elbow);
 
