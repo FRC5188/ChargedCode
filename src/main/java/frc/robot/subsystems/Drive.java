@@ -123,8 +123,10 @@ public class Drive extends SubsystemBase {
      * Represents the drive chassis of the robot. Contains all of the code to
      * move in a swerve format using either a joystick or supplied values.
      */
-    private Drive(Vision visionSubsystem) {
-        _visionSubsystem = visionSubsystem;
+    //TODO: reimplement visionSubsystem when rpi is mounted on the robot (also constructor was private for some reason idk -Mike)
+    public Drive() { 
+        //removed visionSubsystem paramater to allow robot to drive without implementing rpi 
+        //_visionSubsystem = visionSubsystem;
 
         ShuffleboardTab shuffleboardTab = Shuffleboard.getTab("Drivetrain Info");
 
@@ -170,6 +172,8 @@ public class Drive extends SubsystemBase {
 
         _kinematics = new SwerveDriveKinematics(
                 // Front left
+                new Translation2d(CHASSIS_WIDTH_METERS / 2.0, CHASSIS_HEIGHT_METERS / 2.0),
+                // Front right 
                 new Translation2d(CHASSIS_WIDTH_METERS / 2.0, -CHASSIS_HEIGHT_METERS / 2.0),
                 // Back left
                 new Translation2d(-CHASSIS_WIDTH_METERS / 2.0, CHASSIS_HEIGHT_METERS / 2.0),
@@ -189,13 +193,14 @@ public class Drive extends SubsystemBase {
         _navx.reset();
     }
 
-    public static void setInstance(Vision visionSubsystem) {
+    //TODO: uncomment when RPI is mounted and powered on robot
+    /*public static void setInstance(Vision visionSubsystem) {
         _instance = (_instance == null) ? (new Drive(visionSubsystem)) : (_instance);
     }
 
     public static Drive getInstance() {
         return _instance;
-    }
+    }*/
 
     /**
      * Sets the gyroscope angle to zero. This can be used to set the direction the
@@ -266,10 +271,11 @@ public class Drive extends SubsystemBase {
 
         // Update odometry if applicable
         _visionSubsystem.getVisionEstimatedRobotPose(_odometry);
-        _odometry.updateWithTime(Timer.getFPGATimestamp(), getGyroscopeRotation(), new SwerveModulePosition[] {
+        SwerveModulePosition[] myThing = new SwerveModulePosition[] {
                 _frontLeftModule.getModulePosition(), _frontRightModule.getModulePosition(),
                 _backLeftModule.getModulePosition(), _backRightModule.getModulePosition()
-        });
+        };
+        _odometry.updateWithTime(Timer.getFPGATimestamp(), getGyroscopeRotation(), myThing);
 
         // Set each module's speed and angle
         _frontLeftModule.set(states[0].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE,
