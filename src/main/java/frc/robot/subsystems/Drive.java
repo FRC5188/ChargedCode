@@ -269,13 +269,13 @@ public class Drive extends SubsystemBase {
         // Normalize the wheel speeds so we aren't trying to set above the max
         SwerveDriveKinematics.desaturateWheelSpeeds(states, MAX_VELOCITY_METERS_PER_SECOND);
 
+        //TODO: reenable odometry when vision subsystem is available
         // Update odometry if applicable
-        _visionSubsystem.getVisionEstimatedRobotPose(_odometry);
-        SwerveModulePosition[] myThing = new SwerveModulePosition[] {
+        //_visionSubsystem.getVisionEstimatedRobotPose(_odometry);
+        _odometry.updateWithTime(Timer.getFPGATimestamp(), getGyroscopeRotation(), new SwerveModulePosition[] {
                 _frontLeftModule.getModulePosition(), _frontRightModule.getModulePosition(),
                 _backLeftModule.getModulePosition(), _backRightModule.getModulePosition()
-        };
-        _odometry.updateWithTime(Timer.getFPGATimestamp(), getGyroscopeRotation(), myThing);
+        });
 
         // Set each module's speed and angle
         _frontLeftModule.set(states[0].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE,
