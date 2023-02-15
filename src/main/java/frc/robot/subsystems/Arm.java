@@ -24,8 +24,8 @@ import frc.robot.Constants;
 public class Arm extends SubsystemBase {
     private final double SHOULDER_0_DEGREE_POT_OFFSET = 2310;
     private final double SHOULDER_90_DEGREE_POT_OFFSET = 1956;
-    private final double ELBOW_0_DEGREE_POT_OFFSET = 1478;
-    private final double ELBOW_neg90_DEGREE_POT_OFFSET = 1833;
+    private final double ELBOW_0_DEGREE_POT_OFFSET = 1984;
+    private final double ELBOW_neg90_DEGREE_POT_OFFSET = 2177;
 
     // All in degrees
     private final double SHOULDER_UPPER_SOFT_STOP = 1920;
@@ -230,7 +230,7 @@ public class Arm extends SubsystemBase {
     // private double _elbowMotorPIDMaxSpeed = 0.6;
 
     // shoulder PID constants
-    private final double SHOULD_MOTOR_KP = 0.3;
+    private final double SHOULD_MOTOR_KP = 0.0;
     private final double SHOLDER_MOTOR_KI = 0.0;
     private final double SHOULDER_MOTOR_KD = 0.0;
     private final double SHOULDER_MOTOR_TOLERANCE = 0.0;
@@ -244,7 +244,7 @@ public class Arm extends SubsystemBase {
             SHOULDER_MAX_ACCELERATION);
 
     // Elbow constants
-    private final double ELBOW_MOTOR_KP = 0.5;
+    private final double ELBOW_MOTOR_KP = 0.2;
     private final double ELBOW_MOTOR_KI = 0.0;
     private final double ELBOW_MOTOR_KD = 0.0;
     private final double ELBOW_MOTOR_TOLERANCE = 0.0;
@@ -311,8 +311,7 @@ public class Arm extends SubsystemBase {
         SmartDashboard.putNumber("Sholder Angle", this.getShoulderJointAngle());
         SmartDashboard.putNumber("Sholder Angle Setpoint", this.getShoulderSetpoint());
         SmartDashboard.putNumber("Elbow Angle Setpoint", this.getElbowSetpoint());
-        SmartDashboard.putNumber("Elbow Angle Setpoint", this.getElbowSetpoint());
-        SmartDashboard.putNumber("Elbow Angle Setpoint", this.getElbowSetpoint());
+        SmartDashboard.putNumber("Elbow Pot", this.getElbowPotPos());
         SmartDashboard.putNumber("Elbow Motor Output", this._elbowMotor.get());
         SmartDashboard.putNumber("Shoulder Motor Output", this._shoulderMotor.get());
 
