@@ -52,4 +52,9 @@ public class CmdArmRunElbowPID extends CommandBase {
   public boolean isFinished() {
     return _armSubsystem.elbowMotorPIDIsFinished();
   }
+
+  @Override
+  public void end(boolean interrupted){
+    _armSubsystem.setElbowMotorSpeed(0);
+  }
 }
