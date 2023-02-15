@@ -24,14 +24,14 @@ import frc.robot.Constants;
 public class Arm extends SubsystemBase {
     private final double SHOULDER_0_DEGREE_POT_OFFSET = 2310;
     private final double SHOULDER_90_DEGREE_POT_OFFSET = 1956;
-    private final double ELBOW_0_DEGREE_POT_OFFSET = 1984;
-    private final double ELBOW_neg90_DEGREE_POT_OFFSET = 2177;
+    private final double ELBOW_0_DEGREE_POT_OFFSET = 1618;
+    private final double ELBOW_neg90_DEGREE_POT_OFFSET = 1981;
 
     // All in degrees
-    private final double SHOULDER_UPPER_SOFT_STOP = 1920;
-    private final double SHOULDER_LOWER_SOFT_STOP = 2150;
-    private final double ELBOW_UPPER_SOFT_STOP = 2130;
-    private final double ELBOW_LOWER_SOFT_STOP = 1680;
+    private final double SHOULDER_UPPER_SOFT_STOP = 10;
+    private final double SHOULDER_LOWER_SOFT_STOP = -10;
+    private final double ELBOW_UPPER_SOFT_STOP = 10;
+    private final double ELBOW_LOWER_SOFT_STOP = -10;
 
     // The y,z position of the shoulder joint relative to the floor
     private final double SHOULDER_JOINT_Z_POS = 17; // inches
@@ -244,7 +244,7 @@ public class Arm extends SubsystemBase {
             SHOULDER_MAX_ACCELERATION);
 
     // Elbow constants
-    private final double ELBOW_MOTOR_KP = 0.2;
+    private final double ELBOW_MOTOR_KP = 0.005;
     private final double ELBOW_MOTOR_KI = 0.0;
     private final double ELBOW_MOTOR_KD = 0.0;
     private final double ELBOW_MOTOR_TOLERANCE = 0.0;
@@ -274,7 +274,8 @@ public class Arm extends SubsystemBase {
         _elbowMotor.setNeutralMode(NeutralMode.Coast);
 
         // Invert shoulder
-        _shoulderMotor.setInverted(InvertType.InvertMotorOutput);
+        _shoulderMotor.setInverted(InvertType.None);
+        _elbowMotor.setInverted(InvertType.None);
 
         // Claw
         _previousIntakeMotorCurrent = 0;
@@ -314,6 +315,10 @@ public class Arm extends SubsystemBase {
         SmartDashboard.putNumber("Elbow Pot", this.getElbowPotPos());
         SmartDashboard.putNumber("Elbow Motor Output", this._elbowMotor.get());
         SmartDashboard.putNumber("Shoulder Motor Output", this._shoulderMotor.get());
+
+        // System.out.println("ARM ANGLES: Elbow: " + this.getElbowJointAngle() + " Shoulder: " + this.getShoulderJointAngle());
+        // System.out.println("Elbow setpoint: " + this.getElbowSetpoint());
+        // System.out.println("ELBOW POT: " + this.getElbowPotPos());
 
     }
 
@@ -701,7 +706,8 @@ public class Arm extends SubsystemBase {
             speed = 0;
         }
         SmartDashboard.putNumber("Elbow speed", speed);        
-        //_elbowMotor.set(speed);
+        System.out.println("ELBOW SPEEEEEEEEEEEEEEEEEEEEEEEEED " + speed);
+        _elbowMotor.set(speed);
     }
 
     public int getShoulderPotPos() {
