@@ -82,7 +82,7 @@ public class RobotContainer {
         // // No requirements because we don't need to interrupt anything
         // .whenPressed(m_drivetrainSubsystem::zeroGyroscope);
 
-        double manual_setpoint = -20;
+        double manual_setpoint = -60;
         manual_setpoint = SmartDashboard.getNumber("Manual Elbow Setpoint", manual_setpoint);
         SmartDashboard.putNumber("Manual Elbow Setpoint", manual_setpoint);
         Command elbow = new CmdArmRunElbowPID(_armSubsystem, manual_setpoint);

@@ -46,6 +46,11 @@ public class CmdArmRunShoulderPID extends CommandBase {
     _armSubsystem.shoulderMotorPIDExec();
   }
 
+  @Override
+  public void end(boolean interrupted){
+    _armSubsystem.setShoulderMotorSpeed(0);
+  }
+
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
