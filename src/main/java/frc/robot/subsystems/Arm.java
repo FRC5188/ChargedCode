@@ -525,7 +525,7 @@ public class Arm extends SubsystemBase {
      * 
      * @return Current elbow joint angle in xx units.
      */
-    private double getElbowJointAngle() {
+    public double getElbowJointAngle() {
         // TODO check this is correct
         double diff = this.ELBOW_neg90_DEGREE_POT_OFFSET - this.ELBOW_0_DEGREE_POT_OFFSET;
         double potValPerDegree = diff / 90;
@@ -538,7 +538,7 @@ public class Arm extends SubsystemBase {
      * 
      * @return Current shoulder joint anlge in xx units.
      */
-    private double getShoulderJointAngle() {
+    public double getShoulderJointAngle() {
         // TODO check this is correct
         double diff = this.SHOULDER_90_DEGREE_POT_OFFSET - this.SHOULDER_0_DEGREE_POT_OFFSET;
         double potValPerDegree = diff / 90;

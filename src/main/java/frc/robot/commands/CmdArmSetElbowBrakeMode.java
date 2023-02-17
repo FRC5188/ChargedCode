@@ -25,7 +25,6 @@ public class CmdArmSetElbowBrakeMode extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    _armSubsystem.elbowMotorPIDInit(0);
     _armSubsystem.setElbowBrakeMode(_mode);
   }
 
@@ -35,7 +34,9 @@ public class CmdArmSetElbowBrakeMode extends CommandBase {
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {}
+  public void end(boolean interrupted) {
+    _armSubsystem.elbowMotorPIDInit(_armSubsystem.getElbowJointAngle());
+  }
 
   // Returns true when the command should end.
   @Override
