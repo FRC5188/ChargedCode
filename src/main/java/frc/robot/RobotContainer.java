@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import com.ctre.phoenix.motorcontrol.NeutralMode;
+
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
@@ -16,6 +18,7 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.commands.DefaultDriveCommand;
 import frc.robot.commands.CmdArmRunElbowPID;
 import frc.robot.commands.CmdArmRunIntake;
+import frc.robot.commands.CmdArmSetElbowBrakeMode;
 import frc.robot.subsystems.Drive;
 import frc.robot.subsystems.Arm;
 
@@ -82,13 +85,13 @@ public class RobotContainer {
         // // No requirements because we don't need to interrupt anything
         // .whenPressed(m_drivetrainSubsystem::zeroGyroscope);
 
-        double manual_setpoint = -60;
+        double manual_setpoint = 30;
         manual_setpoint = SmartDashboard.getNumber("Manual Elbow Setpoint", manual_setpoint);
         SmartDashboard.putNumber("Manual Elbow Setpoint", manual_setpoint);
         Command elbow = new CmdArmRunElbowPID(_armSubsystem, manual_setpoint);
         _operatorAButton.whileTrue(elbow);
-
-
+        _operatorBButton.whileTrue(new CmdArmSetElbowBrakeMode(_armSubsystem, NeutralMode.Coast));
+        _operatorBButton.whileFalse(new CmdArmSetElbowBrakeMode(_armSubsystem, NeutralMode.Brake));
     }
 
     /**

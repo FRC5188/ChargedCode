@@ -30,8 +30,8 @@ public class Arm extends SubsystemBase {
     // All in degrees
     private final double SHOULDER_UPPER_SOFT_STOP = 10;
     private final double SHOULDER_LOWER_SOFT_STOP = -10;
-    private final double ELBOW_UPPER_SOFT_STOP = 10;
-    private final double ELBOW_LOWER_SOFT_STOP = -60;
+    private final double ELBOW_UPPER_SOFT_STOP = 100;
+    private final double ELBOW_LOWER_SOFT_STOP = -2;
 
     // The y,z position of the shoulder joint relative to the floor
     private final double SHOULDER_JOINT_Z_POS = 17; // inches
@@ -244,15 +244,15 @@ public class Arm extends SubsystemBase {
             SHOULDER_MAX_ACCELERATION);
 
     // Elbow constants
-    private final double ELBOW_MOTOR_KP = 0.005;
-    private final double ELBOW_MOTOR_KI = 0.001;
-    private final double ELBOW_MOTOR_KD = 0.001;
+    private final double ELBOW_MOTOR_KP = 0.0125;
+    private final double ELBOW_MOTOR_KI = 0.00;
+    private final double ELBOW_MOTOR_KD = 0.00;
     private final double ELBOW_MOTOR_TOLERANCE = 1.0;
 
     // shoulder motion profile constraints
     // Velocity is m/s and acceleration is m/s^2
     private final double ELBOW_MAX_VELOCITY = 70; // max speed that this joint should move at
-    private final double ELBOW_MAX_ACCELERATION = 120; // max acceleration this joint should move at
+    private final double ELBOW_MAX_ACCELERATION = 60; // max acceleration this joint should move at
     private final TrapezoidProfile.Constraints ELBOW_MOTION_PORFILE_CONSTRAINTS = new TrapezoidProfile.Constraints(
             ELBOW_MAX_VELOCITY,
             ELBOW_MAX_ACCELERATION);
@@ -270,7 +270,7 @@ public class Arm extends SubsystemBase {
         _elbowMotor.enableVoltageCompensation(true);
 
         // set motor breaking
-        _shoulderMotor.setNeutralMode(NeutralMode.Coast);
+        _shoulderMotor.setNeutralMode(NeutralMode.Brake);
         _elbowMotor.setNeutralMode(NeutralMode.Brake);
 
         // Invert shoulder
@@ -305,6 +305,10 @@ public class Arm extends SubsystemBase {
         _elbowMotorPID.setTolerance(this.ELBOW_MOTOR_TOLERANCE);
 
         this.updateShuffleBoard();
+    }
+
+    public void setElbowBrakeMode(NeutralMode mode) {
+        this._elbowMotor.setNeutralMode(mode);
     }
 
     private void updateShuffleBoard() {
@@ -526,7 +530,7 @@ public class Arm extends SubsystemBase {
         double diff = this.ELBOW_neg90_DEGREE_POT_OFFSET - this.ELBOW_0_DEGREE_POT_OFFSET;
         double potValPerDegree = diff / 90;
         double curAnglePot = this.getElbowPotPos() - this.ELBOW_0_DEGREE_POT_OFFSET;
-        return -curAnglePot / potValPerDegree + this.getShoulderJointAngle(); // returns degrees
+        return -curAnglePot / potValPerDegree + this.getShoulderJointAngle() + 90; // returns degrees
     }
 
     /**

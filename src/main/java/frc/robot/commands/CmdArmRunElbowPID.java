@@ -50,7 +50,7 @@ public class CmdArmRunElbowPID extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return _armSubsystem.elbowMotorPIDIsFinished();
+    return false;
   }
 
   @Override
