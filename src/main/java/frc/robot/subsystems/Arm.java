@@ -641,6 +641,16 @@ public class Arm extends SubsystemBase {
     }
 
     /**
+     * Initializes the PID controller for moving the elbow motor
+     * 
+     * @param setpointAngle setpoint of the elbow motor
+     * @param maxSpeed      the max speed of motor, in percent output
+     */
+    public void elbowMotorPIDInit(double setpointAngle) {
+        _elbowMotorPID.setGoal(setpointAngle);
+    }
+
+    /**
      * 
      * @return
      */
