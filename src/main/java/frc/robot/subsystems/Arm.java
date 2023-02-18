@@ -330,6 +330,7 @@ public class Arm extends SubsystemBase {
         // TODO: implement this
 
         return this._getElbowSetpoint.elbowAtSetpoint();
+    }
 
     private double getShoulderSetpoint() {
         // TODO: implement this
@@ -480,7 +481,7 @@ public class Arm extends SubsystemBase {
         // https://github.com/FRC5188/ChargedCode/commit/a35d8567eb73343b4be02176031213db640c6627
 
         //TODO implement the arm math
-        r
+        return null;
     }
 
     /**
@@ -526,7 +527,7 @@ public class Arm extends SubsystemBase {
         return 0;
     }
 
-    /**\
+    /**
      * This is in degrees
      * This method will do the math to calculate the wrist position in 2D space from
      * a given shoulder and
