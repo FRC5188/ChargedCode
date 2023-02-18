@@ -4,6 +4,8 @@
 
 package frc.robot.subsystems;
 
+import java.util.Optional;
+
 import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
@@ -20,10 +22,11 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandGroupBase;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
-import frc.robot.commands.CmdMoveElbowToSetpoint;
-import frc.robot.commands.CmdMoveShoulderToSetpoint;
+import frc.robot.commands.CmdArmRunElbowPID;
+import frc.robot.commands.CmdArmRunShoulderPID;
 
 public class Arm extends SubsystemBase {
     private final double SHOULDER_0_DEGREE_POT_OFFSET = 2310;
@@ -843,20 +846,21 @@ public class Arm extends SubsystemBase {
     public CommandGroupBase getArmMovementCommand(ArmPosition targetPosition){
         if(checkArmPosition() == ArmPosition.Stored){
             if(targetPosition == ArmPosition.Stored){
-                return null;
+                // If it is where it is then return an empty group that doesn't do anything. 
+                return new SequentialCommandGroup();
             } else {
-                return new SequentialCommandGroup(new CmdMoveElbowToSetpoint(this, targetPosition), new CmdMoveShoulderToSetpoint(this, targetPosition));
+                return new SequentialCommandGroup(new CmdArmRunElbowPID(this, targetPosition), new CmdArmRunShoulderPID(this, targetPosition));
             }
         }
         else {
             // Move Shoulder Then Elbow
-            if(targetPosition == ArmPosition.Stored){
-
-            }
+            if(targetPosition == ArmPosition.Stored){ return new SequentialCommandGroup(
+                    new CmdArmRunShoulderPID(this, targetPosition),
+                    new CmdArmRunElbowPID(this, targetPosition));}
             // Move in Parallel
-            else {
-
-            }
+            else {return new ParallelCommandGroup(
+                    new CmdArmRunShoulderPID(this, targetPosition),
+                    new CmdArmRunElbowPID(this, targetPosition));}
         }
     }
 }
