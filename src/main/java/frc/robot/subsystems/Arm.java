@@ -225,6 +225,8 @@ public class Arm extends SubsystemBase {
     private ProfiledPIDController _shoulderMotorPID;
     private ProfiledPIDController _elbowMotorPID;
 
+    private ArmPosition _currentArmPos;
+
     /** Arm PID constants */
     // these shold use the maxvelocity below
     // private double _shoulderMotorPIDMaxSpeed = 0.6;
@@ -293,6 +295,8 @@ public class Arm extends SubsystemBase {
         _intakeMotorCurrent = 0;
         _intakeMotor = new CANSparkMax(Constants.CanIDs.CLAW_INTAKE_MOTOR_CANID, MotorType.kBrushless);
 
+        _currentArmPos = ArmPosition.Stored;
+
         // Create Sholder PID controllers
         _shoulderMotorPID = new ProfiledPIDController(this.SHOULD_MOTOR_KP,
                 this.SHOLDER_MOTOR_KI,
@@ -342,6 +346,8 @@ public class Arm extends SubsystemBase {
         return this._shoulderMotorPID.getSetpoint().position;
     }
 
+
+
     /**
      * Sets the arm position
      * 
@@ -374,6 +380,7 @@ public class Arm extends SubsystemBase {
     public void shoulderMotorPIDInit(ArmPosition armPosition) {
 
         Arm2DPosition setpoint;
+        _currentArmPos = armPosition;
         switch (armPosition) {
             case GroundPickUp:
                 setpoint = GROUND_PICKUP_SETPOINT;
@@ -595,6 +602,7 @@ public class Arm extends SubsystemBase {
     public void elbowMotorPIDInit(ArmPosition armPosition) {
 
         Arm2DPosition setpoint;
+        _currentArmPos = armPosition;
         switch (armPosition) {
             case GroundPickUp:
                 setpoint = GROUND_PICKUP_SETPOINT;
@@ -769,6 +777,7 @@ public class Arm extends SubsystemBase {
 
     public void setWristPosition(ArmPosition armPosition) {
         // Sets Wrist Position based off of arm position
+        _currentArmPos = armPosition;
         switch (armPosition) {
             case GroundPickUp:
                 setWristPosition(GROUND_PICKUP_WRIST_POS);
@@ -821,5 +830,9 @@ public class Arm extends SubsystemBase {
                 return false;
 
         }
+    }
+
+    public ArmPosition checkArmPosition() {
+        return _currentArmPos;
     }
 }
