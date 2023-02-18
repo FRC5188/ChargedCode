@@ -102,7 +102,7 @@ public class Arm extends SubsystemBase {
          * 
          * @return wristPosition
          */
-        public WristPosition geWristPosition() {
+        public WristPosition getWristPosition() {
             return this.wristPosition;
         }
 
@@ -480,17 +480,30 @@ public class Arm extends SubsystemBase {
         // https://github.com/FRC5188/ChargedCode/commit/a35d8567eb73343b4be02176031213db640c6627
 
         //TODO implement the arm math
+        double bigTriangleHypoSqrd = Math.pow(arm2DPosition.y, 2) + Math.pow(arm2DPosition.z, 2);
+        //process of law of cosines
+        double angleAlpha = Math.pow(SHOULDER_ARM_LENGTH, 2) + Math.pow(ELBOW_ARM_LENGTH, 2);
+        angleAlpha = angleAlpha - bigTriangleHypoSqrd;
+        angleAlpha = angleAlpha / (2 * SHOULDER_ARM_LENGTH * ELBOW_ARM_LENGTH);
+        double angleBigTriangle = Math.acos(angleAlpha);
+        double q2 = angleBigTriangle * -1;
+        double tanOfBeta = (ELBOW_ARM_LENGTH * Math.sin(q2)) / (SHOULDER_ARM_LENGTH + ELBOW_ARM_LENGTH * Math.cos(q2));
+        double angleBeta = Math.atan(tanOfBeta);
+        double angleGamma = Math.atan(arm2DPosition.z / arm2DPosition.y);
+        double q1 = angleGamma + angleBeta;
         return null;
     }
 
     /**
-     * Get the current position of the arm in 2d space and return in
+     * Get the current position of the arm in 2d space and return it
      * 
      * @return a Arm2DPosition that represents the wrist position in 2D space
      */
     public Arm2DPosition getArm2DPosition() {
         //TODO implement this
-        return null;
+        double theta1 = this.getShoulderJointAngle();
+        double theta2 = this.getElbowJointAngle();
+        return arm2DPositionFromAngles(theta1, theta2, this.getWristPosition());
     }
 
     /**
@@ -531,8 +544,13 @@ public class Arm extends SubsystemBase {
      */
     private Arm2DPosition arm2DPositionFromAngles(double currentShoulder, double currentElbow, WristPosition wristPos) {
         // TODO: implement this
-
-       return null;
+        double finalY = (this.SHOULDER_JOINT_Y_POS);
+        finalY += (this.SHOULDER_ARM_LENGTH * Math.cos(Math.toRadians(currentShoulder));
+        finalY += (this.ELBOW_ARM_LENGTH * Math.cos(Math.toRadians(currentElbow));
+        double finalZ = (this.SHOULDER_JOINT_Z_POS);
+        finalZ += (this.SHOULDER_ARM_LENGTH * Math.sin(Math.toRadians(currentShoulder));
+        finalZ += (this.ELBOW_ARM_LENGTH * Math.sin(Math.toRadians(currentElbow));
+       return new Arm2DPosition(finalY, finalZ, wristPos);
     }
 
     /**
