@@ -328,8 +328,8 @@ public class Arm extends SubsystemBase {
 
     private double getElbowSetpoint() {
         // TODO: implement this
-        return 0;
-    }
+
+        return this._getElbowSetpoint.elbowAtSetpoint();
 
     private double getShoulderSetpoint() {
         // TODO: implement this
@@ -480,17 +480,20 @@ public class Arm extends SubsystemBase {
         // https://github.com/FRC5188/ChargedCode/commit/a35d8567eb73343b4be02176031213db640c6627
 
         //TODO implement the arm math
-        return null;
+        r
     }
 
     /**
-     * Get the current position of the arm in 2d space and return in
+     * Get the current position of the arm in 2d space and return it
      * 
      * @return a Arm2DPosition that represents the wrist position in 2D space
      */
     public Arm2DPosition getArm2DPosition() {
-        //TODO implement this
-        return null;
+        //TODO implement (DONE)
+        double shoulderAngle = this.getShoulderJointAngle();
+        double elbowAngle = this.getElbowJointAngle();
+        WristPosition _wristPOS = this.getWristPosition();
+        this.arm2DPositionFromAngles(shoulderAngle, elbowAngle, _wristPOS);
     }
 
     /**
@@ -500,6 +503,16 @@ public class Arm extends SubsystemBase {
      */
     public double getElbowJointAngle() {
         // TODO: implement this
+        //notes 
+        /*
+         *     private final double SHOULDER_JOINT_Z_POS = 17; // inches
+         *      private final double SHOULDER_JOINT_Y_POS = -15; // inches
+
+    // arm segments lengths
+    private final double SHOULDER_ARM_LENGTH = 28; // inches
+    private final double ELBOW_ARM_LENGTH = 28.5; // inches
+         */
+        double ELBOW_Z_POS  
         return 0;
     }
 
@@ -513,7 +526,8 @@ public class Arm extends SubsystemBase {
         return 0;
     }
 
-    /**
+    /**\
+     * This is in degrees
      * This method will do the math to calculate the wrist position in 2D space from
      * a given shoulder and
      * elbow joint angle. This method still needs a current wristposition passed
@@ -529,10 +543,12 @@ public class Arm extends SubsystemBase {
      * @return A Arm2DPosition that represents the current point in 2D space of the
      *         wrist of the arm, including the wrist state.
      */
+    //(DONE)
     private Arm2DPosition arm2DPositionFromAngles(double currentShoulder, double currentElbow, WristPosition wristPos) {
-        // TODO: implement this
 
-       return null;
+        double y = SHOULDER_JOINT_Y_POS+SHOULDER_ARM_LENGTH*Math.cos(currentShoulder*Math.pi/180)+ELBOW_ARM_LENGTH*Math.cos(currentElbow*Math.pi/180);
+        double z = SHOULDER_JOINT_Z_POS+SHOULDER_ARM_LENGTH*Math.sin(currentShoulder*Math.pi/180)+ELBOW_ARN_LENGTH*Math.sin(currentElbow*Math.pi/180);
+        return new Arm2DPosition(y, z, wristPos);
     }
 
     /**
