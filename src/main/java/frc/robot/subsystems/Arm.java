@@ -293,14 +293,6 @@ public class Arm extends SubsystemBase {
         _intakeMotorCurrent = 0;
         _intakeMotor = new CANSparkMax(Constants.CanIDs.CLAW_INTAKE_MOTOR_CANID, MotorType.kBrushless);
 
-        // Potentiometer
-        _elbowPotentiometer = new AnalogInput(Constants.AIO.ELBOW_PORT_POT);
-        _elbowPotentiometer.setAverageBits(2);
-        _elbowPotentiometer.setOversampleBits(0);
-        _shoulderPotentiometer = new AnalogInput(Constants.AIO.SHOULDER_PORT_POT);
-        _shoulderPotentiometer.setAverageBits(2);
-        _shoulderPotentiometer.setOversampleBits(0);
-
         // Create Sholder PID controllers
         _shoulderMotorPID = new ProfiledPIDController(this.SHOULD_MOTOR_KP,
                 this.SHOLDER_MOTOR_KI,
