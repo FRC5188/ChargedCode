@@ -837,12 +837,19 @@ public class Arm extends SubsystemBase {
         return _currentArmPos;
     }
 
-    public CommandGroupBase getArmMovementCommand(ArmPosition targePosition){
+    public CommandGroupBase getArmMovementCommand(ArmPosition targetPosition){
         if(checkArmPosition() == ArmPosition.Stored){
 
         }
         else {
-            
+            // Move Shoulder Then Elbow
+            if(targePosition == ArmPosition.Stored){
+
+            }
+            // Move in Parallel
+            else {
+
+            }
         }
     }
 }
