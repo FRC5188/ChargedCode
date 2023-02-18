@@ -625,6 +625,7 @@ public class Arm extends SubsystemBase {
         }
         // TODO: make sure this is what we want
         ArmJointAngles jointAngles = this.jointAnglesFrom2DPose(setpoint);
+        _elbowMotorPID.reset(this.getElbowJointAngle());
         _elbowMotorPID.setGoal(jointAngles.getElbowJointAngle());
     }
 
