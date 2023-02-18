@@ -232,4 +232,8 @@ public class Drive extends SubsystemBase {
         _backRightModule.set(states[3].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE, 
                              states[3].angle.getRadians());
     }
+
+    public boolean rotatePIDAtSetpoint() {
+        return this._rotatePID.atSetpoint();
+    }
 }

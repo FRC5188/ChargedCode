@@ -45,6 +45,16 @@ public class AutoRotateCommand extends CommandBase {
 
     @Override
     public void end(boolean interrupted) {
-        m_drivetrainSubsystem.drive(new ChassisSpeeds(0.0, 0.0, 0.0));
+        m_drivetrainSubsystem.drive(ChassisSpeeds.fromFieldRelativeSpeeds(
+            m_translationXSupplier.getAsDouble(),
+            m_translationYSupplier.getAsDouble(),
+            0,
+            m_drivetrainSubsystem.getGyroscopeRotation()
+    ));
+    }
+
+    @Override
+    public boolean isFinished(){
+        return this.m_drivetrainSubsystem.rotatePIDAtSetpoint();
     }
 }
