@@ -4,12 +4,13 @@
 
 package frc.robot;
 
+import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.kauailabs.navx.frc.Tracer;
 
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
-
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -17,7 +18,9 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.DefaultDriveCommand;
 import frc.robot.commands.CmdArmRunIntake;
+import frc.robot.commands.CmdArmSetElbowBrakeMode;
 import frc.robot.commands.CmdArmManual;
+import frc.robot.commands.CmdArmRunElbowPID;
 import frc.robot.subsystems.Drive;
 import frc.robot.subsystems.Arm;
 
@@ -31,17 +34,15 @@ import frc.robot.subsystems.Arm;
  * subsystems, commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
-    // Subsystems
-    private final Drive _driveSubsystem;
-    private final Arm _armSubsystem;
-    // Controllers 
-    private final XboxController _driverController;
-    private final Joystick _operatorController;
-    // Driver Buttons
-
-    // Codriver Buttons
-    private Trigger _operatorButtonOne;
-    private Trigger _operatorButtonTwo;
+    private final Drive _driveSubsystem = new Drive();
+    private final Arm _armSubsystem = new Arm();
+    private final XboxController _driverController = new XboxController(0);
+    
+    
+    private final XboxController _operatorController = new XboxController(1);
+    
+    private JoystickButton _operatorAButton = new JoystickButton(_operatorController, XboxController.Button.kA.value);
+    private JoystickButton _operatorBButton = new JoystickButton(_operatorController, XboxController.Button.kB.value);
 
     // Constant Arm Multiplier In To Reduce Arm Speed
     private static final double ARM_MULTIPLIER = 0.3;
@@ -50,15 +51,6 @@ public class RobotContainer {
      * The container for the robot. Contains subsystems, OI devices, and commands.
      */
     public RobotContainer() {
-        _driveSubsystem = new Drive();
-        _armSubsystem = new Arm();
-        // Set up the default command for the drivetrain.
-        // The controls are for field-oriented driving:
-        // Left stick Y axis -> forward and backwards movement
-        // Left stick X axis -> left and right movement
-        // Right stick X axis -> rotation
-        _driverController = new XboxController(0);
-        _operatorController = new Joystick(1);
         // Driver Configuration
         _driveSubsystem.setDefaultCommand(new DefaultDriveCommand(
                                                _driveSubsystem,
@@ -67,23 +59,22 @@ public class RobotContainer {
                                                () -> (-modifyAxis(_driverController.getRightX()) * Drive.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND)));
         // Codriver Configuration
         // If the throttle is in one state then the Z-axis will control one motor, and when its moved then it controlled the other. 
-        _armSubsystem.setDefaultCommand(new CmdArmManual(
-            _armSubsystem, 
-            () -> (getShoulderSpeed()), 
-            () -> (getArmSpeed())
-        ));
-        _operatorButtonOne = new JoystickButton(_operatorController, 1);
-        _operatorButtonTwo = new JoystickButton(_operatorController, 2);
-        _operatorButtonOne.whileTrue(new CmdArmRunIntake(_armSubsystem, () -> (0.5)));
+        // _armSubsystem.setDefaultCommand(new CmdArmManual(
+        //     _armSubsystem, 
+        //     () -> (getShoulderSpeed()), 
+        //     () -> (getArmSpeed())
+        // ));
+
+        configureButtonBindings();
     }
 
-    private double getShoulderSpeed(){
-        return ARM_MULTIPLIER*((_operatorController.getThrottle() > 0) ? (0) : (_operatorController.getZ()));
-    }
+    // private double getShoulderSpeed(){
+    //     return ARM_MULTIPLIER*((_operatorController.getLeftY()> 0) ? (0) : (_operatorController.getZ()));
+    // }
 
-    private double getArmSpeed(){
-        return ARM_MULTIPLIER*((_operatorController.getThrottle() > 0) ? (_operatorController.getZ()) : (0));
-    }
+    // private double getArmSpeed(){
+    //     return ARM_MULTIPLIER*((_operatorController.getThrottle() > 0) ? (_operatorController.getZ()) : (0));
+    // }
 
     /**
      * Use this method to define your button->command mappings. Buttons can be
@@ -101,7 +92,13 @@ public class RobotContainer {
 
         //_operatorAButton.onTrue(new CmdArmRunIntake(_armSubsystem));
 
-
+        double manual_setpoint = 30;
+        manual_setpoint = SmartDashboard.getNumber("Manual Elbow Setpoint", manual_setpoint);
+        SmartDashboard.putNumber("Manual Elbow Setpoint", manual_setpoint);
+        Command elbow = new CmdArmRunElbowPID(_armSubsystem, manual_setpoint);
+        _operatorAButton.whileTrue(elbow);
+        _operatorBButton.whileTrue(new CmdArmSetElbowBrakeMode(_armSubsystem, NeutralMode.Coast));
+        _operatorBButton.whileFalse(new CmdArmSetElbowBrakeMode(_armSubsystem, NeutralMode.Brake));
     }
 
     /**

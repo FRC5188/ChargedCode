@@ -12,6 +12,7 @@ public class CmdArmRunShoulderPID extends CommandBase {
 
   private Arm _armSubsystem;
   private ArmPosition _setpoint;
+  private double _manualSetpoint = -1000;
 
   /** Creates a new CmdArmRunShoulderPID. */
   public CmdArmRunShoulderPID(Arm armSubsystem, ArmPosition setpoint) {
@@ -21,16 +22,33 @@ public class CmdArmRunShoulderPID extends CommandBase {
     this.addRequirements(_armSubsystem);
   }
 
+  public CmdArmRunShoulderPID(Arm armSubsystem, Double manualSetpoint) {
+    this._armSubsystem = armSubsystem;
+    this._manualSetpoint = -1000;
+
+    this.addRequirements(_armSubsystem);
+  }
+
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    _armSubsystem.shoulderMotorPIDInit(_setpoint);
+    if(this._manualSetpoint != -1000){
+      _armSubsystem.shoulderMotorPIDInit(this._manualSetpoint);
+    }
+    else{
+      _armSubsystem.shoulderMotorPIDInit(_setpoint);
+    }
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
     _armSubsystem.shoulderMotorPIDExec();
+  }
+
+  @Override
+  public void end(boolean interrupted){
+    _armSubsystem.setShoulderMotorSpeed(0);
   }
 
   // Returns true when the command should end.
