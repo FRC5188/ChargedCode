@@ -4,8 +4,13 @@
 
 package frc.robot.subsystems;
 
+import java.util.function.DoubleSupplier;
+
+import com.ctre.phoenix.motorcontrol.InvertType;
+import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.AnalogInput;
@@ -14,9 +19,6 @@ import edu.wpi.first.wpilibj.Solenoid;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
-
-
-
 
 
 public class Arm extends SubsystemBase {
@@ -76,6 +78,11 @@ public class Arm extends SubsystemBase {
     private final double STORED_ELBOW_POS = -1.0
     private final WristPosition STORED_WRIST_POS = WristPosition.Parallel;
 
+    //STORE
+    private final double STORE_SHOULDER_POS = -1.0;
+    private final double STORE_ELBOW_POS = -1.0;
+    private final WristPosition STORE_WRIST_POS = WristPosition.Parallel;
+
     // CLAW
     private CANSparkMax _intakeMotor;
     private double _previousIntakeMotorCurrent;
@@ -106,6 +113,11 @@ public class Arm extends SubsystemBase {
     private double ElbowMotorkD = 0.0;
     private double ElbowMotorkTolerance = 0.0;
 
+    private int SHOULDER_UPPER_SOFT_STOP = 1920;
+    private int SHOULDER_LOWER_SOFT_STOP = 2150;
+    private int ELBOW_UPPER_SOFT_STOP = 2130;
+    private int ELBOW_LOWER_SOFT_STOP = 1680;
+
     public enum ArmPositionState {
         Stored,
         /* GAME PIECE PICKUP */
@@ -116,11 +128,21 @@ public class Arm extends SubsystemBase {
     public Arm() {
         _shoulderMotor = new WPI_TalonFX(Constants.CanIDs.ARM_SHOULDER_MOTOR_CANID);
         _elbowMotor = new WPI_TalonFX(Constants.CanIDs.ARM_ELBOW_MOTOR_CANID);
+        _shoulderMotor.setNeutralMode(NeutralMode.Brake);
+        _shoulderMotor.setInverted(InvertType.InvertMotorOutput);
+        _elbowMotor.setNeutralMode(NeutralMode.Brake);
+
         _wristSolenoid = new Solenoid(PneumaticsModuleType.REVPH, Constants.PHPorts.WRIST_SOLENOID_PORT);
+
         _elbowPotentiometer = new AnalogInput(Constants.AIO.ELBOW_PORT_POT);
         _shoulderPotentiometer = new AnalogInput(Constants.AIO.SHOULDER_PORT_POT);
+        _elbowPotentiometer.setAverageBits(2);
+        _elbowPotentiometer.setOversampleBits(0);
+        _shoulderPotentiometer.setAverageBits(2);
+        _shoulderPotentiometer.setOversampleBits(0);
         // Claw
         _previousIntakeMotorCurrent = 0;
+        _intakeMotor = new CANSparkMax(Constants.CanIDs.CLAW_INTAKE_MOTOR_CANID, MotorType.kBrushless);
 
         // Create PID controllers
         _shoulderMotorPID = new PIDController(Constants.PID.ShoulderMotorkP, Constants.PID.ShoulderMotorkI,
@@ -129,11 +151,12 @@ public class Arm extends SubsystemBase {
 
         _elbowMotorPID = new PIDController(ElbowMotorkP, ElbowMotorkI,
                 ElbowMotorkD);
-        _elbowMotorPID.setTolerance(ElbowMotorkTolerance);
+        _elbowMotorPID.setTolerance(ElbowMotorkTolerance);  
     }
 
     public void setWristPosition(WristPosition position) {
         _wristSolenoid.set(position == WristPosition.Parallel);
+        
     }
 
     public WristPosition getWristPosition() {
@@ -147,54 +170,88 @@ public class Arm extends SubsystemBase {
      * @param maxSpeed the max speed of motor, in percent output
      */
     public void shoulderMotorPIDInit(ArmPosition setpoint) {
-// Start with our values being where we currently are
-            // That way, if there's an issue, the arm just stays where it is
-            double shoulderSetpoint = this.getShoulderPotPos();
-    
-            switch (setpoint) {
-                case GroundPickUp:
-                    shoulderSetpoint = GROUND_PICKUP_SHOULDER_POS;
-                    break;
-                case HighCone:
-                    shoulderSetpoint = HIGH_GOAL_CONE_SHOULDER_POS;
-                    break;
-                case HighCube:
-                    shoulderSetpoint = HIGH_GOAL_CUBE_SHOULDER_POS;
-                    break;
-                case LoadStationPickUp:
-                    shoulderSetpoint = LOADING_STATION_SHOULDER_POS;
-                    break;
-                case LowScore:
-                    shoulderSetpoint = LOW_GOAL_SHOULDER_POS;
-                    break;
-                case MiddleCone:
-                    shoulderSetpoint = MIDDLE_GOAL_CONE_SHOULDER_POS;
-                    break;
-                case MiddleCube:
-                    shoulderSetpoint = MIDDLE_GOAL_CUBE_SHOULDER_POS;
-                    break;
-                case Stored:
-                    shoulderSetpoint = STORED_ELBOW_POS;
-                    break;
-                default:
-                    // If we hit default that means we don't know what position we are in
-                    // So we just wanna stay put until we get a new position
-                    shoulderSetpoint = this.getShoulderPotPos();
-                    break;
-            }
 
+        double shoulderSetpoint = this.getShoulderPotPos();
+
+        switch (setpoint) {
+            case GroundPickUp:
+                shoulderSetpoint = GROUND_PICKUP_SHOULDER_POS;
+                break;
+            case HighCone:
+                break;
+            case HighCube:
+                break;
+            case LoadStationPickUp:
+                break;
+            case LowScore:
+                break;
+            case MiddleCone:
+                break;
+            case MiddleCube:
+                break;
+            case Stored:
+                break;
+            default:
+                // If we hit default that means we don't know what position we are in
+                // So we just wanna stay put until we get a new position
+                break;
+        }
         _shoulderMotorPID.setSetpoint(shoulderSetpoint);
-            
+    }
+
+    public void elbowMotorPIDInit(ArmPosition setpoint) {
+
+        double elbowSetpoint = this.getElbowPotPos();
+
+        switch (setpoint) {
+            case GroundPickUp:
+                elbowSetpoint = GROUND_PICKUP_ELBOW_POS;
+                break;
+            case HighCone:
+                break;
+            case HighCube:
+                break;
+            case LoadStationPickUp:
+                break;
+            case LowScore:
+                break;
+            case MiddleCone:
+                break;
+            case MiddleCube:
+                break;
+            case Stored:
+                break;
+            default:
+                // If we hit default that means we don't know what position we are in
+                // So we just wanna stay put until we get a new position
+                break;
+        }
+        _elbowMotorPID.setSetpoint(elbowSetpoint);
     }
     
+    public boolean shoulderMotorPIDIsFinished() {
+        return _shoulderMotorPID.atSetpoint();
+    }
+
+    public boolean elbowMotorPIDIsFinished() {
+        return _elbowMotorPID.atSetpoint();
+    }
+
     /**
      * Executes the shoulder motor PID controller
      */
     public void shoulderMotorPIDExec() {
         double position = getShoulderPotPos();
         double power = _shoulderMotorPID.calculate(position) * _shoulderMotorPIDMaxSpeed;
-
+        
         setShoulderMotorSpeed(power);
+    }
+
+    public void elbowMotorPIDExec() {
+        double position = getElbowPotPos();
+        double power = _elbowMotorPID.calculate(position) * _elbowMotorPIDMaxSpeed;
+        
+        setElbowMotorSpeed(power);
     }
 
     /** Checks if the joint motors are at their setpoints **/
@@ -247,26 +304,26 @@ public class Arm extends SubsystemBase {
         _elbowMotorPID.setSetpoint(elbowSetpoint);
     }
 
-    /**
-     * Executes the shoulder motor PID controller
-     */
-    public void elbowMotorPIDExec() {
-        double position = getElbowPotPos();
-        double power = _elbowMotorPID.calculate(position) * _elbowMotorPIDMaxSpeed;
-
-        setElbowMotorSpeed(power);
-    }
-
     /** Checks if the joint motors are at their setpoints **/
     public boolean elbowAtSetpoint() {
         return _elbowMotorPID.atSetpoint();
     }
 
     public void setShoulderMotorSpeed(double speed) {
+        if ((this.getShoulderPotPos() < this.SHOULDER_UPPER_SOFT_STOP && speed < 0) || (this.getShoulderPotPos() > this.SHOULDER_LOWER_SOFT_STOP && speed > 0)) {
+            _shoulderMotor.set(0);
+            return;
+        }
+
         _shoulderMotor.set(speed);
     }
 
     public void setElbowMotorSpeed(double speed) {
+        if ((this.getElbowPotPos() > this.ELBOW_UPPER_SOFT_STOP && speed < 0) || (this.getElbowPotPos() < this.ELBOW_LOWER_SOFT_STOP && speed > 0)) {
+            _elbowMotor.set(0);
+            return;
+        }
+
         _elbowMotor.set(speed);
     }
 
@@ -276,19 +333,6 @@ public class Arm extends SubsystemBase {
 
     public int getElbowPotPos() {
         return _elbowPotentiometer.getAverageValue();
-    }
-
-    public void armAtSetpoint() {
-        // FILL ME OUT!
-        shoulderAtSetpoint();
-        elbowAtSetpoint();
-    }
-
-    @Override
-    public void periodic() {
-        // This method will be called once per scheduler run
-        _previousIntakeMotorCurrent = _intakeMotorCurrent;
-        _intakeMotorCurrent = _intakeMotor.getOutputCurrent();
     }
 
     /*
@@ -307,4 +351,68 @@ public class Arm extends SubsystemBase {
         return _intakeMotorCurrent - _previousIntakeMotorCurrent;
     }
 
+    @Override
+    public void periodic() {
+        // This method will be called once per scheduler run
+        _previousIntakeMotorCurrent = _intakeMotorCurrent;
+        _intakeMotorCurrent = _intakeMotor.getOutputCurrent();
+
+        System.out.println("Shoulder Pot: " + this.getShoulderPotPos() + " Elbow Pot: " + this.getElbowPotPos());
+    }
+
+    public void setWristPosition(ArmPosition armPosition) {
+        //Sets Wrist Position based off of arm position
+        switch (armPosition) {
+            case GroundPickUp:
+                setWristPosition(GROUND_PICKUP_WRIST_POS);
+                break;
+            case HighCone:
+                setWristPosition(HIGH_GOAL_CONE_WRIST_POS);
+                break;
+            case HighCube:
+                setWristPosition(HIGH_GOAL_CUBE_WRIST_POS);
+                break;
+            case LoadStationPickUp:
+                setWristPosition(LOADING_STATION_WRIST_POS);
+                break;
+            case LowScore:
+                setWristPosition(LOW_GOAL_WRIST_POS);
+                break;
+            case MiddleCone:
+                setWristPosition(MIDDLE_GOAL_CONE_WRIST_POS);
+                break;
+            case MiddleCube:
+                setWristPosition(MIDDLE_GOAL_CUBE_WRIST_POS);
+                break;
+            case Stored:
+
+                break;
+            default:
+                break; 
+        }
+    }
+
+    public boolean checkWristPosition(ArmPosition positionOfArm) {
+        switch (positionOfArm) {
+            case GroundPickUp:
+                return getWristPosition() == GROUND_PICKUP_WRIST_POS;
+            case HighCone:
+                return getWristPosition() == HIGH_GOAL_CONE_WRIST_POS;
+            case HighCube:
+                return getWristPosition() == HIGH_GOAL_CUBE_WRIST_POS;
+            case LoadStationPickUp:
+                return getWristPosition() == LOADING_STATION_WRIST_POS;
+            case LowScore:
+                return getWristPosition() == LOW_GOAL_WRIST_POS;
+            case MiddleCone:
+                return getWristPosition() == MIDDLE_GOAL_CONE_WRIST_POS;
+            case MiddleCube:
+                return getWristPosition() == MIDDLE_GOAL_CUBE_WRIST_POS;
+            case Stored:
+                return getWristPosition() == STORE_WRIST_POS; 
+            default:
+                return false;
+             
+        }
+    }
 }
