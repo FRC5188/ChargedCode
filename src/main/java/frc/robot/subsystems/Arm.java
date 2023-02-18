@@ -19,8 +19,11 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandGroupBase;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.commands.CmdMoveElbowToSetpoint;
+import frc.robot.commands.CmdMoveShoulderToSetpoint;
 
 public class Arm extends SubsystemBase {
     private final double SHOULDER_0_DEGREE_POT_OFFSET = 2310;
@@ -839,11 +842,15 @@ public class Arm extends SubsystemBase {
 
     public CommandGroupBase getArmMovementCommand(ArmPosition targetPosition){
         if(checkArmPosition() == ArmPosition.Stored){
-
+            if(targetPosition == ArmPosition.Stored){
+                return null;
+            } else {
+                return new SequentialCommandGroup(new CmdMoveElbowToSetpoint(this, targetPosition), new CmdMoveShoulderToSetpoint(this, targetPosition));
+            }
         }
         else {
             // Move Shoulder Then Elbow
-            if(targePosition == ArmPosition.Stored){
+            if(targetPosition == ArmPosition.Stored){
 
             }
             // Move in Parallel
