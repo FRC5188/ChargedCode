@@ -326,17 +326,14 @@ public class Arm extends SubsystemBase {
 
     }
 
-    private void shuffleBoardInit() {
-        ShuffleboardTab tab = Shuffleboard.getTab("Arm");
-    }
-
     private double getElbowSetpoint() {
-        // TODO: This might be the wrong thing to return
-        return this._elbowMotorPID.getSetpoint().position;
+        // TODO: implement this
+        return 0;
     }
 
     private double getShoulderSetpoint() {
-        return this._shoulderMotorPID.getSetpoint().position;
+        // TODO: implement this
+        return 0;
     }
 
     /**
@@ -404,9 +401,11 @@ public class Arm extends SubsystemBase {
                 setpoint = this.getArm2DPosition();
                 break;
         }
-        // TODO: make sure this is what we want
-        ArmJointAngles jointAngles = this.jointAnglesFrom2DPose(setpoint);
-        _shoulderMotorPID.setGoal(jointAngles.getShoulderJointAngle());
+      
+      // TODO: implement this
+      // calculate joint angles
+      // set pid goal
+        
     }
 
     /**
@@ -480,30 +479,8 @@ public class Arm extends SubsystemBase {
         // Here is the commit I refered to:
         // https://github.com/FRC5188/ChargedCode/commit/a35d8567eb73343b4be02176031213db640c6627
 
-        // grab the points
-        double z = arm2DPosition.getz() - this.SHOULDER_JOINT_Z_POS;
-        double y = arm2DPosition.gety() - this.SHOULDER_JOINT_Y_POS;
-        double elbowLen = this.ELBOW_ARM_LENGTH;
-        double shoulderLen = this.SHOULDER_ARM_LENGTH;
-
-        // alpha = acos((x^2 + y^2 - a1^2 - a2^2) / (-2*a1*a2))
-        double alpha = Math.acos((Math.pow(y, 2) + Math.pow(z, 2) -
-                Math.pow(elbowLen, 2) - Math.pow(shoulderLen, 2)) /
-                (-2 * elbowLen * shoulderLen));
-
-        // this is a temp variable. following my math sheet
-        double t1 = Math.atan(z / y);
-        // this is also a temp variable. following my math sheet
-        double gamma = Math.PI - alpha;
-
-        // t2 = atan(a2*sin(q2))/(a1 + a2*cos(q2))
-        double t2 = Math.atan((elbowLen * Math.sin(gamma)) /
-                (shoulderLen + elbowLen * Math.cos(gamma)));
-
-        double shoulderAngle = t1 + t2;
-        double elbowAngle = (-1 * Math.PI + shoulderAngle + alpha);
-
-        return new ArmJointAngles(Math.toDegrees(shoulderAngle), Math.toDegrees(elbowAngle));
+        //TODO implement the arm math
+        return null;
     }
 
     /**
@@ -512,12 +489,8 @@ public class Arm extends SubsystemBase {
      * @return a Arm2DPosition that represents the wrist position in 2D space
      */
     public Arm2DPosition getArm2DPosition() {
-        double currentShoulder = this.getShoulderJointAngle();
-        double currentElbow = this.getElbowJointAngle();
-        WristPosition wristPos = this.getWristPosition();
-        Arm2DPosition currentPos = this.arm2DPositionFromAngles(currentShoulder, currentElbow, wristPos);
-
-        return currentPos;
+        //TODO implement this
+        return null;
     }
 
     /**
@@ -526,11 +499,8 @@ public class Arm extends SubsystemBase {
      * @return Current elbow joint angle in xx units.
      */
     public double getElbowJointAngle() {
-        // TODO check this is correct
-        double diff = this.ELBOW_neg90_DEGREE_POT_OFFSET - this.ELBOW_0_DEGREE_POT_OFFSET;
-        double potValPerDegree = diff / 90;
-        double curAnglePot = this.getElbowPotPos() - this.ELBOW_0_DEGREE_POT_OFFSET;
-        return -curAnglePot / potValPerDegree + this.getShoulderJointAngle() + 90; // returns degrees
+        // TODO: implement this
+        return 0;
     }
 
     /**
@@ -539,11 +509,8 @@ public class Arm extends SubsystemBase {
      * @return Current shoulder joint anlge in xx units.
      */
     public double getShoulderJointAngle() {
-        // TODO check this is correct
-        double diff = this.SHOULDER_90_DEGREE_POT_OFFSET - this.SHOULDER_0_DEGREE_POT_OFFSET;
-        double potValPerDegree = diff / 90;
-        double curAnglePot = this.getShoulderPotPos() - this.SHOULDER_0_DEGREE_POT_OFFSET;
-        return curAnglePot / potValPerDegree; // returns degrees
+        // TODO: implement this
+        return 0;
     }
 
     /**
@@ -563,17 +530,9 @@ public class Arm extends SubsystemBase {
      *         wrist of the arm, including the wrist state.
      */
     private Arm2DPosition arm2DPositionFromAngles(double currentShoulder, double currentElbow, WristPosition wristPos) {
-        // TODO check this math
+        // TODO: implement this
 
-        double y = this.SHOULDER_JOINT_Y_POS;
-        y += this.SHOULDER_ARM_LENGTH * Math.cos(currentShoulder);
-        y += this.ELBOW_ARM_LENGTH * Math.cos(currentElbow);
-
-        double z = this.SHOULDER_JOINT_Z_POS;
-        z += this.SHOULDER_ARM_LENGTH * Math.sin(currentShoulder);
-        z += this.ELBOW_ARM_LENGTH * Math.sin(currentElbow);
-
-        return new Arm2DPosition(y, z, wristPos);
+       return null;
     }
 
     /**
@@ -623,9 +582,9 @@ public class Arm extends SubsystemBase {
                 setpoint = this.getArm2DPosition();
                 break;
         }
-        // TODO: make sure this is what we want
-        ArmJointAngles jointAngles = this.jointAnglesFrom2DPose(setpoint);
-        _elbowMotorPID.setGoal(jointAngles.getElbowJointAngle());
+               // TODO: implement this
+        // calculate the joint angles
+        // set the pid goal
     }
 
     /**
@@ -633,7 +592,9 @@ public class Arm extends SubsystemBase {
      * @return
      */
     public boolean shoulderMotorPIDIsFinished() {
-        return _shoulderMotorPID.atSetpoint();
+        //         // TODO: implement this
+
+        return false;
     }
 
     /**
@@ -641,7 +602,9 @@ public class Arm extends SubsystemBase {
      * @return
      */
     public boolean elbowMotorPIDIsFinished() {
-        return _elbowMotorPID.atSetpoint();
+                // TODO: implement this
+
+        return false;
     }
 
     /**
@@ -649,12 +612,7 @@ public class Arm extends SubsystemBase {
      * ramping the PID output and setting any limits.
      */
     public void shoulderMotorPIDExec() {
-        // i think we want to work in angles and not pot values -garrett 2/9
-        double angle = getShoulderJointAngle();
-        // double position = getShoulderPotPos();
-        double voltage = _shoulderMotorPID.calculate(angle);
-
-        setShoulderMotorSpeed(voltage);
+        // TODO: implement this
     }
 
     /**
@@ -662,16 +620,14 @@ public class Arm extends SubsystemBase {
      * ramping the PID output and setting any limits.
      */
     public void elbowMotorPIDExec() {
-        // i think we want to work in angles and not pot values -garrett 2/9
-        double angle = getElbowJointAngle();
-        double voltage = _elbowMotorPID.calculate(angle);
+        // TODO: implement this
 
-        setElbowMotorSpeed(voltage);
     }
 
     /** Checks if the joint motors are at their setpoints **/
     public boolean shoulderAtSetpoint() {
-        return _shoulderMotorPID.atSetpoint();
+        // TODO: implement this
+        return false;
     }
 
     /**
@@ -681,7 +637,7 @@ public class Arm extends SubsystemBase {
      * @param maxSpeed      the max speed of motor, in percent output
      */
     public void elbowMotorPIDInit(double setpointAngle) {
-        _elbowMotorPID.setGoal(setpointAngle);
+                // TODO: implement this
     }
 
     public void shoulderMotorPIDInit(double setpointAngle) {
@@ -690,25 +646,20 @@ public class Arm extends SubsystemBase {
 
     /** Checks if the joint motors are at their setpoints **/
     public boolean elbowAtSetpoint() {
-        return _elbowMotorPID.atSetpoint();
+        // TODO: implement this
+        return false;
     }
 
     public void setShoulderMotorSpeed(double speed) {
-        if (this.getShoulderJointAngle() <= this.SHOULDER_LOWER_SOFT_STOP && speed < 0) {
-            speed = 0;
-        } else if (this.getShoulderJointAngle() >= this.SHOULDER_UPPER_SOFT_STOP && speed > 0) {
-            speed = 0;
-        }
+                // TODO: implement this
+        //add soft stops
         SmartDashboard.putNumber("Shoulder speed", speed);
         //_shoulderMotor.set(speed);
     }
 
     public void setElbowMotorSpeed(double speed) {
-        if (this.getElbowJointAngle() <= this.ELBOW_LOWER_SOFT_STOP && speed < 0) {
-            speed = 0;
-        } else if (this.getElbowJointAngle() >= this.ELBOW_UPPER_SOFT_STOP && speed > 0) {
-            speed = 0;
-        }
+               // TODO: implement this
+        // add soft stops
         SmartDashboard.putNumber("Elbow speed", speed);        
         _elbowMotor.set(speed);
     }
