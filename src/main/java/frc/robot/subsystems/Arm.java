@@ -4,6 +4,8 @@
 
 package frc.robot.subsystems;
 
+import java.util.Optional;
+
 import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
@@ -18,8 +20,13 @@ import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.CommandGroupBase;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.commands.CmdArmRunElbowPID;
+import frc.robot.commands.CmdArmRunShoulderPID;
 
 public class Arm extends SubsystemBase {
     private final double SHOULDER_0_DEGREE_POT_OFFSET = 2307;
@@ -226,6 +233,8 @@ public class Arm extends SubsystemBase {
     private ProfiledPIDController _shoulderMotorPID;
     private ProfiledPIDController _elbowMotorPID;
 
+    private ArmPosition _currentArmPos;
+
     /** Arm PID constants */
     // these shold use the maxvelocity below
     // private double _shoulderMotorPIDMaxSpeed = 0.6;
@@ -294,6 +303,8 @@ public class Arm extends SubsystemBase {
         _intakeMotorCurrent = 0;
         _intakeMotor = new CANSparkMax(Constants.CanIDs.CLAW_INTAKE_MOTOR_CANID, MotorType.kBrushless);
 
+        _currentArmPos = ArmPosition.Stored;
+
         // Create Sholder PID controllers
         _shoulderMotorPID = new ProfiledPIDController(this.SHOULD_MOTOR_KP,
                 this.SHOLDER_MOTOR_KI,
@@ -342,6 +353,8 @@ public class Arm extends SubsystemBase {
         return this._shoulderMotorPID.getSetpoint().position;
     }
 
+
+
     /**
      * Sets the arm position
      * 
@@ -374,6 +387,7 @@ public class Arm extends SubsystemBase {
     public void shoulderMotorPIDInit(ArmPosition armPosition) {
 
         Arm2DPosition setpoint;
+        _currentArmPos = armPosition;
         switch (armPosition) {
             case GroundPickUp:
                 setpoint = GROUND_PICKUP_SETPOINT;
@@ -595,6 +609,7 @@ public class Arm extends SubsystemBase {
     public void elbowMotorPIDInit(ArmPosition armPosition) {
 
         Arm2DPosition setpoint;
+        _currentArmPos = armPosition;
         switch (armPosition) {
             case GroundPickUp:
                 setpoint = GROUND_PICKUP_SETPOINT;
@@ -770,6 +785,7 @@ public class Arm extends SubsystemBase {
 
     public void setWristPosition(ArmPosition armPosition) {
         // Sets Wrist Position based off of arm position
+        _currentArmPos = armPosition;
         switch (armPosition) {
             case GroundPickUp:
                 setWristPosition(GROUND_PICKUP_WRIST_POS);
@@ -821,6 +837,31 @@ public class Arm extends SubsystemBase {
             default:
                 return false;
 
+        }
+    }
+
+    public ArmPosition checkArmPosition() {
+        return _currentArmPos;
+    }
+
+    public CommandGroupBase getArmMovementCommand(ArmPosition targetPosition){
+        if(checkArmPosition() == ArmPosition.Stored){
+            if(targetPosition == ArmPosition.Stored){
+                // If it is where it is then return an empty group that doesn't do anything. 
+                return new SequentialCommandGroup();
+            } else {
+                return new SequentialCommandGroup(new CmdArmRunElbowPID(this, targetPosition), new CmdArmRunShoulderPID(this, targetPosition));
+            }
+        }
+        else {
+            // Move Shoulder Then Elbow
+            if(targetPosition == ArmPosition.Stored){ return new SequentialCommandGroup(
+                    new CmdArmRunShoulderPID(this, targetPosition),
+                    new CmdArmRunElbowPID(this, targetPosition));}
+            // Move in Parallel
+            else {return new ParallelCommandGroup(
+                    new CmdArmRunShoulderPID(this, targetPosition),
+                    new CmdArmRunElbowPID(this, targetPosition));}
         }
     }
 }
