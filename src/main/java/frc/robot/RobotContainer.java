@@ -6,11 +6,13 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.Button;
+import frc.robot.commands.AutoRotateCommand;
 import frc.robot.commands.DefaultDriveCommand;
 import frc.robot.subsystems.Drive;
 
@@ -20,11 +22,18 @@ import frc.robot.subsystems.Drive;
  * periodic methods (other than the scheduler calls). Instead, the structure of the robot (including
  * subsystems, commands, and button mappings) should be declared here.
  */
+
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final Drive m_drivetrainSubsystem = new Drive();
 
   private final XboxController m_controller = new XboxController(0);
+
+  private JoystickButton driverAButton = new JoystickButton(m_controller, XboxController.Button.kA.value);
+private JoystickButton driverBButton = new JoystickButton(m_controller, XboxController.Button.kB.value);
+private JoystickButton driverXButton = new JoystickButton(m_controller, XboxController.Button.kX.value);
+private JoystickButton driverYButton = new JoystickButton(m_controller, XboxController.Button.kY.value);
+
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -57,6 +66,14 @@ public class RobotContainer {
     // new Button(m_controller::getBackButton)
     //         // No requirements because we don't need to interrupt anything
     //         .whenPressed(m_drivetrainSubsystem::zeroGyroscope);
+  this.driverAButton.onTrue(new AutoRotateCommand(
+  m_drivetrainSubsystem,
+  () -> (-modifyAxis(m_controller.getLeftY()) * Drive.MAX_VELOCITY_METERS_PER_SECOND),
+  () -> (-modifyAxis(m_controller.getLeftX()) * Drive.MAX_VELOCITY_METERS_PER_SECOND),
+  0)
+  );
+  
+  
   }
 
   /**

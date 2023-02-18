@@ -8,6 +8,7 @@ import com.ctre.phoenix.sensors.AbsoluteSensorRange;
 import com.ctre.phoenix.sensors.CANCoder;
 import com.kauailabs.navx.frc.AHRS;
 
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -36,6 +37,10 @@ public class Drive extends SubsystemBase {
      */
     public static final double MAX_VOLTAGE = 6.0;
 
+    private PIDController _rotatePID;
+    private final double ROTATE_PID_KP = 0;
+    private final double ROTATE_PID_KI = 0;
+    private final double ROTATE_PID_KD = 0;
     /**
      * The maximum velocity of the robot in meters per second.
      * <p>
@@ -200,6 +205,13 @@ public class Drive extends SubsystemBase {
         _chassisSpeeds = chassisSpeeds;
     }
 
+  
+    public void rotatePIDInit(double rotationSetpoint){
+      this._rotatePID.setSetpoint(rotationSetpoint);
+    }
+    public double rotatePIDExec(){
+      return this._rotatePID.calculate(this.getGyroscopeRotation().getDegrees());
+    }
     @Override
     public void periodic() {
         // Convert the drive base vector into module vectors
