@@ -838,6 +838,11 @@ public class Arm extends SubsystemBase {
     }
 
     public CommandGroupBase getArmMovementCommand(){
-        
+        if(checkArmPosition() == ArmPosition.Stored){
+
+        }
+        else {
+            
+        }
     }
 }
