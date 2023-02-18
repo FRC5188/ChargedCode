@@ -22,10 +22,11 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
 public class Arm extends SubsystemBase {
-    private final double SHOULDER_0_DEGREE_POT_OFFSET = 2310;
-    private final double SHOULDER_90_DEGREE_POT_OFFSET = 1956;
-    private final double ELBOW_0_DEGREE_POT_OFFSET = 1660;
-    private final double ELBOW_neg90_DEGREE_POT_OFFSET = 2020;
+    private final double SHOULDER_0_DEGREE_POT_OFFSET = 2307;
+    private final double SHOULDER_90_DEGREE_POT_OFFSET = 1953;
+    private final double ELBOW_0_DEGREE_POT_OFFSET = 1706;
+    private final double ELBOW_neg90_DEGREE_POT_OFFSET = 2058;
+
 
     // All in degrees
     private final double SHOULDER_UPPER_SOFT_STOP = 10;
@@ -245,10 +246,10 @@ public class Arm extends SubsystemBase {
             SHOULDER_MAX_ACCELERATION);
 
     // Elbow constants
-    private final double ELBOW_MOTOR_KP = 0.0125;
-    private final double ELBOW_MOTOR_KI = 0.00;
+    private final double ELBOW_MOTOR_KP = 0.0175;
+    private final double ELBOW_MOTOR_KI = 0.001;
     private final double ELBOW_MOTOR_KD = 0.00;
-    private final double ELBOW_MOTOR_TOLERANCE = 1.0;
+    private final double ELBOW_MOTOR_TOLERANCE = 2.0;
 
     // shoulder motion profile constraints
     // Velocity is m/s and acceleration is m/s^2
@@ -311,6 +312,7 @@ public class Arm extends SubsystemBase {
     }
 
     public void setElbowBrakeMode(NeutralMode mode) {
+        System.out.println("Setting elbow brake mode to " + mode);
         this._elbowMotor.setNeutralMode(mode);
     }
 
@@ -325,8 +327,6 @@ public class Arm extends SubsystemBase {
 
         // System.out.println("ARM ANGLES: Elbow: " + this.getElbowJointAngle() + " Shoulder: " + this.getShoulderJointAngle());
         // System.out.println("Elbow setpoint: " + this.getElbowSetpoint());
-         System.out.println("ELBOW POT: " + this.getElbowPotPos());
-
     }
 
     private void shuffleBoardInit() {
@@ -639,6 +639,7 @@ public class Arm extends SubsystemBase {
      * @param maxSpeed      the max speed of motor, in percent output
      */
     public void elbowMotorPIDInit(double setpointAngle) {
+        _elbowMotorPID.reset(this.getElbowJointAngle());
         _elbowMotorPID.setGoal(setpointAngle);
     }
 
@@ -753,8 +754,8 @@ public class Arm extends SubsystemBase {
         _previousIntakeMotorCurrent = _intakeMotorCurrent;
         _intakeMotorCurrent = _intakeMotor.getOutputCurrent();
 
-        // System.out.println("Shoulder: " + this.getShoulderPotPos() + " Elbow: " +
-        // this.getElbowPotPos());
+        //  System.out.println("Shoulder: " + this.getShoulderPotPos() + " Elbow: " +
+        //  this.getElbowPotPos());
         // System.out.println("Shoulder Angle: " + this.getShoulderJointAngle() + "
         // Elbow Angle: " + this.getElbowJointAngle());
         // ArmJointAngles angles = this.jointAnglesFrom2DPose(new Arm2DPosition(10, 30,

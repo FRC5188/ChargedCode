@@ -43,6 +43,10 @@ public class RobotContainer {
     
     private JoystickButton _operatorAButton = new JoystickButton(_operatorController, XboxController.Button.kA.value);
     private JoystickButton _operatorBButton = new JoystickButton(_operatorController, XboxController.Button.kB.value);
+    private JoystickButton _operatorXButton = new JoystickButton(_operatorController, XboxController.Button.kX.value);
+
+    
+
 
     // Constant Arm Multiplier In To Reduce Arm Speed
     private static final double ARM_MULTIPLIER = 0.3;
@@ -92,13 +96,12 @@ public class RobotContainer {
 
         //_operatorAButton.onTrue(new CmdArmRunIntake(_armSubsystem));
 
-        double manual_setpoint = 30;
-        manual_setpoint = SmartDashboard.getNumber("Manual Elbow Setpoint", manual_setpoint);
-        SmartDashboard.putNumber("Manual Elbow Setpoint", manual_setpoint);
-        Command elbow = new CmdArmRunElbowPID(_armSubsystem, manual_setpoint);
-        _operatorAButton.whileTrue(elbow);
+        _operatorAButton.whileTrue(new CmdArmRunElbowPID(_armSubsystem, 50.0));
+
         _operatorBButton.whileTrue(new CmdArmSetElbowBrakeMode(_armSubsystem, NeutralMode.Coast));
         _operatorBButton.whileFalse(new CmdArmSetElbowBrakeMode(_armSubsystem, NeutralMode.Brake));
+
+        _operatorXButton.whileTrue(new CmdArmRunElbowPID(_armSubsystem, 0.0));
     }
 
     /**
