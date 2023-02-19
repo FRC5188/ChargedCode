@@ -123,7 +123,7 @@ public class Drive extends SubsystemBase {
      * Represents the drive chassis of the robot. Contains all of the code to
      * move in a swerve format using either a joystick or supplied values.
      */
-    private Drive(Vision visionSubsystem) {
+    public Drive(Vision visionSubsystem) {
         _visionSubsystem = visionSubsystem;
 
         ShuffleboardTab shuffleboardTab = Shuffleboard.getTab("Drivetrain Info");
