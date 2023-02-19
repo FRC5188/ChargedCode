@@ -24,7 +24,7 @@ public class CmdArmRunShoulderPID extends CommandBase {
 
   public CmdArmRunShoulderPID(Arm armSubsystem, Double manualSetpoint) {
     this._armSubsystem = armSubsystem;
-    this._manualSetpoint = -1000;
+    this._manualSetpoint = manualSetpoint;
 
     this.addRequirements(_armSubsystem);
   }
@@ -36,7 +36,7 @@ public class CmdArmRunShoulderPID extends CommandBase {
       _armSubsystem.shoulderMotorPIDInit(this._manualSetpoint);
     }
     else{
-      _armSubsystem.shoulderMotorPIDInit(_setpoint);
+      _armSubsystem.shoulderPIDSetGoal(_setpoint);
     }
   }
 
@@ -54,6 +54,6 @@ public class CmdArmRunShoulderPID extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return _armSubsystem.shoulderMotorPIDIsFinished();
+    return false;
   }
 }

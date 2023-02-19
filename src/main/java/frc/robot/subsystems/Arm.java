@@ -10,6 +10,7 @@ import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.math.controller.ProfiledPIDController;
@@ -34,10 +35,9 @@ public class Arm extends SubsystemBase {
     private final double ELBOW_0_DEGREE_POT_OFFSET = 1706;
     private final double ELBOW_neg90_DEGREE_POT_OFFSET = 2058;
 
-
     // All in degrees
-    private final double SHOULDER_UPPER_SOFT_STOP = 10;
-    private final double SHOULDER_LOWER_SOFT_STOP = -10;
+    private final double SHOULDER_UPPER_SOFT_STOP = 95;
+    private final double SHOULDER_LOWER_SOFT_STOP = 5;
     private final double ELBOW_UPPER_SOFT_STOP = 100;
     private final double ELBOW_LOWER_SOFT_STOP = -2;
 
@@ -157,13 +157,19 @@ public class Arm extends SubsystemBase {
         // Low Goal
     }
 
+    private final double STORED_SHOULDER_POS = 95;
+    private final double STORED_ELBOW_POS = 25;
+
+    private final double GROUND_PICKUP_SHOULDER_POS = 44;
+    private final double GROUND_PICKUP_ELBOW_POS = 9;
+
     /**
      * constants for the above defined in the ArmPosition Enum.
      * This is the place to make edits to setpoints.
      */
-    private final double STORED_Y_POS = 0.0;
-    private final double STORED_X_POS = 0.0;
-    private final WristPosition STORED_WRIST_POS = WristPosition.Parallel;
+    private final double STORED_Y_POS = 15.75;
+    private final double STORED_X_POS = -9;
+    private final WristPosition STORED_WRIST_POS = WristPosition.Perpendicular;
     private final Arm2DPosition STORED_SETPOINT = new Arm2DPosition(STORED_Y_POS,
             STORED_X_POS,
             STORED_WRIST_POS);
@@ -234,6 +240,11 @@ public class Arm extends SubsystemBase {
     private ProfiledPIDController _elbowMotorPID;
 
     private ArmPosition _currentArmPos;
+    private ArmPosition _previousArmPos;
+    private WristPosition _desiredWristPos;
+
+    private boolean _shoulderIsGood;
+    private boolean _elbowIsGood;
 
     /** Arm PID constants */
     // these shold use the maxvelocity below
@@ -241,15 +252,15 @@ public class Arm extends SubsystemBase {
     // private double _elbowMotorPIDMaxSpeed = 0.6;
 
     // shoulder PID constants
-    private final double SHOULD_MOTOR_KP = 0.0;
-    private final double SHOLDER_MOTOR_KI = 0.0;
+    private final double SHOULD_MOTOR_KP = 0.015;
+    private final double SHOLDER_MOTOR_KI = 0.002;
     private final double SHOULDER_MOTOR_KD = 0.0;
-    private final double SHOULDER_MOTOR_TOLERANCE = 0.0;
+    private final double SHOULDER_MOTOR_TOLERANCE = 1.0;
 
     // shoulder motion profile constraints
     // Velocity is m/s and acceleration is m/s^2
     private final double SHOULDER_MAX_VELOCITY = 70; // max speed that this joint should move at
-    private final double SHOULDER_MAX_ACCELERATION = 120; // max acceleration this joint should move at
+    private final double SHOULDER_MAX_ACCELERATION = 40; // max acceleration this joint should move at
     private final TrapezoidProfile.Constraints SHOLDER_MOTION_PROFILE_CONSTRAINTS = new TrapezoidProfile.Constraints(
             SHOULDER_MAX_VELOCITY,
             SHOULDER_MAX_ACCELERATION);
@@ -270,11 +281,8 @@ public class Arm extends SubsystemBase {
 
     public Arm() {
         // Motor Controllers and pnuematics
-        _shoulderMotor = new WPI_TalonFX(Constants.CanIDs.ARM_SHOULDER_MOTOR_CANID);
-        _elbowMotor = new WPI_TalonFX(Constants.CanIDs.ARM_ELBOW_MOTOR_CANID);
-        _shoulderMotor.setNeutralMode(NeutralMode.Brake);
-        _shoulderMotor.setInverted(InvertType.InvertMotorOutput);
-        _elbowMotor.setNeutralMode(NeutralMode.Brake);
+        _shoulderMotor = new WPI_TalonFX(Constants.CanIDs.ARM_SHOULDER_MOTOR_ID);
+        _elbowMotor = new WPI_TalonFX(Constants.CanIDs.ARM_ELBOW_MOTOR_ID);
 
         _wristSolenoid = new Solenoid(PneumaticsModuleType.REVPH, Constants.PHPorts.WRIST_SOLENOID_PORT);
 
@@ -284,6 +292,7 @@ public class Arm extends SubsystemBase {
         _elbowPotentiometer.setOversampleBits(0);
         _shoulderPotentiometer.setAverageBits(2);
         _shoulderPotentiometer.setOversampleBits(0);
+
         // Set the motors to adjust their output based on battery voltage
         _shoulderMotor.configVoltageCompSaturation(this.MAX_MOTOR_VOLTAGE);
         _shoulderMotor.enableVoltageCompensation(true);
@@ -292,18 +301,24 @@ public class Arm extends SubsystemBase {
 
         // set motor breaking
         _shoulderMotor.setNeutralMode(NeutralMode.Brake);
-        _elbowMotor.setNeutralMode(NeutralMode.Brake);
+        _elbowMotor.setNeutralMode(NeutralMode.Coast);
 
-        // Invert shoulder
+        // Set inversion
         _shoulderMotor.setInverted(InvertType.None);
         _elbowMotor.setInverted(InvertType.None);
 
         // Claw
         _previousIntakeMotorCurrent = 0;
         _intakeMotorCurrent = 0;
-        _intakeMotor = new CANSparkMax(Constants.CanIDs.CLAW_INTAKE_MOTOR_CANID, MotorType.kBrushless);
+        _intakeMotor = new CANSparkMax(Constants.CanIDs.ARM_INTAKE_MOTOR_ID, MotorType.kBrushless);
+        _intakeMotor.setIdleMode(IdleMode.kBrake);
 
+        _previousArmPos = ArmPosition.Stored;
         _currentArmPos = ArmPosition.Stored;
+        _desiredWristPos = WristPosition.Perpendicular;
+
+        _shoulderIsGood = true;
+        _elbowIsGood = true;
 
         // Create Sholder PID controllers
         _shoulderMotorPID = new ProfiledPIDController(this.SHOULD_MOTOR_KP,
@@ -329,8 +344,8 @@ public class Arm extends SubsystemBase {
 
     private void updateShuffleBoard() {
         SmartDashboard.putNumber("Elbow Angle", this.getElbowJointAngle());
-        SmartDashboard.putNumber("Sholder Angle", this.getShoulderJointAngle());
-        SmartDashboard.putNumber("Sholder Angle Setpoint", this.getShoulderSetpoint());
+        SmartDashboard.putNumber("Shoulder Angle", this.getShoulderJointAngle());
+        SmartDashboard.putNumber("Sholder Angle Setpoint", this._shoulderMotorPID.getGoal().position);
         SmartDashboard.putNumber("Elbow Angle Setpoint", this.getElbowSetpoint());
         SmartDashboard.putNumber("Elbow Pot", this.getElbowPotPos());
         SmartDashboard.putNumber("Elbow Motor Output", this._elbowMotor.get());
@@ -353,22 +368,21 @@ public class Arm extends SubsystemBase {
         return this._shoulderMotorPID.getSetpoint().position;
     }
 
-
-
     /**
      * Sets the arm position
      * 
      * @param position Position to set the arm wrist to.
      */
     public void setWristPosition(WristPosition position) {
-        _wristSolenoid.set(position == WristPosition.Parallel);
+        System.out.println("Setting wrist position to " + position);
+        //_wristSolenoid.set(position == WristPosition.Perpendicular);
     }
 
     /**
      * @return the current position of the wrist
      */
     public WristPosition getWristPosition() {
-        return _wristSolenoid.get() ? WristPosition.Parallel : WristPosition.Perpendicular;
+        return _wristSolenoid.get() ? WristPosition.Perpendicular : WristPosition.Parallel;
     }
 
     /**
@@ -384,13 +398,15 @@ public class Arm extends SubsystemBase {
      * 
      * @param setpoint Setpoint of the wrist of the arm.
      */
-    public void shoulderMotorPIDInit(ArmPosition armPosition) {
-
+    public void shoulderPIDSetGoal(ArmPosition armPosition) {
+        _shoulderIsGood = false;
         Arm2DPosition setpoint;
-        _currentArmPos = armPosition;
+        double shoulderPos = this.getShoulderJointAngle();
+
         switch (armPosition) {
             case GroundPickUp:
-                setpoint = GROUND_PICKUP_SETPOINT;
+                //setpoint = GROUND_PICKUP_SETPOINT;
+                shoulderPos = GROUND_PICKUP_SHOULDER_POS;
                 break;
             case HighCone:
                 setpoint = HIGH_CONE_SETPOINT;
@@ -411,7 +427,8 @@ public class Arm extends SubsystemBase {
                 setpoint = MIDDLE_CUBE_SETPOINT;
                 break;
             case Stored:
-                setpoint = STORED_SETPOINT;
+                shoulderPos = STORED_SHOULDER_POS;
+                //setpoint = STORED_SETPOINT;
                 break;
             default:
                 // If we hit default that means we don't know what position we are in
@@ -422,8 +439,11 @@ public class Arm extends SubsystemBase {
                 break;
         }
         // TODO: make sure this is what we want
-        ArmJointAngles jointAngles = this.jointAnglesFrom2DPose(setpoint);
-        _shoulderMotorPID.setGoal(jointAngles.getShoulderJointAngle());
+        //ArmJointAngles jointAngles = this.jointAnglesFrom2DPose(setpoint);
+        //System.out.println("Calculated Angles: Shoulder " + jointAngles.shoulderJointAngle + " elbow: " + jointAngles.elbowJointAngle);
+        //_shoulderMotorPID.setGoal(jointAngles.getShoulderJointAngle());
+        _shoulderMotorPID.reset(this.getShoulderJointAngle());
+        _shoulderMotorPID.setGoal(shoulderPos);
     }
 
     /**
@@ -606,13 +626,15 @@ public class Arm extends SubsystemBase {
      * 
      * @param setpoint Setpoint of the arm as a whole.
      */
-    public void elbowMotorPIDInit(ArmPosition armPosition) {
-
+    public void elbowPIDSetGoal(ArmPosition armPosition) {
+        _elbowIsGood = false;
         Arm2DPosition setpoint;
-        _currentArmPos = armPosition;
+        double elbowPos = this.getElbowJointAngle();
+
         switch (armPosition) {
             case GroundPickUp:
-                setpoint = GROUND_PICKUP_SETPOINT;
+                //setpoint = GROUND_PICKUP_SETPOINT;
+                elbowPos = GROUND_PICKUP_ELBOW_POS;
                 break;
             case HighCone:
                 setpoint = HIGH_CONE_SETPOINT;
@@ -633,7 +655,8 @@ public class Arm extends SubsystemBase {
                 setpoint = MIDDLE_CUBE_SETPOINT;
                 break;
             case Stored:
-                setpoint = STORED_SETPOINT;
+                //setpoint = STORED_SETPOINT;
+                elbowPos = STORED_ELBOW_POS;
                 break;
             default:
                 // If we hit default that means we don't know what position we are in
@@ -642,9 +665,11 @@ public class Arm extends SubsystemBase {
                 break;
         }
         // TODO: make sure this is what we want
-        ArmJointAngles jointAngles = this.jointAnglesFrom2DPose(setpoint);
+        //ArmJointAngles jointAngles = this.jointAnglesFrom2DPose(setpoint);
+
         _elbowMotorPID.reset(this.getElbowJointAngle());
-        _elbowMotorPID.setGoal(jointAngles.getElbowJointAngle());
+        //_elbowMotorPID.setGoal(jointAngles.getElbowJointAngle());
+        _elbowMotorPID.setGoal(elbowPos);
     }
 
     /**
@@ -655,7 +680,7 @@ public class Arm extends SubsystemBase {
      */
     public void elbowMotorPIDInit(double setpointAngle) {
         _elbowMotorPID.reset(this.getElbowJointAngle());
-        _elbowMotorPID.setGoal(setpointAngle);
+        //_elbowMotorPID.setGoal(setpointAngle);
     }
 
     /**
@@ -663,7 +688,9 @@ public class Arm extends SubsystemBase {
      * @return
      */
     public boolean shoulderMotorPIDIsFinished() {
-        return _shoulderMotorPID.atSetpoint();
+        boolean isFinished = _shoulderMotorPID.atSetpoint();
+        _shoulderIsGood = isFinished;
+        return isFinished;
     }
 
     /**
@@ -671,7 +698,9 @@ public class Arm extends SubsystemBase {
      * @return
      */
     public boolean elbowMotorPIDIsFinished() {
-        return _elbowMotorPID.atSetpoint();
+        boolean isFinished = _elbowMotorPID.atSetpoint();
+        _elbowIsGood = isFinished;
+        return isFinished;
     }
 
     /**
@@ -695,7 +724,7 @@ public class Arm extends SubsystemBase {
         // i think we want to work in angles and not pot values -garrett 2/9
         double angle = getElbowJointAngle();
         double voltage = _elbowMotorPID.calculate(angle);
-
+        //System.out.println(_elbowMotorPID.getGoal().position);
         setElbowMotorSpeed(voltage);
     }
 
@@ -705,11 +734,13 @@ public class Arm extends SubsystemBase {
     }
 
     public void shoulderMotorPIDInit(double setpointAngle) {
-        _shoulderMotorPID.setGoal(setpointAngle);
+        _shoulderMotorPID.reset(this.getShoulderJointAngle());
+        //_shoulderMotorPID.setGoal(setpointAngle);
     }
 
     /** Checks if the joint motors are at their setpoints **/
     public boolean elbowAtSetpoint() {
+        //System.out.println(_elbowMotorPID.atSetpoint());
         return _elbowMotorPID.atSetpoint();
     }
 
@@ -732,7 +763,7 @@ public class Arm extends SubsystemBase {
             speed = 0;
         }
         SmartDashboard.putNumber("Elbow speed", speed);        
-        _elbowMotor.set(speed);
+        //_elbowMotor.set(speed);
     }
 
     public int getShoulderPotPos() {
@@ -785,7 +816,6 @@ public class Arm extends SubsystemBase {
 
     public void setWristPosition(ArmPosition armPosition) {
         // Sets Wrist Position based off of arm position
-        _currentArmPos = armPosition;
         switch (armPosition) {
             case GroundPickUp:
                 setWristPosition(GROUND_PICKUP_WRIST_POS);
@@ -809,7 +839,7 @@ public class Arm extends SubsystemBase {
                 setWristPosition(MIDDLE_CUBE_WRIST_POS);
                 break;
             case Stored:
-
+                setWristPosition(STORED_WRIST_POS);
                 break;
             default:
                 break;
@@ -837,6 +867,73 @@ public class Arm extends SubsystemBase {
             default:
                 return false;
 
+        }
+    }
+
+    public WristPosition getDesiredWristPosition() {
+        return _desiredWristPos;
+    }
+
+    public void setDesiredWristPosition(ArmPosition position) {
+        switch (position) {
+            case GroundPickUp:
+                _desiredWristPos = GROUND_PICKUP_WRIST_POS;
+                break;
+            case HighCone:
+                _desiredWristPos = HIGH_CONE_WRIST_POS;
+                break;
+            case HighCube:
+                _desiredWristPos = HIGH_CUBE_WRIST_POS;
+                break;
+            case LoadStationPickUp:
+                _desiredWristPos = LOAD_STATION_PICKUP_WRIST_POS;
+                break;
+            case LowScore:
+                _desiredWristPos = LOW_SCORE_WRIST_POS;
+                break;
+            case MiddleCone:
+                _desiredWristPos = MIDDLE_CONE_WRIST_POS;
+                break;
+            case MiddleCube:
+                _desiredWristPos = MIDDLE_CUBE_WRIST_POS;
+                break;
+            case Stored:
+                _desiredWristPos = STORED_WRIST_POS;
+                break;
+            default:
+                break;
+        }
+    }
+
+    public void setCurrentArmPosition(ArmPosition pos) {
+        _previousArmPos = _currentArmPos;
+        _currentArmPos = pos;
+    }
+
+    public boolean isSafeForShoulder() {
+        if ((_previousArmPos == ArmPosition.Stored && _currentArmPos != ArmPosition.Stored) && !_elbowIsGood) {
+            //System.out.println("NOT SAFE FOR SHOULDER");
+            return this.elbowMotorPIDIsFinished();
+        } else {
+            return true;
+        }
+    }
+
+    public boolean isSafeForElbow() {
+        if ((_previousArmPos != ArmPosition.Stored && _currentArmPos == ArmPosition.Stored) && !_shoulderIsGood) {
+            //System.out.println("NOT SAFE FOR ELBOW");
+            return this.shoulderMotorPIDIsFinished();
+        } else {
+            return true;
+        }
+    }
+
+    public boolean isSafeForWrist() {
+        if ((_previousArmPos == ArmPosition.Stored && _currentArmPos != ArmPosition.Stored) && (!_elbowIsGood || !_shoulderIsGood)) {
+            //System.out.println("NOT SAFE FOR WRIST");
+            return this.elbowMotorPIDIsFinished() && this.shoulderMotorPIDIsFinished();
+        } else {
+            return false;
         }
     }
 

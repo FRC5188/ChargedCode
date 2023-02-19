@@ -24,7 +24,7 @@ public class CmdMoveClawToSetpoint extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    this._armSubsystem.elbowMotorPIDInit(this._setpoint);
+    this._armSubsystem.elbowPIDSetGoal(this._setpoint);
     
   }
 

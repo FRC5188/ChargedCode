@@ -37,7 +37,7 @@ public class CmdArmRunElbowPID extends CommandBase {
       _armSubsystem.elbowMotorPIDInit(this._manualSetpoint);
     }
     else{
-      _armSubsystem.elbowMotorPIDInit(_setpoint);
+      //_armSubsystem.elbowPIDSetGoal(_setpoint);
     }
   }
 

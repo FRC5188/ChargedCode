@@ -18,10 +18,17 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.DefaultDriveCommand;
 import frc.robot.commands.CmdArmRunIntake;
+import frc.robot.commands.CmdArmRunShoulderPID;
 import frc.robot.commands.CmdArmSetElbowBrakeMode;
+import frc.robot.commands.CmdArmUpdateElbowGoal;
+import frc.robot.commands.CmdArmUpdateGoal;
+import frc.robot.commands.CmdArmUpdateShoulderGoal;
+import frc.robot.commands.CmdArmWristPosition;
+import frc.robot.commands.CmdArmDefault;
 import frc.robot.commands.CmdArmManual;
 import frc.robot.commands.CmdArmRunElbowPID;
 import frc.robot.subsystems.Drive;
+import frc.robot.subsystems.Arm.ArmPosition;
 import frc.robot.subsystems.Arm;
 
 /**
@@ -44,7 +51,7 @@ public class RobotContainer {
     private JoystickButton _operatorAButton = new JoystickButton(_operatorController, XboxController.Button.kA.value);
     private JoystickButton _operatorBButton = new JoystickButton(_operatorController, XboxController.Button.kB.value);
     private JoystickButton _operatorXButton = new JoystickButton(_operatorController, XboxController.Button.kX.value);
-
+    private JoystickButton _operatorYButton = new JoystickButton(_operatorController, XboxController.Button.kY.value);
     
 
 
@@ -61,13 +68,8 @@ public class RobotContainer {
                                                () -> (-modifyAxis(_driverController.getLeftY()) * Drive.MAX_VELOCITY_METERS_PER_SECOND),
                                                () -> (-modifyAxis(_driverController.getLeftX()) * Drive.MAX_VELOCITY_METERS_PER_SECOND),
                                                () -> (-modifyAxis(_driverController.getRightX()) * Drive.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND)));
-        // Codriver Configuration
-        // If the throttle is in one state then the Z-axis will control one motor, and when its moved then it controlled the other. 
-        // _armSubsystem.setDefaultCommand(new CmdArmManual(
-        //     _armSubsystem, 
-        //     () -> (getShoulderSpeed()), 
-        //     () -> (getArmSpeed())
-        // ));
+        
+        _armSubsystem.setDefaultCommand(new CmdArmDefault(_armSubsystem));
 
         configureButtonBindings();
     }
@@ -96,12 +98,14 @@ public class RobotContainer {
 
         //_operatorAButton.onTrue(new CmdArmRunIntake(_armSubsystem));
 
-        _operatorAButton.whileTrue(new CmdArmRunElbowPID(_armSubsystem, 50.0));
+        _operatorAButton.whileTrue(new CmdArmUpdateElbowGoal(_armSubsystem, _armSubsystem.checkArmPosition()));
 
-        _operatorBButton.whileTrue(new CmdArmSetElbowBrakeMode(_armSubsystem, NeutralMode.Coast));
-        _operatorBButton.whileFalse(new CmdArmSetElbowBrakeMode(_armSubsystem, NeutralMode.Brake));
+        _operatorBButton.whileTrue(new CmdArmRunIntake(_armSubsystem, 0.4));
+        _operatorBButton.whileFalse(new CmdArmRunIntake(_armSubsystem, 0));
 
-        _operatorXButton.whileTrue(new CmdArmRunElbowPID(_armSubsystem, 0.0));
+        _operatorXButton.whileTrue(new CmdArmUpdateShoulderGoal(_armSubsystem, _armSubsystem.checkArmPosition()));
+
+        _operatorYButton.whileTrue(new CmdArmUpdateGoal(_armSubsystem, ArmPosition.GroundPickUp));
     }
 
     /**

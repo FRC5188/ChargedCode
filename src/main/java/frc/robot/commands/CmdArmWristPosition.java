@@ -21,16 +21,14 @@ public class CmdArmWristPosition extends CommandBase {
     this.addRequirements(_armSubsystem); 
   }
 
-  // Called every time the scheduler runs while the command is scheduled.
   @Override
-  public void execute() {
-    _armSubsystem.setWristPosition(_setpoint);
-
-  }
+    public void initialize() {
+      _armSubsystem.setWristPosition(_setpoint);
+    }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
+    return true;
   }
 }

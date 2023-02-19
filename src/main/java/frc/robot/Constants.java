@@ -62,10 +62,10 @@ public final class Constants {
         public static final int BACK_RIGHT_TURNING_ID = 11;
         public static final int BACK_RIGHT_ENCODER_ID = 12;
 
-        public static final int ARM_SHOULDER_MOTOR_CANID = 13;
-        public static final int ARM_ELBOW_MOTOR_CANID = 14;
+        public static final int ARM_SHOULDER_MOTOR_ID = 13;
+        public static final int ARM_ELBOW_MOTOR_ID = 14;
         
-        public static final int CLAW_INTAKE_MOTOR_CANID = 20; // Change this value
+        public static final int ARM_INTAKE_MOTOR_ID = 15; // Change this value
     }
 
     public static class PHPorts {
