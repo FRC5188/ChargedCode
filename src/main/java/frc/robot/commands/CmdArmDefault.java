@@ -19,9 +19,9 @@ public class CmdArmDefault extends CommandBase {
     @Override
     public void initialize() {
         // When we restart this comman (after updating goal), we want to go to the current goal
-        _armSubsystem.shoulderPIDSetGoal(_armSubsystem.checkArmPosition());
-        _armSubsystem.elbowPIDSetGoal(_armSubsystem.checkArmPosition());
-        _armSubsystem.setWristPosition(_armSubsystem.checkArmPosition());
+        // _armSubsystem.shoulderPIDSetGoal(_armSubsystem.checkArmPosition());
+        // _armSubsystem.elbowPIDSetGoal(_armSubsystem.checkArmPosition());
+        // _armSubsystem.setWristPosition(_armSubsystem.checkArmPosition());
         _armSubsystem.setCurrentArmPosition(_armSubsystem.checkArmPosition());
     }
 

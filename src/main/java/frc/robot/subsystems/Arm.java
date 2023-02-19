@@ -345,7 +345,7 @@ public class Arm extends SubsystemBase {
     private void updateShuffleBoard() {
         SmartDashboard.putNumber("Elbow Angle", this.getElbowJointAngle());
         SmartDashboard.putNumber("Shoulder Angle", this.getShoulderJointAngle());
-        SmartDashboard.putNumber("Sholder Angle Setpoint", this._shoulderMotorPID.getGoal().position);
+        SmartDashboard.putNumber("Sholder Angle Setpoint", this.getShoulderSetpoint());
         SmartDashboard.putNumber("Elbow Angle Setpoint", this.getElbowSetpoint());
         SmartDashboard.putNumber("Elbow Pot", this.getElbowPotPos());
         SmartDashboard.putNumber("Elbow Motor Output", this._elbowMotor.get());
@@ -442,6 +442,7 @@ public class Arm extends SubsystemBase {
         //ArmJointAngles jointAngles = this.jointAnglesFrom2DPose(setpoint);
         //System.out.println("Calculated Angles: Shoulder " + jointAngles.shoulderJointAngle + " elbow: " + jointAngles.elbowJointAngle);
         //_shoulderMotorPID.setGoal(jointAngles.getShoulderJointAngle());
+        System.out.println("Shoulder Setpoint: " + shoulderPos);
         _shoulderMotorPID.reset(this.getShoulderJointAngle());
         _shoulderMotorPID.setGoal(shoulderPos);
     }
@@ -670,6 +671,7 @@ public class Arm extends SubsystemBase {
         _elbowMotorPID.reset(this.getElbowJointAngle());
         //_elbowMotorPID.setGoal(jointAngles.getElbowJointAngle());
         _elbowMotorPID.setGoal(elbowPos);
+        System.out.println("Elbow Setpoint: " + elbowPos);
     }
 
     /**
@@ -763,7 +765,7 @@ public class Arm extends SubsystemBase {
             speed = 0;
         }
         SmartDashboard.putNumber("Elbow speed", speed);        
-        //_elbowMotor.set(speed);
+        _elbowMotor.set(speed);
     }
 
     public int getShoulderPotPos() {

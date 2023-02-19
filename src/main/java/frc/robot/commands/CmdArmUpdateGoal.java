@@ -18,8 +18,8 @@ public class CmdArmUpdateGoal extends CommandBase {
     @Override
     public void initialize() {
         _armSubsystem.setCurrentArmPosition(_position);
-        _armSubsystem.shoulderPIDSetGoal(_position);
-        _armSubsystem.elbowPIDSetGoal(_position);
+        // _armSubsystem.shoulderPIDSetGoal(_position);
+        // _armSubsystem.elbowPIDSetGoal(_position);
         _armSubsystem.setDesiredWristPosition(_position);
         System.out.println("Updated arm position to " + _position);
     }

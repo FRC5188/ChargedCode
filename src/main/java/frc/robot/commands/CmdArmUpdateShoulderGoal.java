@@ -16,6 +16,7 @@ public class CmdArmUpdateShoulderGoal extends CommandBase {
   @Override
   public void initialize() {
     _armSubsystem.shoulderPIDSetGoal(_position);
+    System.out.println("Updated Elbow Goal");
   }
 
   @Override
