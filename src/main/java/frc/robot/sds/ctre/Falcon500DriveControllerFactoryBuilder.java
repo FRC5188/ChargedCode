@@ -6,6 +6,8 @@ import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 import com.ctre.phoenix.motorcontrol.TalonFXInvertType;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
+
+import frc.robot.Constants;
 import frc.robot.sds.DriveController;
 import frc.robot.sds.DriveControllerFactory;
 import frc.robot.sds.ModuleConfiguration;
@@ -93,6 +95,8 @@ public final class Falcon500DriveControllerFactoryBuilder {
         private ControllerImplementation(TalonFX motor, double sensorVelocityCoefficient) {
             this.motor = motor;
             this.sensorVelocityCoefficient = sensorVelocityCoefficient;
+
+            motor.configOpenloopRamp(Constants.AssortedConstants.DRIVE_RAMP_SECONDS);
         }
 
         @Override
@@ -103,6 +107,16 @@ public final class Falcon500DriveControllerFactoryBuilder {
         @Override
         public double getStateVelocity() {
             return motor.getSelectedSensorVelocity() * sensorVelocityCoefficient;
+        }
+
+        @Override
+        public double getEncoderValue() {
+            // getSelectedSensorPosition gives back ticks, so divide by ticks per rotation to get number of rotations
+            // then multiply by wheel circumference to find how far we've driven
+            return (motor.getSelectedSensorPosition() / 2048) * (4 * Math.PI);
+        }
+        public double getDriveEncoderPosition() {
+            return motor.getSelectedSensorPosition();
         }
     }
 }

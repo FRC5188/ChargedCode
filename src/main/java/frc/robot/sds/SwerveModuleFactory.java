@@ -1,5 +1,7 @@
 package frc.robot.sds;
 
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 
@@ -57,8 +59,18 @@ public class SwerveModuleFactory<DriveConfiguration, SteerConfiguration> {
             return steerController.getStateAngle();
         }
 
+        @Override 
+        public SwerveModulePosition getModulePosition() {
+            return new SwerveModulePosition(driveController.getEncoderValue(), new Rotation2d(this.getSteerAngle()));
+        }
+        public double getDriveEncoderPosition() {
+            return driveController.getDriveEncoderPosition();
+        }
+
         @Override
         public void set(double driveVoltage, double steerAngle) {
+
+
             steerAngle %= (2.0 * Math.PI);
             if (steerAngle < 0.0) {
                 steerAngle += 2.0 * Math.PI;

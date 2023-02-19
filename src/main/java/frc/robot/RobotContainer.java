@@ -4,8 +4,7 @@
 
 package frc.robot;
 
-import com.ctre.phoenix.motorcontrol.NeutralMode;
-import com.kauailabs.navx.frc.Tracer;
+import com.pathplanner.lib.PathPlanner;
 
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
@@ -27,9 +26,10 @@ import frc.robot.commands.CmdArmWristPosition;
 import frc.robot.commands.CmdArmDefault;
 import frc.robot.commands.CmdArmManual;
 import frc.robot.commands.CmdArmRunElbowPID;
-import frc.robot.subsystems.Drive;
-import frc.robot.subsystems.Arm.ArmPosition;
 import frc.robot.subsystems.Arm;
+import frc.robot.subsystems.Drive;
+import frc.robot.subsystems.Vision;
+import frc.robot.subsystems.Arm.ArmPosition;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -41,7 +41,10 @@ import frc.robot.subsystems.Arm;
  * subsystems, commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
-    private final Drive _driveSubsystem = new Drive();
+  // The robot's subsystems and commands are defined here...
+  private final Vision _visionSubsystem = Vision.getInstance();
+
+    private final Drive _driveSubsystem = new Drive(_visionSubsystem);
     private final Arm _armSubsystem = new Arm();
     private final XboxController _driverController = new XboxController(0);
     
@@ -114,8 +117,9 @@ public class RobotContainer {
      * @return the command to run in autonomous
      */
     public Command getAutonomousCommand() {
-        // An ExampleCommand will run in autonomous
-        return new InstantCommand();
+        return _driveSubsystem.followTrajectoryCommand(
+      PathPlanner.loadPath("TEST_Straight_Line", 3, 4), 
+          true);
     }
 
     private static double deadband(double value, double deadband) {
