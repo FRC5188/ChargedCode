@@ -24,7 +24,7 @@ public final class Constants {
     public static class OperatorConstants {
         public static final int kDriverControllerPort = 0;
     }
-    
+
     public final class ButtonMappings {
         /*
          * The class that holds the button mappings for an X-box controller
@@ -48,13 +48,13 @@ public final class Constants {
         public final static int SHOULDER_PORT_POT = 1;
     }
 
-    public static class Position {
-        public static final double StartingYPosition = 0;
-
+    public static class CanIDs {
         public static final int FRONT_LEFT_DRIVE_ID = 1;
         public static final int FRONT_LEFT_TURNING_ID = 2;
+        public static final int FRONT_LEFT_ENCODER_ID = 3;
 
         public static final int FRONT_RIGHT_DRIVE_ID = 4;
+        public static final int FRONT_RIGHT_TURNING_ID = 5;
         public static final int FRONT_RIGHT_ENCODER_ID = 6;
 
         public static final int BACK_LEFT_DRIVE_ID = 7;
@@ -73,15 +73,6 @@ public final class Constants {
 
     public static class PHPorts {
         public static int WRIST_SOLENOID_PORT = 0;
-    }
-
-    /** added PID constants+ */
-    public static class PID {
-        public static final double ShoulderMotorkP = 0.0;
-        public static final double ShoulderMotorkI = 0.0;
-        public static final double ShoulderMotorkD = 0.0;
-        public static final double ShoulderMotorkTolerance = 0.0;
-
     }
 
     /**
