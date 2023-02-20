@@ -8,15 +8,15 @@ public class CmdArmUpdateShoulderGoal extends CommandBase {
   private Arm _armSubsystem;
   private ArmPosition _position;
 
-  public CmdArmUpdateShoulderGoal(Arm armSubsystem, ArmPosition position) {
+  public CmdArmUpdateShoulderGoal(Arm armSubsystem) {
     _armSubsystem = armSubsystem;
-    _position = position;
   }
 
   @Override
   public void initialize() {
+    _position = _armSubsystem.getCurrentArmPosition();
     _armSubsystem.shoulderPIDSetGoal(_position);
-    System.out.println("Updated Elbow Goal");
+    System.out.println("Updated Shoulder Goal to " + _position);
   }
 
   @Override

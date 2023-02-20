@@ -25,7 +25,7 @@ public class Vision extends SubsystemBase {
     private PhotonPoseEstimator photonPoseEstimator;
     private static Vision _instance = null;
 
-    private Vision(){
+    public Vision(){
         this.photonCamera = new PhotonCamera(Constants.Vision.PhotonVision.PHOTON_CAMERA_NAME);
         this.photonPoseEstimator = new PhotonPoseEstimator(getApriltagFieldLayout(), PoseStrategy.AVERAGE_BEST_TARGETS, photonCamera, Camera.DIFFERENCE_BETWEEN_ROBOT_CAMERA);
     }

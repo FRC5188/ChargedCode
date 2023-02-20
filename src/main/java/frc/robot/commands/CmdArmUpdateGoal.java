@@ -22,6 +22,7 @@ public class CmdArmUpdateGoal extends CommandBase {
         // _armSubsystem.elbowPIDSetGoal(_position);
         _armSubsystem.setDesiredWristPosition(_position);
         System.out.println("Updated arm position to " + _position);
+        System.out.println("Current position is " + _armSubsystem.getCurrentArmPosition());
     }
 
     @Override

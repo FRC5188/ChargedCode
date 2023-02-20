@@ -36,9 +36,9 @@ public class Arm extends SubsystemBase {
     private final double ELBOW_neg90_DEGREE_POT_OFFSET = 2058;
 
     // All in degrees
-    private final double SHOULDER_UPPER_SOFT_STOP = 95;
+    private final double SHOULDER_UPPER_SOFT_STOP = 115;
     private final double SHOULDER_LOWER_SOFT_STOP = 5;
-    private final double ELBOW_UPPER_SOFT_STOP = 100;
+    private final double ELBOW_UPPER_SOFT_STOP = 120;
     private final double ELBOW_LOWER_SOFT_STOP = -2;
 
     // The y,z position of the shoulder joint relative to the floor
@@ -158,10 +158,31 @@ public class Arm extends SubsystemBase {
     }
 
     private final double STORED_SHOULDER_POS = 95;
-    private final double STORED_ELBOW_POS = 25;
+    private final double STORED_ELBOW_POS = 18;
 
-    private final double GROUND_PICKUP_SHOULDER_POS = 44;
-    private final double GROUND_PICKUP_ELBOW_POS = 9;
+    private final double MID_CONE_SHOULDER_POS = 83;
+    private final double MID_CONE_ELBOW_POS = 88;
+
+    private final double MID_CONE_SHOULDER_PLACE_POS = 76;
+    private final double MID_CONE_ELBOW_PLACE_POS = 59;
+
+    private final double MID_CUBE_SHOULDER_POS = 90;
+    private final double MID_CUBE_ELBOW_POS = 67;
+
+    private final double HIGH_CONE_SPIT_SHOUDLER_POS = 53;
+    private final double HIGH_CONE_SPIT_ELBOW_POS = 110;
+
+    private final double HIGH_CONE_DROP_SHOULDER_POS = 38;
+    private final double HIGH_CONE_DROP_ELBOW_POS = 121;
+
+    private final double HIGH_CUBE_SHOULDER_POS = 80;
+    private final double HIGH_CUBE_ELBOW_POS = 91;
+
+    private final double HUMAN_PLAYER_SHOULDER_POS = 110;
+    private final double HUMAN_PLAYER_ELBOW_POS = 93;
+
+    private final double GROUND_PICKUP_SHOULDER_POS = 42;
+    private final double GROUND_PICKUP_ELBOW_POS = -7;
 
     /**
      * constants for the above defined in the ArmPosition Enum.
@@ -176,7 +197,7 @@ public class Arm extends SubsystemBase {
 
     private final double GROUND_PICKUP_Y_POS = 0.0;
     private final double GROUND_PICKUP_X_POS = 0.0;
-    private final WristPosition GROUND_PICKUP_WRIST_POS = WristPosition.Parallel;
+    private final WristPosition GROUND_PICKUP_WRIST_POS = WristPosition.Perpendicular;
     private final Arm2DPosition GROUND_PICKUP_SETPOINT = new Arm2DPosition(GROUND_PICKUP_Y_POS,
             GROUND_PICKUP_X_POS,
             GROUND_PICKUP_WRIST_POS);
@@ -301,7 +322,7 @@ public class Arm extends SubsystemBase {
 
         // set motor breaking
         _shoulderMotor.setNeutralMode(NeutralMode.Brake);
-        _elbowMotor.setNeutralMode(NeutralMode.Coast);
+        _elbowMotor.setNeutralMode(NeutralMode.Brake);
 
         // Set inversion
         _shoulderMotor.setInverted(InvertType.None);
@@ -375,7 +396,7 @@ public class Arm extends SubsystemBase {
      */
     public void setWristPosition(WristPosition position) {
         System.out.println("Setting wrist position to " + position);
-        //_wristSolenoid.set(position == WristPosition.Perpendicular);
+        _wristSolenoid.set(position == WristPosition.Perpendicular);
     }
 
     /**
@@ -409,22 +430,28 @@ public class Arm extends SubsystemBase {
                 shoulderPos = GROUND_PICKUP_SHOULDER_POS;
                 break;
             case HighCone:
-                setpoint = HIGH_CONE_SETPOINT;
+                //setpoint = HIGH_CONE_SETPOINT;
+                shoulderPos = HIGH_CONE_DROP_SHOULDER_POS;
                 break;
             case HighCube:
-                setpoint = HIGH_CUBE_SETPOINT;
+                //setpoint = HIGH_CUBE_SETPOINT;
+                shoulderPos = HIGH_CUBE_SHOULDER_POS;
                 break;
             case LoadStationPickUp:
-                setpoint = LOAD_STATION_PICKUP_SETPOINT;
+                //setpoint = LOAD_STATION_PICKUP_SETPOINT;
+                shoulderPos = HUMAN_PLAYER_SHOULDER_POS;
                 break;
             case LowScore:
-                setpoint = LOW_SCORE_SETPOINT;
+                //setpoint = LOW_SCORE_SETPOINT;
+                shoulderPos = GROUND_PICKUP_SHOULDER_POS;
                 break;
             case MiddleCone:
-                setpoint = MIDDLE_CONE_SETPOINT;
+                //setpoint = MIDDLE_CONE_SETPOINT;
+                shoulderPos = MID_CONE_SHOULDER_POS;
                 break;
             case MiddleCube:
-                setpoint = MIDDLE_CUBE_SETPOINT;
+                //setpoint = MIDDLE_CUBE_SETPOINT;
+                shoulderPos = MID_CUBE_SHOULDER_POS;
                 break;
             case Stored:
                 shoulderPos = STORED_SHOULDER_POS;
@@ -638,22 +665,28 @@ public class Arm extends SubsystemBase {
                 elbowPos = GROUND_PICKUP_ELBOW_POS;
                 break;
             case HighCone:
-                setpoint = HIGH_CONE_SETPOINT;
+                //setpoint = HIGH_CONE_SETPOINT;
+                elbowPos = HIGH_CONE_DROP_ELBOW_POS;
                 break;
             case HighCube:
-                setpoint = HIGH_CUBE_SETPOINT;
+                //setpoint = HIGH_CUBE_SETPOINT;
+                elbowPos = HIGH_CUBE_ELBOW_POS;
                 break;
             case LoadStationPickUp:
-                setpoint = LOAD_STATION_PICKUP_SETPOINT;
+                //setpoint = LOAD_STATION_PICKUP_SETPOINT;
+                elbowPos = HUMAN_PLAYER_ELBOW_POS;
                 break;
             case LowScore:
-                setpoint = LOW_SCORE_SETPOINT;
+                //setpoint = LOW_SCORE_SETPOINT;
+                elbowPos = GROUND_PICKUP_ELBOW_POS;
                 break;
             case MiddleCone:
-                setpoint = MIDDLE_CONE_SETPOINT;
+                //setpoint = MIDDLE_CONE_SETPOINT;
+                elbowPos = MID_CONE_ELBOW_POS;
                 break;
             case MiddleCube:
-                setpoint = MIDDLE_CUBE_SETPOINT;
+                //setpoint = MIDDLE_CUBE_SETPOINT;
+                elbowPos = MID_CUBE_ELBOW_POS;
                 break;
             case Stored:
                 //setpoint = STORED_SETPOINT;
@@ -755,7 +788,7 @@ public class Arm extends SubsystemBase {
             speed = 0;
         }
         SmartDashboard.putNumber("Shoulder speed", speed);
-        //_shoulderMotor.set(speed);
+        _shoulderMotor.set(speed);
     }
 
     public void setElbowMotorSpeed(double speed) {
@@ -939,12 +972,12 @@ public class Arm extends SubsystemBase {
         }
     }
 
-    public ArmPosition checkArmPosition() {
+    public ArmPosition getCurrentArmPosition() {
         return _currentArmPos;
     }
 
     public CommandGroupBase getArmMovementCommand(ArmPosition targetPosition){
-        if(checkArmPosition() == ArmPosition.Stored){
+        if(getCurrentArmPosition() == ArmPosition.Stored){
             if(targetPosition == ArmPosition.Stored){
                 // If it is where it is then return an empty group that doesn't do anything. 
                 return new SequentialCommandGroup();

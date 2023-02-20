@@ -99,6 +99,7 @@ public class Drive extends SubsystemBase {
     private AHRS _navx;
 
     private SwerveDrivePoseEstimator _odometry;
+    private double _speedMultiplier = 0.4;
 
     // These are our modules
     private SwerveModule _frontLeftModule;
@@ -170,6 +171,8 @@ public class Drive extends SubsystemBase {
 
         _kinematics = new SwerveDriveKinematics(
                 // Front left
+                new Translation2d(CHASSIS_WIDTH_METERS / 2.0, CHASSIS_HEIGHT_METERS / 2.0),
+                //
                 new Translation2d(CHASSIS_WIDTH_METERS / 2.0, -CHASSIS_HEIGHT_METERS / 2.0),
                 // Back left
                 new Translation2d(-CHASSIS_WIDTH_METERS / 2.0, CHASSIS_HEIGHT_METERS / 2.0),
@@ -230,6 +233,13 @@ public class Drive extends SubsystemBase {
         // counter-clockwise makes the angle increase.
         return Rotation2d.fromDegrees(360.0 - _navx.getYaw());
     }
+    public void setSpeedMultiplier(double multiplier){
+        _speedMultiplier = multiplier;
+    }
+
+    public double getSpeedMultiplier(){
+        return this._speedMultiplier;
+    }
 
     public Command followTrajectoryCommand(PathPlannerTrajectory traj, boolean isFirstPath) {
         return new SequentialCommandGroup(
@@ -256,6 +266,7 @@ public class Drive extends SubsystemBase {
     public void drive(ChassisSpeeds chassisSpeeds) {
         _chassisSpeeds = chassisSpeeds;
     }
+
 
     @Override
     public void periodic() {

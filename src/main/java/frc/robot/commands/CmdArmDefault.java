@@ -22,7 +22,7 @@ public class CmdArmDefault extends CommandBase {
         // _armSubsystem.shoulderPIDSetGoal(_armSubsystem.checkArmPosition());
         // _armSubsystem.elbowPIDSetGoal(_armSubsystem.checkArmPosition());
         // _armSubsystem.setWristPosition(_armSubsystem.checkArmPosition());
-        _armSubsystem.setCurrentArmPosition(_armSubsystem.checkArmPosition());
+        //_armSubsystem.setCurrentArmPosition(_armSubsystem.checkArmPosition());
     }
 
     @Override

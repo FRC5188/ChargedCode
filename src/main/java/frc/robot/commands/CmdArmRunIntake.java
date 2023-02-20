@@ -39,6 +39,6 @@ public class CmdArmRunIntake extends CommandBase {
 
     @Override
     public boolean isFinished() {
-        return false;
+        return (this._intakeSpeed == 0);
     }
 }

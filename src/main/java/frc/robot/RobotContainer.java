@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.DefaultDriveCommand;
+import frc.robot.commands.GrpInitArm;
 import frc.robot.commands.CmdArmRunIntake;
 import frc.robot.commands.CmdArmRunShoulderPID;
 import frc.robot.commands.CmdArmSetElbowBrakeMode;
@@ -23,6 +24,7 @@ import frc.robot.commands.CmdArmUpdateElbowGoal;
 import frc.robot.commands.CmdArmUpdateGoal;
 import frc.robot.commands.CmdArmUpdateShoulderGoal;
 import frc.robot.commands.CmdArmWristPosition;
+import frc.robot.commands.CmdDriveChangeSpeedMult;
 import frc.robot.commands.CmdArmDefault;
 import frc.robot.commands.CmdArmManual;
 import frc.robot.commands.CmdArmRunElbowPID;
@@ -42,21 +44,27 @@ import frc.robot.subsystems.Arm.ArmPosition;
  */
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
-  private final Vision _visionSubsystem = Vision.getInstance();
-
+    private final Vision _visionSubsystem = new Vision();
     private final Drive _driveSubsystem = new Drive(_visionSubsystem);
     private final Arm _armSubsystem = new Arm();
-    private final XboxController _driverController = new XboxController(0);
-    
-    
-    private final XboxController _operatorController = new XboxController(1);
-    
-    private JoystickButton _operatorAButton = new JoystickButton(_operatorController, XboxController.Button.kA.value);
-    private JoystickButton _operatorBButton = new JoystickButton(_operatorController, XboxController.Button.kB.value);
-    private JoystickButton _operatorXButton = new JoystickButton(_operatorController, XboxController.Button.kX.value);
-    private JoystickButton _operatorYButton = new JoystickButton(_operatorController, XboxController.Button.kY.value);
-    
 
+    private final XboxController _driverController = new XboxController(0);
+    private final JoystickButton _driverButtonX = new JoystickButton(_driverController, Constants.ButtonMappings.X_BUTTON);
+    
+    private final Joystick _operatorController = new Joystick(1);
+    
+    private JoystickButton _opButtonOne = new JoystickButton(_operatorController, 1);
+    private JoystickButton _opButtonTwo = new JoystickButton(_operatorController, 2);
+    private JoystickButton _opButtonThree = new JoystickButton(_operatorController, 3);
+    private JoystickButton _opButtonFour = new JoystickButton(_operatorController, 4);
+    private JoystickButton _opButtonFive = new JoystickButton(_operatorController, 5);
+    private JoystickButton _opButtonSix = new JoystickButton(_operatorController, 6);
+    private JoystickButton _opButtonSeven = new JoystickButton(_operatorController, 7);
+    private JoystickButton _opButtonEight = new JoystickButton(_operatorController, 8);
+    private JoystickButton _opButtonNine = new JoystickButton(_operatorController, 9);
+    private JoystickButton _opButtonTen = new JoystickButton(_operatorController, 10);
+    private JoystickButton _opButtonEleven = new JoystickButton(_operatorController, 11);
+    private JoystickButton _opButtonTwelve = new JoystickButton(_operatorController, 12);
 
     // Constant Arm Multiplier In To Reduce Arm Speed
     private static final double ARM_MULTIPLIER = 0.3;
@@ -68,9 +76,9 @@ public class RobotContainer {
         // Driver Configuration
         _driveSubsystem.setDefaultCommand(new DefaultDriveCommand(
                                                _driveSubsystem,
-                                               () -> (-modifyAxis(_driverController.getLeftY()) * Drive.MAX_VELOCITY_METERS_PER_SECOND),
-                                               () -> (-modifyAxis(_driverController.getLeftX()) * Drive.MAX_VELOCITY_METERS_PER_SECOND),
-                                               () -> (-modifyAxis(_driverController.getRightX()) * Drive.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND)));
+                                               () -> (-modifyAxis(_driverController.getLeftY()) * Drive.MAX_VELOCITY_METERS_PER_SECOND * _driveSubsystem.getSpeedMultiplier()),
+                                               () -> (-modifyAxis(_driverController.getLeftX()) * Drive.MAX_VELOCITY_METERS_PER_SECOND * _driveSubsystem.getSpeedMultiplier()),
+                                               () -> (-modifyAxis(_driverController.getRightX()) * Drive.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND * _driveSubsystem.getSpeedMultiplier())));
         
         _armSubsystem.setDefaultCommand(new CmdArmDefault(_armSubsystem));
 
@@ -99,16 +107,40 @@ public class RobotContainer {
         // // No requirements because we don't need to interrupt anything
         // .whenPressed(m_drivetrainSubsystem::zeroGyroscope);
 
-        //_operatorAButton.onTrue(new CmdArmRunIntake(_armSubsystem));
+        // Driver Reduce Speed 40%
+        _driverButtonX.whileFalse(new CmdDriveChangeSpeedMult(_driveSubsystem, 0.4));
+        _driverButtonX.whileTrue(new CmdDriveChangeSpeedMult(_driveSubsystem, 1.0)); 
 
-        _operatorAButton.whileTrue(new CmdArmUpdateElbowGoal(_armSubsystem, _armSubsystem.checkArmPosition()));
+        // Intake On/Off
+        _opButtonTwo.whileTrue(new CmdArmRunIntake(_armSubsystem, 0.4));
+        _opButtonTwo.whileFalse(new CmdArmRunIntake(_armSubsystem, 0.0));
 
-        _operatorBButton.whileTrue(new CmdArmRunIntake(_armSubsystem, 0.4));
-        _operatorBButton.whileFalse(new CmdArmRunIntake(_armSubsystem, 0));
+        // Set Wrist Position
+        _opButtonOne.whileTrue(new CmdArmWristPosition(_armSubsystem));
 
-        _operatorXButton.whileTrue(new CmdArmUpdateShoulderGoal(_armSubsystem, _armSubsystem.checkArmPosition()));
+        // Flip Around Intake
+        _opButtonEight.whileTrue(new CmdArmRunIntake(_armSubsystem, -0.4));
+        _opButtonEight.whileFalse(new CmdArmRunIntake(_armSubsystem, 0));
 
-        _operatorYButton.whileTrue(new CmdArmUpdateGoal(_armSubsystem, ArmPosition.GroundPickUp));
+        //_opButtonSeven.whileTrue(new CmdArmUpdateGoal(_armSubsystem, ArmPosition.LowScore));
+        _opButtonNine.whileTrue(new CmdArmUpdateGoal(_armSubsystem, ArmPosition.Stored));
+        _opButtonTen.whileTrue(new CmdArmUpdateGoal(_armSubsystem, ArmPosition.LoadStationPickUp));
+        _opButtonThree.whileTrue(new CmdArmUpdateGoal(_armSubsystem, ArmPosition.MiddleCube));
+        _opButtonFour.whileTrue(new CmdArmUpdateGoal(_armSubsystem, ArmPosition.MiddleCone));
+        _opButtonFive.whileTrue(new CmdArmUpdateGoal(_armSubsystem, ArmPosition.HighCube));
+        _opButtonSix.whileTrue(new CmdArmUpdateGoal(_armSubsystem, ArmPosition.HighCone));
+
+        _opButtonEleven.whileTrue(new CmdArmUpdateElbowGoal(_armSubsystem));
+        _opButtonTwelve.whileTrue(new CmdArmUpdateShoulderGoal(_armSubsystem));
+
+        // _operatorAButton.whileTrue(new CmdArmUpdateElbowGoal(_armSubsystem));
+
+        // _operatorBButton.whileTrue(new CmdArmRunIntake(_armSubsystem, 0.4));
+        // _operatorBButton.whileFalse(new CmdArmRunIntake(_armSubsystem, 0));
+
+        // _operatorXButton.whileTrue(new CmdArmUpdateShoulderGoal(_armSubsystem));
+
+        // _operatorYButton.whileTrue(new CmdArmUpdateGoal(_armSubsystem, ArmPosition.GroundPickUp));
     }
 
     /**
@@ -120,6 +152,10 @@ public class RobotContainer {
         return _driveSubsystem.followTrajectoryCommand(
       PathPlanner.loadPath("TEST_Straight_Line", 3, 4), 
           true);
+    }
+
+    public Command getInitialArmPosCommand() {
+        return new GrpInitArm(_armSubsystem);
     }
 
     private static double deadband(double value, double deadband) {

@@ -12,18 +12,18 @@ import frc.robot.subsystems.Arm.WristPosition;
 public class CmdArmWristPosition extends CommandBase {
   /** Creates a new CmdArmWristPosition. */
   private Arm _armSubsystem;
-  private ArmPosition _setpoint;
   
-  public CmdArmWristPosition(Arm armSubsystem, ArmPosition setpoint) {
+  public CmdArmWristPosition(Arm armSubsystem) {
     this._armSubsystem = armSubsystem;
-    this._setpoint = setpoint;
     // Use addRequirements() here to declare subsystem dependencies.
     this.addRequirements(_armSubsystem); 
   }
 
   @Override
     public void initialize() {
-      _armSubsystem.setWristPosition(_setpoint);
+      ArmPosition position = _armSubsystem.getCurrentArmPosition();
+      _armSubsystem.setWristPosition(position);
+      System.out.println("set wrist position to " + position);
     }
 
   // Returns true when the command should end.
