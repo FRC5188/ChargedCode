@@ -1,6 +1,10 @@
+package frc.robot.autonomous;
+
 import java.util.ArrayList;
+import java.util.List;
 
 import com.pathplanner.lib.PathConstraints;
+import com.pathplanner.lib.PathPlanner;
 import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.PathPoint;
 
@@ -8,9 +12,9 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 
-protected class TrajectoryBuilder {
+public class TrajectoryBuilder {
     private PathConstraints _pathConstraints;
-    private ArrayList<PathPoint> _pathPoints;
+    private List<PathPoint> _pathPoints = new ArrayList<>();
 
     /** Should only be called once and sets the constraints for velocity and acceleration for the entire path.  */
     public TrajectoryBuilder addConstraints(double maxVelocity, double maxAcceleration){
@@ -31,7 +35,7 @@ protected class TrajectoryBuilder {
     
     /** Called whenver you've finished designing your current path. It returns the trajectory itself. */
     public PathPlannerTrajectory buildTrajectory(){
-        return new PathPlanner.generatePath(this._pathConstraints, this._pathPoints);
+        return PathPlanner.generatePath(this._pathConstraints, this._pathPoints);
     }
 
     /**  When you need to see information about the class call this method to print important information to the console.  */

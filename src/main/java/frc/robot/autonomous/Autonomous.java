@@ -1,3 +1,9 @@
+package frc.robot.autonomous;
+
+import com.pathplanner.lib.PathPlannerTrajectory;
+
+import edu.wpi.first.math.trajectory.Trajectory;
+import frc.robot.subsystems.Drive;
 
 public abstract class Autonomous {
     public enum FIELD_POSITIONS {
@@ -52,19 +58,13 @@ public abstract class Autonomous {
         RIGHT_SIDE_GRID_CUBE_THIRD_CLOSEST,
     }
 
-    public enum GAMEPLAY_MODE {
-        AUTO,
-        TELEOP
-    }
-
-    public static void runAutonomous(GAMEPLAY_MODE mode, FIELD_POSITIONS fieldPosition){
-        switch(mode){
-            case AUTO:
-                // Add code for if in autonomous.
-                break;
-            case TELEOP:
-                // Add code for if in teleop. Should be almost the same as for auto, but the driver should be able to take control back if needed. 
-                break;
-        }
+    public static void movePosition(FIELD_POSITIONS targetPosition, Drive driveSubsystem){
+        // Create the trajectory to be executed to move to that position. 
+        PathPlannerTrajectory targetTrajectory = new TrajectoryBuilder()
+                                                .setStartPositionAsCurrent(driveSubsystem.getPose())
+                                                .addConstraints(3, 4)
+                                                // Doesn't Work Add Points For Each Field Position
+                                                .buildTrajectory();
+        // Execute trajectory...
     }
 }
