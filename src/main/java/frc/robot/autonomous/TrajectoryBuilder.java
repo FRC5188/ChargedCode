@@ -27,6 +27,11 @@ public class TrajectoryBuilder {
         return this;
     }
 
+    public TrajectoryBuilder addPathPoint(PathPoint pathPoint){
+        this._pathPoints.add(pathPoint);
+        return this;
+    }
+
     /** <STRONG>Must be called as the first operation of the builder</STRONG>. It sets that start position to the current positon of the robot that is passed in. */
     public TrajectoryBuilder setStartPositionAsCurrent(Pose2d currentRobotPose){
         this._pathPoints.add(new PathPoint(currentRobotPose.getTranslation(), currentRobotPose.getRotation()));
