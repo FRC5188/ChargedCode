@@ -944,32 +944,83 @@ public class Arm extends SubsystemBase {
         _previousArmPos = _currentArmPos;
         _currentArmPos = pos;
     }
-
+// TODO Fix these.
     public boolean isSafeForShoulder() {
-        if ((_previousArmPos == ArmPosition.Stored && _currentArmPos != ArmPosition.Stored) && !_elbowIsGood) {
-            //System.out.println("NOT SAFE FOR SHOULDER");
-            return this.elbowMotorPIDIsFinished();
-        } else {
-            return true;
-        }
+        //Check if the elbow is in danger of colliding with the robot body in an unpleasant way.
+        /*
+         * if (the elbow is in danger){
+         * Don't move
+         * } 
+         * else {
+         * Keep going
+         * }
+         * 
+         * 
+         */
+        //Check if the wrist is in danger of colliding with the robot body or the ground in an unpleasant way.
+        /*
+         * if (the wrist is in danger){
+         * Don't move
+         * } 
+         * else {
+         * Keep going
+         * }
+         * 
+         * 
+         */
+        return false; 
     }
 
     public boolean isSafeForElbow() {
-        if ((_previousArmPos != ArmPosition.Stored && _currentArmPos == ArmPosition.Stored) && !_shoulderIsGood) {
-            //System.out.println("NOT SAFE FOR ELBOW");
-            return this.shoulderMotorPIDIsFinished();
-        } else {
-            return true;
-        }
+        //Check if the shoulder is in danger of colliding with the robot body or the ground in an unpleasant way.
+        /*
+         * if (the shoulder is in danger){
+         * Don't move
+         * } 
+         * else {
+         * Keep going
+         * }
+         * 
+         * 
+         */
+        //Check if the wrist is in danger of colliding with the robot body or the ground in an unpleasant way.
+        /*
+         * if (the wrist is in danger){
+         * Don't move
+         * } 
+         * else {
+         * Keep going
+         * }
+         * 
+         * 
+         */
+        return false;
     }
 
     public boolean isSafeForWrist() {
-        if ((_previousArmPos == ArmPosition.Stored && _currentArmPos != ArmPosition.Stored) && (!_elbowIsGood || !_shoulderIsGood)) {
-            //System.out.println("NOT SAFE FOR WRIST");
-            return this.elbowMotorPIDIsFinished() && this.shoulderMotorPIDIsFinished();
-        } else {
-            return false;
-        }
+        //Check if the shoulder is in danger of colliding with the robot body or the ground in an unpleasant way.
+        /*
+         * if (the shoulder is in danger){
+         * Don't move
+         * } 
+         * else {
+         * Keep going
+         * }
+         * 
+         * 
+         */
+        //Check if the elbow is in danger of colliding with the robot body in an unpleasant way.
+        /*
+         * if (the elbow is in danger){
+         * Don't move
+         * } 
+         * else {
+         * Keep going
+         * }
+         * 
+         * 
+         */
+        return false;
     }
 
     public ArmPosition getCurrentArmPosition() {
