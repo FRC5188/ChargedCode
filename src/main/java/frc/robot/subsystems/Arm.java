@@ -473,25 +473,26 @@ public class Arm extends SubsystemBase {
 
         // NOTE: 2/13/23 garrett
         // While rewriting the math from the previous commit i realize i was missing
-        // parenthesis on line 419. that might
+        // parentheses on line 419. that might
         // have been the issue... :( Still moving forward with this code for now since I
-        // have more confidance in it.
-        // Here is the commit I refered to:
+        // have more confidence in it.
+        // Here is the commit I referred to:
         // https://github.com/FRC5188/ChargedCode/commit/a35d8567eb73343b4be02176031213db640c6627
 
         //TODO implement the arm math
+
         double bigTriangleHypoSqrd = Math.pow(arm2DPosition.y, 2) + Math.pow(arm2DPosition.z, 2);
         //process of law of cosines
         double angleAlpha = Math.pow(SHOULDER_ARM_LENGTH, 2) + Math.pow(ELBOW_ARM_LENGTH, 2);
         angleAlpha = angleAlpha - bigTriangleHypoSqrd;
         angleAlpha = angleAlpha / (2 * SHOULDER_ARM_LENGTH * ELBOW_ARM_LENGTH);
-        double angleBigTriangle = Math.acos(angleAlpha);
-        double q2 = angleBigTriangle * -1;
+        angleAlpha = Math.acos(angleAlpha);
+        double q2 = angleAlpha * -1;
         double tanOfBeta = (ELBOW_ARM_LENGTH * Math.sin(q2)) / (SHOULDER_ARM_LENGTH + ELBOW_ARM_LENGTH * Math.cos(q2));
         double angleBeta = Math.atan(tanOfBeta);
         double angleGamma = Math.atan(arm2DPosition.z / arm2DPosition.y);
         double q1 = angleGamma + angleBeta;
-        return null;
+        return new ArmJointAngles(Math.toDegrees(q1), Math.toDegrees(q2));
     }
 
     /**
