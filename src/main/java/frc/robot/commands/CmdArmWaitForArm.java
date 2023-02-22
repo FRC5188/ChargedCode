@@ -5,8 +5,8 @@ import frc.robot.subsystems.Arm;
 
 public class CmdArmWaitForArm extends CommandBase {
   private Arm _armSubsystem;
-  private boolean _shoulderDone;
-  private boolean _elbowDone;
+  private boolean _shoulderDone = false;
+  private boolean _elbowDone = false;
   
   public CmdArmWaitForArm(Arm armSubsystem) {
     _armSubsystem = armSubsystem;

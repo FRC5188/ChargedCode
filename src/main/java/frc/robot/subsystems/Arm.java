@@ -158,7 +158,7 @@ public class Arm extends SubsystemBase {
     }
 
     private final double STORED_SHOULDER_POS = 95;
-    private final double STORED_ELBOW_POS = 18;
+    private final double STORED_ELBOW_POS = 17;
 
     private final double MID_CONE_SHOULDER_POS = 83;
     private final double MID_CONE_ELBOW_POS = 88;
@@ -178,17 +178,17 @@ public class Arm extends SubsystemBase {
     private final double HIGH_CUBE_SHOULDER_POS = 80;
     private final double HIGH_CUBE_ELBOW_POS = 91;
 
-    private final double HUMAN_PLAYER_SHOULDER_POS = 110;
-    private final double HUMAN_PLAYER_ELBOW_POS = 93;
+    private final double HUMAN_PLAYER_SHOULDER_POS = 100;
+    private final double HUMAN_PLAYER_ELBOW_POS = 90;
 
     private final double GROUND_PICKUP_SHOULDER_POS = 42;
     private final double GROUND_PICKUP_ELBOW_POS = -7;
 
-    private final double INTERMEDIATE_SCORING_SHOULDER_POS = 42;
-    private final double INTERMEDIATE_SCORING_ELBOW_POS = -7;
+    private final double INTERMEDIATE_SCORING_SHOULDER_POS = 95;
+    private final double INTERMEDIATE_SCORING_ELBOW_POS = 31;
 
-    private final double INTERMEDIATE_PICKUP_SHOULDER_POS = 42;
-    private final double INTERMEDIATE_PICKUP_ELBOW_POS = -7;
+    private final double INTERMEDIATE_PICKUP_SHOULDER_POS = 95;
+    private final double INTERMEDIATE_PICKUP_ELBOW_POS = 31;
 
     /**
      * constants for the above defined in the ArmPosition Enum.
@@ -581,14 +581,22 @@ public class Arm extends SubsystemBase {
         setElbowMotorSpeed(voltage);
     }
 
+    public double getShoulderError() {
+        return Math.abs(_shoulderMotorPID.getGoal().position - this.getShoulderJointAngle());
+    }
+
+    public double getElbowError() {
+        return Math.abs(_elbowMotorPID.getGoal().position - this.getElbowJointAngle());
+    }
+
     /** Checks if the joint motors are at their setpoints **/
     public boolean shoulderAtSetpoint() {
-        return _shoulderMotorPID.atSetpoint();
+        return getShoulderError() < SHOULDER_MOTOR_TOLERANCE;
     }
 
     /** Checks if the joint motors are at their setpoints **/
     public boolean elbowAtSetpoint() {
-        return _elbowMotorPID.atSetpoint();
+        return getElbowError() < ELBOW_MOTOR_TOLERANCE;
     }
 
     public void setShoulderMotorSpeed(double speed) {

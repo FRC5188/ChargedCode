@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.commands.DefaultDriveCommand;
+import frc.robot.commands.GrpMoveArmToPosition;
 import frc.robot.commands.CmdArmRunIntake;
 import frc.robot.commands.CmdArmUpdateGoal;
 import frc.robot.commands.CmdArmWristPosition;
@@ -107,15 +108,16 @@ public class RobotContainer {
         _opButtonOne.whileTrue(new CmdArmWristPosition(_armSubsystem));
 
         // Flip Around Intake
-        _opButtonEight.whileTrue(new CmdArmRunIntake(_armSubsystem, -0.4));
+        //_opButtonEight.whileTrue(new CmdArmRunIntake(_armSubsystem, -0.4));
 
         //_opButtonSeven.whileTrue(new CmdArmUpdateGoal(_armSubsystem, ArmPosition.LowScore));
-        _opButtonNine.whileTrue(new CmdArmUpdateGoal(_armSubsystem, ArmPosition.Stored));
-        _opButtonTen.whileTrue(new CmdArmUpdateGoal(_armSubsystem, ArmPosition.LoadStationPickUp));
-        _opButtonThree.whileTrue(new CmdArmUpdateGoal(_armSubsystem, ArmPosition.MiddleCube));
-        _opButtonFour.whileTrue(new CmdArmUpdateGoal(_armSubsystem, ArmPosition.MiddleCone));
-        _opButtonFive.whileTrue(new CmdArmUpdateGoal(_armSubsystem, ArmPosition.HighCube));
-        _opButtonSix.whileTrue(new CmdArmUpdateGoal(_armSubsystem, ArmPosition.HighCone));
+        // _opButtonNine.whileTrue(new CmdArmUpdateGoal(_armSubsystem, ArmPosition.Stored));
+        // _opButtonTen.whileTrue(new CmdArmUpdateGoal(_armSubsystem, ArmPosition.LoadStationPickUp));
+        // _opButtonThree.whileTrue(new CmdArmUpdateGoal(_armSubsystem, ArmPosition.MiddleCube));
+        // _opButtonFour.whileTrue(new CmdArmUpdateGoal(_armSubsystem, ArmPosition.MiddleCone));
+        // _opButtonFive.whileTrue(new CmdArmUpdateGoal(_armSubsystem, ArmPosition.HighCube));
+        // _opButtonSix.whileTrue(new CmdArmUpdateGoal(_armSubsystem, ArmPosition.HighCone));
+        _opButtonEight.onTrue(new GrpMoveArmToPosition(_armSubsystem, ArmPosition.LoadStationPickUp));
     }
 
     /**
