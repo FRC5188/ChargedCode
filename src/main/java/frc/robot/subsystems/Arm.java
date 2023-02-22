@@ -593,8 +593,7 @@ public class Arm extends SubsystemBase {
      */
     public boolean shoulderMotorPIDIsFinished() {
         //         // TODO: implement this
-
-        return false;
+        return this._shoulderMotorPID.atSetpoint();
     }
 
 
@@ -605,7 +604,7 @@ public class Arm extends SubsystemBase {
     public boolean elbowMotorPIDIsFinished() {
                 // TODO: implement this
 
-        return false;
+        return this._elbowMotorPID.atSetpoint();
     }
 
     /**
@@ -614,6 +613,8 @@ public class Arm extends SubsystemBase {
      */
     public void shoulderMotorPIDExec() {
         // TODO: implement this
+        double shoulderMotorPower = this._shoulderMotorPID.calculate(this.getShoulderJointAngle());
+        this.setShoulderMotorSpeed(shoulderMotorPower);
     }
 
     /**
@@ -622,7 +623,8 @@ public class Arm extends SubsystemBase {
      */
     public void elbowMotorPIDExec() {
         // TODO: implement this
-
+        double elbowMotorPower = this._elbowMotorPID.calculate(this.getElbowJointAngle());
+        this.setElbowMotorSpeed(elbowMotorPower);
     }
 
     /** Checks if the joint motors are at their setpoints **/
@@ -767,5 +769,42 @@ public class Arm extends SubsystemBase {
                 return false;
 
         }
+    }
+
+    public void SetArmGoal(ArmPosition armGoal) {
+
+        Arm2DPosition setpoint;
+        switch (armGoal) {
+            case GroundPickUp:
+                setpoint = GROUND_PICKUP_SETPOINT;
+                break;
+            case HighCone:
+                setpoint = HIGH_CONE_SETPOINT;
+                break;
+            case HighCube:
+                setpoint = HIGH_CUBE_SETPOINT;
+                break;
+            case LoadStationPickUp:
+                setpoint = LOAD_STATION_PICKUP_SETPOINT;
+                break;
+            case LowScore:
+                setpoint = LOW_SCORE_SETPOINT;
+                break;
+            case MiddleCone:
+                setpoint = MIDDLE_CONE_SETPOINT;
+                break;
+            case MiddleCube:
+                setpoint = MIDDLE_CUBE_SETPOINT;
+                break;
+            case Stored:
+                setpoint = STORED_SETPOINT;
+                break;
+            default:
+                setpoint = this.getArm2DPosition();
+                break;
+        }
+        ArmJointAngles angles = this.jointAnglesFrom2DPose(setpoint);
+        _shoulderMotorPID.setGoal(angles.shoulderJointAngle);
+        _elbowMotorPID.setGoal(angles.elbowJointAngle);
     }
 }
