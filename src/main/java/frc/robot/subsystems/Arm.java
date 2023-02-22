@@ -11,6 +11,7 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
@@ -40,6 +41,22 @@ public class Arm extends SubsystemBase {
     // arm segments lengths
     private final double SHOULDER_ARM_LENGTH = 28; // inches
     private final double ELBOW_ARM_LENGTH = 28.5; // inches
+
+    private final double ELBOW_MASS = 0;
+    private final double ELBOW_MOI = 0;
+    private final double ELBOW_CGRADIUS = 0;
+    private final DCMotor ELBOW_DC_MOTOR = DCMotor.getFalcon500(1).withReduction(200);
+
+    private final double SHOULDER_MASS = 0;
+    private final double SHOULDER_MOI = 0;
+    private final double SHOULDER_CGRADIUS = 0;
+    private final DCMotor SHOULDER_DC_MOTOR = DCMotor.getFalcon500(1).withReduction(200);
+
+    private JointConfig joint_Upper = new JointConfig(ELBOW_MASS, ELBOW_ARM_LENGTH,
+    ELBOW_MOI, ELBOW_CGRADIUS, ELBOW_DC_MOTOR);
+    
+    private JointConfig joint_lower = new JointConfig(SHOULDER_MASS, SHOULDER_ARM_LENGTH,
+    SHOULDER_MOI, SHOULDER_CGRADIUS, SHOULDER_DC_MOTOR);
 
     /**
      * A list of possible wrist positions.
