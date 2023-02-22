@@ -9,25 +9,14 @@ import com.pathplanner.lib.PathPlanner;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.FunctionalCommand;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.DefaultDriveCommand;
-import frc.robot.commands.GrpInitArm;
 import frc.robot.commands.CmdArmRunIntake;
-import frc.robot.commands.CmdArmRunShoulderPID;
-import frc.robot.commands.CmdArmSetElbowBrakeMode;
-import frc.robot.commands.CmdArmUpdateElbowGoal;
 import frc.robot.commands.CmdArmUpdateGoal;
-import frc.robot.commands.CmdArmUpdateShoulderGoal;
 import frc.robot.commands.CmdArmWristPosition;
 import frc.robot.commands.CmdDriveChangeSpeedMult;
 import frc.robot.commands.CmdArmDefault;
-import frc.robot.commands.CmdArmManual;
-import frc.robot.commands.CmdArmRunElbowPID;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Drive;
 import frc.robot.subsystems.Vision;
@@ -113,14 +102,12 @@ public class RobotContainer {
 
         // Intake On/Off
         _opButtonTwo.whileTrue(new CmdArmRunIntake(_armSubsystem, 0.4));
-        _opButtonTwo.whileFalse(new CmdArmRunIntake(_armSubsystem, 0.0));
 
         // Set Wrist Position
         _opButtonOne.whileTrue(new CmdArmWristPosition(_armSubsystem));
 
         // Flip Around Intake
         _opButtonEight.whileTrue(new CmdArmRunIntake(_armSubsystem, -0.4));
-        _opButtonEight.whileFalse(new CmdArmRunIntake(_armSubsystem, 0));
 
         //_opButtonSeven.whileTrue(new CmdArmUpdateGoal(_armSubsystem, ArmPosition.LowScore));
         _opButtonNine.whileTrue(new CmdArmUpdateGoal(_armSubsystem, ArmPosition.Stored));
@@ -129,18 +116,6 @@ public class RobotContainer {
         _opButtonFour.whileTrue(new CmdArmUpdateGoal(_armSubsystem, ArmPosition.MiddleCone));
         _opButtonFive.whileTrue(new CmdArmUpdateGoal(_armSubsystem, ArmPosition.HighCube));
         _opButtonSix.whileTrue(new CmdArmUpdateGoal(_armSubsystem, ArmPosition.HighCone));
-
-        _opButtonEleven.whileTrue(new CmdArmUpdateElbowGoal(_armSubsystem));
-        _opButtonTwelve.whileTrue(new CmdArmUpdateShoulderGoal(_armSubsystem));
-
-        // _operatorAButton.whileTrue(new CmdArmUpdateElbowGoal(_armSubsystem));
-
-        // _operatorBButton.whileTrue(new CmdArmRunIntake(_armSubsystem, 0.4));
-        // _operatorBButton.whileFalse(new CmdArmRunIntake(_armSubsystem, 0));
-
-        // _operatorXButton.whileTrue(new CmdArmUpdateShoulderGoal(_armSubsystem));
-
-        // _operatorYButton.whileTrue(new CmdArmUpdateGoal(_armSubsystem, ArmPosition.GroundPickUp));
     }
 
     /**
@@ -155,7 +130,7 @@ public class RobotContainer {
     }
 
     public Command getInitialArmPosCommand() {
-        return new GrpInitArm(_armSubsystem);
+        return new CmdArmUpdateGoal(_armSubsystem, ArmPosition.Stored);
     }
 
     private static double deadband(double value, double deadband) {

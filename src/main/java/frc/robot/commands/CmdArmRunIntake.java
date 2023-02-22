@@ -32,13 +32,15 @@ public class CmdArmRunIntake extends CommandBase {
     public void execute() {
         // Set the values give from the joystick to the shoulder and elbow.
         this._armSubsystem.setIntakeMotorSpeed(this._intakeSpeed);
-        System.out.println(this._armSubsystem.getChangeInIntakeMotorCurrent());
     }
 
-
+    @Override
+    public void end(boolean interrupted) {
+        _armSubsystem.setIntakeMotorSpeed(0);
+    }
 
     @Override
     public boolean isFinished() {
-        return (this._intakeSpeed == 0);
+        return _armSubsystem.intakeHasPiece();
     }
 }

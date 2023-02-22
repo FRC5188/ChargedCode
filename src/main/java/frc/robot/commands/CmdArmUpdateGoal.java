@@ -1,7 +1,5 @@
 package frc.robot.commands;
 
-import javax.swing.text.Position;
-
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Arm.ArmPosition;
@@ -17,12 +15,9 @@ public class CmdArmUpdateGoal extends CommandBase {
 
     @Override
     public void initialize() {
-        _armSubsystem.setCurrentArmPosition(_position);
-        // _armSubsystem.shoulderPIDSetGoal(_position);
-        // _armSubsystem.elbowPIDSetGoal(_position);
-        _armSubsystem.setDesiredWristPosition(_position);
+        _armSubsystem.setArmGoalsFromPosition(_position);
+        _armSubsystem.setWristPosition(_position);
         System.out.println("Updated arm position to " + _position);
-        System.out.println("Current position is " + _armSubsystem.getCurrentArmPosition());
     }
 
     @Override
