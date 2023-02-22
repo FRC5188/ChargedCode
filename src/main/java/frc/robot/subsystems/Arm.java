@@ -162,8 +162,13 @@ public class Arm extends SubsystemBase {
         LoadStationPickUp,
         LowScore,
         MiddleCone,
-        MiddleCube
+        MiddleCube,
+        IntermediateScoring,
+        IntermediatePickup,
+        CurrentPosition
     }
+
+    ArmPosition _currentArmPos;
 
     /**
      * constants for the above defined in the ArmPosition Enum.
@@ -280,6 +285,8 @@ public class Arm extends SubsystemBase {
         _elbowMotor = new WPI_TalonFX(Constants.CanIDs.ARM_ELBOW_MOTOR_CANID);
         _wristSolenoid = new Solenoid(PneumaticsModuleType.REVPH, Constants.PHPorts.WRIST_SOLENOID_PORT);
 
+        _currentArmPos = ArmPosition.Stored;
+
         // Set the motors to adjust their output based on battery voltage
         _shoulderMotor.configVoltageCompSaturation(this.MAX_MOTOR_VOLTAGE);
         _shoulderMotor.enableVoltageCompensation(true);
@@ -387,6 +394,7 @@ public class Arm extends SubsystemBase {
      */
     public void shoulderMotorPIDInit(ArmPosition armPosition) {
 
+        _currentArmPos = armPosition;
         Arm2DPosition setpoint;
         switch (armPosition) {
             case GroundPickUp:
@@ -607,6 +615,7 @@ public class Arm extends SubsystemBase {
      * @param setpoint Setpoint of the arm as a whole.
      */
     public void elbowMotorPIDInit(ArmPosition armPosition) {
+        _currentArmPos = armPosition;
 
         Arm2DPosition setpoint;
         switch (armPosition) {
@@ -780,6 +789,7 @@ public class Arm extends SubsystemBase {
     }
 
     public void setWristPosition(ArmPosition armPosition) {
+        _currentArmPos = armPosition;
         // Sets Wrist Position based off of arm position
         switch (armPosition) {
             case GroundPickUp:
@@ -809,6 +819,55 @@ public class Arm extends SubsystemBase {
             default:
                 break;
         }
+    }
+
+
+    public ArmPosition getIntermediateFromPos(ArmPosition position) {
+        ArmPosition interPos = ArmPosition.CurrentPosition;
+
+       
+        if (_currentArmPos == ArmPosition.Stored) {
+            switch (position) {
+                case GroundPickUp:
+                    interPos = ArmPosition.IntermediatePickup;
+                    break;
+                case Stored:
+                    interPos = ArmPosition.CurrentPosition;
+                    break;
+                default:
+                    interPos = ArmPosition.IntermediateScoring;
+                    break;
+            }
+        }
+
+
+        if (_currentArmPos == ArmPosition.GroundPickUp) {
+            switch (position) {
+                case LowScore:
+                    interPos = ArmPosition.IntermediateScoring;
+                case GroundPickUp:
+                    interPos = ArmPosition.CurrentPosition;
+                    break;
+                default:
+                    interPos = ArmPosition.IntermediatePickup;
+                    break;
+            }
+        }
+
+        if (_currentArmPos == ArmPosition.LowScore) {
+            switch (position) {
+                case LowScore:
+                    interPos = ArmPosition.CurrentPosition;
+                case GroundPickUp:
+                    interPos = ArmPosition.IntermediatePickup;
+                    break;
+                default:
+                    interPos = ArmPosition.IntermediatePickup;
+                    break;
+            }
+        }
+
+        return interPos;
     }
 
     public boolean checkWristPosition(ArmPosition positionOfArm) {
