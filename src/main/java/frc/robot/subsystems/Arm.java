@@ -102,7 +102,7 @@ public class Arm extends SubsystemBase {
          * 
          * @return wristPosition
          */
-        public WristPosition geWristPosition() {
+        public WristPosition getWristPosition() {
             return this.wristPosition;
         }
 
@@ -473,24 +473,36 @@ public class Arm extends SubsystemBase {
 
         // NOTE: 2/13/23 garrett
         // While rewriting the math from the previous commit i realize i was missing
-        // parenthesis on line 419. that might
+        // parentheses on line 419. that might
         // have been the issue... :( Still moving forward with this code for now since I
-        // have more confidance in it.
-        // Here is the commit I refered to:
+        // have more confidence in it.
+        // Here is the commit I referred to:
         // https://github.com/FRC5188/ChargedCode/commit/a35d8567eb73343b4be02176031213db640c6627
 
         //TODO implement the arm math
-        return null;
+
+        double bigTriangleHypoSqrd = Math.pow(arm2DPosition.y, 2) + Math.pow(arm2DPosition.z, 2);
+        //process of law of cosines
+        double angleAlpha = Math.pow(SHOULDER_ARM_LENGTH, 2) + Math.pow(ELBOW_ARM_LENGTH, 2);
+        angleAlpha = angleAlpha - bigTriangleHypoSqrd;
+        angleAlpha = angleAlpha / (2 * SHOULDER_ARM_LENGTH * ELBOW_ARM_LENGTH);
+        angleAlpha = Math.acos(angleAlpha);
+        double q2 = angleAlpha * -1;
+        double tanOfBeta = (ELBOW_ARM_LENGTH * Math.sin(q2)) / (SHOULDER_ARM_LENGTH + ELBOW_ARM_LENGTH * Math.cos(q2));
+        double angleBeta = Math.atan(tanOfBeta);
+        double angleGamma = Math.atan(arm2DPosition.z / arm2DPosition.y);
+        double q1 = angleGamma + angleBeta;
+        return new ArmJointAngles(Math.toDegrees(q1), Math.toDegrees(q2));
     }
 
     /**
-     * Get the current position of the arm in 2d space and return in
+     * Get the current position of the arm in 2d space and return it
      * 
      * @return a Arm2DPosition that represents the wrist position in 2D space
      */
     public Arm2DPosition getArm2DPosition() {
         //TODO implement this
-        return null;
+        return this.arm2DPositionFromAngles(getShoulderJointAngle(), getElbowJointAngle(), getWristPosition());
     }
 
     /**
@@ -530,9 +542,20 @@ public class Arm extends SubsystemBase {
      *         wrist of the arm, including the wrist state.
      */
     private Arm2DPosition arm2DPositionFromAngles(double currentShoulder, double currentElbow, WristPosition wristPos) {
-        // TODO: implement this
+        
+        //y1, z1 are the "coordinates" of the shoulder joint.
+        double y1 = this.SHOULDER_JOINT_Y_POS;
+        double z1 = this.SHOULDER_JOINT_Z_POS;
 
-       return null;
+        // y2, z2 are the "coordinates" of the elbow joint.
+        double y2 = ((Math.cos(Math.toRadians(currentShoulder))) * SHOULDER_ARM_LENGTH) + y1;
+        double z2 = ((Math.sin(Math.toRadians(currentShoulder))) * SHOULDER_ARM_LENGTH) + z1;
+
+        // y3, z3 are the "coordinates" of the wrist.
+        double y3 = ((Math.cos(Math.toRadians(currentElbow))) * ELBOW_ARM_LENGTH) + y2;
+        double z3 = ((Math.sin(Math.toRadians(currentElbow))) * ELBOW_ARM_LENGTH) + z2;
+
+       return new Arm2DPosition(y3, z3, wristPos);
     }
 
     /**
@@ -655,14 +678,32 @@ public class Arm extends SubsystemBase {
 
     public void setShoulderMotorSpeed(double speed) {
                 // TODO: implement this
-        //add soft stops
+
+        //If current angle is above upper soft stop and is still traveling up, stop.
+        if (getShoulderJointAngle() > SHOULDER_UPPER_SOFT_STOP && speed > 0) {
+            speed = 0;
+        }
+
+        //If current angle is below lower soft stop and is still traveling down, stop.
+        else if (getShoulderJointAngle() < SHOULDER_LOWER_SOFT_STOP && speed < 0) {
+            speed = 0;
+        }
         SmartDashboard.putNumber("Shoulder speed", speed);
         //_shoulderMotor.set(speed);
     }
 
     public void setElbowMotorSpeed(double speed) {
                // TODO: implement this
-        // add soft stops
+                
+        //If current angle is above upper soft stop and is still traveling up, stop.
+        if (getElbowJointAngle() > ELBOW_UPPER_SOFT_STOP && speed > 0) {
+            speed = 0;
+        }
+        
+        //If current angle is below lower soft stop and is still traveling down, stop.
+        else if (getElbowJointAngle() < ELBOW_LOWER_SOFT_STOP && speed < 0) {
+            speed = 0;
+        }
         SmartDashboard.putNumber("Elbow speed", speed);        
         _elbowMotor.set(speed);
     }

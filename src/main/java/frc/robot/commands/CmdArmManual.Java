@@ -19,9 +19,10 @@ public class CmdArmManual extends CommandBase {
         this._shoulderSupplier = shoulderSupplier;
         this._elbowSupplier = elbowSupplier;
 
-        // Add the required subsytems.
+        // Add the required subsytems. 
         this.addRequirements(_armSubsystem);
-    }
+
+      }
 
     @Override
     public void initialize() {
@@ -33,6 +34,7 @@ public class CmdArmManual extends CommandBase {
         // Set the values give from the joystick to the shoulder and elbow.
         this._armSubsystem.setShoulderMotorSpeed(_shoulderSupplier.getAsDouble());
         this._armSubsystem.setElbowMotorSpeed(_elbowSupplier.getAsDouble());
+
     }
 
     @Override
