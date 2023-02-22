@@ -19,8 +19,11 @@ public class GrpMoveArmToPosition extends SequentialCommandGroup {
   public GrpMoveArmToPosition(Arm armSubsystem, ArmPosition targetPosition){
     this._armSubsystem = armSubsystem;
     this._targetPosition = targetPosition;
-    
-    addCommands();
+
     addRequirements(this._armSubsystem);
+
+    addCommands(
+      
+    );
   }
 }
