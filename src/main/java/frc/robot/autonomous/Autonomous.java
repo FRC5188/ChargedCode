@@ -10,6 +10,8 @@ import com.pathplanner.lib.PathPoint;
 import com.pathplanner.lib.commands.PPSwerveControllerCommand;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -68,45 +70,47 @@ public abstract class Autonomous {
         RIGHT_SIDE_GRID_CUBE_THIRD_CLOSEST,
     }
     /** Assocaites each positon that robot could be at with a PathPoint used to create on-the-fly autonomous. */
-    private static HashMap<FIELD_POSITIONS, PathPoint> fieldPositionsCoordinateMap = new HashMap<>()
+    private static final HashMap<FIELD_POSITIONS, PathPoint> fieldPositionsCoordinateMap = new HashMap<FIELD_POSITIONS, PathPoint>(){{
     // Creates the map for the field positions. 
-    {
-        {
-            // TODO: Add Coordiantes from FRC PathPlanner 
-            put(FIELD_POSITIONS.SINGLE_SUBSTRATION_LEFT, new PathPoint(null, null));
-            put(FIELD_POSITIONS.SINGLE_SUBSTRATION_RIGHT, new PathPoint(null, null));
-            put(FIELD_POSITIONS.DOUBLE_SUBSTRATION_LEFT, new PathPoint(null, null));
-            put(FIELD_POSITIONS.DOUBLE_SUBSTRATION_RIGHT, new PathPoint(null, null));
-            put(FIELD_POSITIONS.CHARGE_STATION_LEFT, new PathPoint(null, null));
-            put(FIELD_POSITIONS.CHARGE_STATION_RIGHT, new PathPoint(null, null));
-            put(FIELD_POSITIONS.CLOSEST_SCORE_TABLE_GAME_PIECE_LEFT, new PathPoint(null, null));
-            put(FIELD_POSITIONS.SECOND_CLOSEST_SCORE_TABLE_GAME_PIECE_LEFT, new PathPoint(null, null));
-            put(FIELD_POSITIONS.THIRD_CLOSEST_SCORE_TABLE_GAME_PIECE_LEFT, new PathPoint(null, null));
-            put(FIELD_POSITIONS.FOURTH_CLOSEST_SCORE_TABLE_GAME_PIECE_LEFT, new PathPoint(null, null));
-            put(FIELD_POSITIONS.CLOSEST_SCORE_TABLE_GAME_PIECE_RIGHT, new PathPoint(null, null));
-            put(FIELD_POSITIONS.SECOND_CLOSEST_SCORE_TABLE_GAME_PIECE_RIGHT, new PathPoint(null, null));
-            put(FIELD_POSITIONS.THIRD_CLOSEST_SCORE_TABLE_GAME_PIECE_RIGHT, new PathPoint(null, null));
-            put(FIELD_POSITIONS.LEFT_SIDE_GRID_CONE_CLOSEST, new PathPoint(null, null));
-            put(FIELD_POSITIONS.LEFT_SIDE_GRID_CONE_SECOND_CLOSEST, new PathPoint(null, null));
-            put(FIELD_POSITIONS.LEFT_SIDE_GRID_CONE_THIRD_CLOSEST, new PathPoint(null, null));
-            put(FIELD_POSITIONS.LEFT_SIDE_GRID_CONE_THIRD_CLOSEST, new PathPoint(null, null));
-            put(FIELD_POSITIONS.LEFT_SIDE_GRID_CONE_FOURTH_CLOSEST, new PathPoint(null, null));
-            put(FIELD_POSITIONS.LEFT_SIDE_GRID_CONE_FIFTH_CLOSEST, new PathPoint(null, null));
-            put(FIELD_POSITIONS.LEFT_SIDE_GRID_CONE_SIXTH_CLOSEST, new PathPoint(null, null));
-            put(FIELD_POSITIONS.LEFT_SIDE_GRID_CUBE_CLOSEST, new PathPoint(null, null));
-            put(FIELD_POSITIONS.LEFT_SIDE_GRID_CUBE_SECOND_CLOSEST, new PathPoint(null, null));
-            put(FIELD_POSITIONS.LEFT_SIDE_GRID_CUBE_THIRD_CLOSEST, new PathPoint(null, null));
-            put(FIELD_POSITIONS.RIGHT_SIDE_GRID_CONE_CLOSEST, new PathPoint(null, null));
-            put(FIELD_POSITIONS.RIGHT_SIDE_GRID_CONE_SECOND_CLOSEST, new PathPoint(null, null));
-            put(FIELD_POSITIONS.RIGHT_SIDE_GRID_CONE_THIRD_CLOSEST, new PathPoint(null, null));
-            put(FIELD_POSITIONS.RIGHT_SIDE_GRID_CONE_FOURTH_CLOSEST, new PathPoint(null, null));
-            put(FIELD_POSITIONS.RIGHT_SIDE_GRID_CONE_FIFTH_CLOSEST, new PathPoint(null, null));
-            put(FIELD_POSITIONS.RIGHT_SIDE_GRID_CONE_SIXTH_CLOSEST, new PathPoint(null, null));
-            put(FIELD_POSITIONS.RIGHT_SIDE_GRID_CUBE_CLOSEST, new PathPoint(null, null));
-            put(FIELD_POSITIONS.RIGHT_SIDE_GRID_CUBE_SECOND_CLOSEST, new PathPoint(null, null));
-            put(FIELD_POSITIONS.RIGHT_SIDE_GRID_CUBE_THIRD_CLOSEST, new PathPoint(null, null));
-        }
-    };
+    
+        
+    //this(0.0, 0.0);
+    put(FIELD_POSITIONS.SINGLE_SUBSTRATION_LEFT, new PathPoint(new Translation2d(2.6, 7.0), new Rotation2d(90)));
+    put(FIELD_POSITIONS.SINGLE_SUBSTRATION_RIGHT, new PathPoint(new Translation2d(13.8, 7), new Rotation2d(90)));
+    put(FIELD_POSITIONS.DOUBLE_SUBSTRATION_LEFT, new PathPoint(new Translation2d(1.2, 7.4), new Rotation2d(180)));
+    put(FIELD_POSITIONS.DOUBLE_SUBSTRATION_RIGHT, new PathPoint(new Translation2d(15.3, 7.3), new Rotation2d(0)));
+    put(FIELD_POSITIONS.CHARGE_STATION_LEFT, new PathPoint(new Translation2d(3.88, 2.75), new Rotation2d(0)));
+    put(FIELD_POSITIONS.CHARGE_STATION_RIGHT, new PathPoint(new Translation2d(12.65, 2.75), new Rotation2d(0)));
+    put(FIELD_POSITIONS.CLOSEST_SCORE_TABLE_GAME_PIECE_LEFT, new PathPoint(new Translation2d(6.15, 0.9), new Rotation2d(0)));
+    put(FIELD_POSITIONS.SECOND_CLOSEST_SCORE_TABLE_GAME_PIECE_LEFT, new PathPoint(new Translation2d(6.15, 2.15), new Rotation2d(0)));
+    put(FIELD_POSITIONS.THIRD_CLOSEST_SCORE_TABLE_GAME_PIECE_LEFT, new PathPoint(new Translation2d(6.15, 3.37), new Rotation2d(0)));
+    put(FIELD_POSITIONS.FOURTH_CLOSEST_SCORE_TABLE_GAME_PIECE_LEFT, new PathPoint(new Translation2d(6.15, 4.59), new Rotation2d(0)));
+    put(FIELD_POSITIONS.CLOSEST_SCORE_TABLE_GAME_PIECE_RIGHT, new PathPoint(new Translation2d(10.6, 0.9), new Rotation2d(180)));
+    put(FIELD_POSITIONS.SECOND_CLOSEST_SCORE_TABLE_GAME_PIECE_RIGHT, new PathPoint(new Translation2d(10.6, 2.15), new Rotation2d(180)));
+    put(FIELD_POSITIONS.THIRD_CLOSEST_SCORE_TABLE_GAME_PIECE_RIGHT, new PathPoint(new Translation2d(10.6, 3.37), new Rotation2d(180)));
+    put(FIELD_POSITIONS.FOURTH_CLOSEST_SCORE_TABLE_GAME_PIECE_RIGHT, new PathPoint(new Translation2d(10.6, 4.59), new Rotation2d(180)));
+    put(FIELD_POSITIONS.LEFT_SIDE_GRID_CONE_CLOSEST, new PathPoint(new Translation2d(2.16, 0.51), new Rotation2d(180)));
+    put(FIELD_POSITIONS.LEFT_SIDE_GRID_CONE_SECOND_CLOSEST, new PathPoint(new Translation2d(2.16, 1.62), new Rotation2d(180)));
+    put(FIELD_POSITIONS.LEFT_SIDE_GRID_CONE_THIRD_CLOSEST, new PathPoint(new Translation2d(2.16, 2.19), new Rotation2d(180)));
+    put(FIELD_POSITIONS.LEFT_SIDE_GRID_CONE_FOURTH_CLOSEST, new PathPoint(new Translation2d(2.16, 3.30), new Rotation2d(180)));
+    put(FIELD_POSITIONS.LEFT_SIDE_GRID_CONE_FIFTH_CLOSEST, new PathPoint(new Translation2d(2.16, 3.87), new Rotation2d(180)));
+    put(FIELD_POSITIONS.LEFT_SIDE_GRID_CONE_SIXTH_CLOSEST, new PathPoint(new Translation2d(2.16, 4.99), new Rotation2d(180)));
+    put(FIELD_POSITIONS.LEFT_SIDE_GRID_CUBE_CLOSEST, new PathPoint(new Translation2d(2.16, 1.04), new Rotation2d(180)));
+    put(FIELD_POSITIONS.LEFT_SIDE_GRID_CUBE_SECOND_CLOSEST, new PathPoint(new Translation2d(2.16, 2.76), new Rotation2d(180)));
+    put(FIELD_POSITIONS.LEFT_SIDE_GRID_CUBE_THIRD_CLOSEST, new PathPoint(new Translation2d(2.16, 4.43), new Rotation2d(180)));
+    put(FIELD_POSITIONS.RIGHT_SIDE_GRID_CONE_CLOSEST, new PathPoint(new Translation2d(14.4, 0.5), new Rotation2d(0)));
+    put(FIELD_POSITIONS.RIGHT_SIDE_GRID_CONE_SECOND_CLOSEST, new PathPoint(new Translation2d(14.4, 1.61), new Rotation2d(0)));
+    put(FIELD_POSITIONS.RIGHT_SIDE_GRID_CONE_THIRD_CLOSEST, new PathPoint(new Translation2d(14.4, 2.19), new Rotation2d(0)));
+    put(FIELD_POSITIONS.RIGHT_SIDE_GRID_CONE_FOURTH_CLOSEST, new PathPoint(new Translation2d(14.4, 3.29), new Rotation2d(0)));
+    put(FIELD_POSITIONS.RIGHT_SIDE_GRID_CONE_FIFTH_CLOSEST, new PathPoint(new Translation2d(14.4, 3.86), new Rotation2d(0)));
+    put(FIELD_POSITIONS.RIGHT_SIDE_GRID_CONE_SIXTH_CLOSEST, new PathPoint(new Translation2d(14.4, 4.98), new Rotation2d(0)));
+    put(FIELD_POSITIONS.RIGHT_SIDE_GRID_CUBE_CLOSEST, new PathPoint(new Translation2d(14.4, 0.49), new Rotation2d(0)));
+    put(FIELD_POSITIONS.RIGHT_SIDE_GRID_CUBE_SECOND_CLOSEST, new PathPoint(new Translation2d(14.4, 2.75), new Rotation2d(0)));
+    put(FIELD_POSITIONS.RIGHT_SIDE_GRID_CUBE_THIRD_CLOSEST, new PathPoint(new Translation2d(14.4, 4.41), new Rotation2d(0)));
+    }};
+
+    
+
 
     public static Command getMovementCommand(FIELD_POSITIONS targetPosition, Drive driveSubsystem, Consumer<ChassisSpeeds> chassisSpeed){
         // Create the trajectory to be executed to move to that position. 
@@ -130,4 +134,8 @@ public abstract class Autonomous {
         );
     }
 
+    
+
+    public Autonomous() {
+    }
 }
