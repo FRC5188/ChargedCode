@@ -878,7 +878,7 @@ public class Arm extends SubsystemBase {
         if (_currentArmPos == ArmPosition.GroundPickUp) {
             switch (position) {
                 case LowScore:
-                    interPos = ArmPosition.IntermediateScoring;
+                    interPos = ArmPosition.IntermediatePickup;
                 case GroundPickUp:
                     interPos = ArmPosition.CurrentPosition;
                     break;
