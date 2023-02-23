@@ -145,8 +145,13 @@ public class Arm extends SubsystemBase {
         LoadStationPickUp,
         LowScore,
         MiddleCone,
-        MiddleCube
+        MiddleCube,
+        IntermediatePickup,
+        IntermediateScoring,
+        CurrentPosition
     }
+
+    ArmPosition _currentArmPos;
 
     /**
      * constants for the above defined in the ArmPosition Enum.
@@ -305,6 +310,8 @@ public class Arm extends SubsystemBase {
         _elbowMotorPID.setTolerance(this.ELBOW_MOTOR_TOLERANCE);
 
         this.updateShuffleBoard();
+
+        _currentArmPos = ArmPosition.Stored;
     }
 
     public void setElbowBrakeMode(NeutralMode mode) {
@@ -366,7 +373,7 @@ public class Arm extends SubsystemBase {
      * @param setpoint Setpoint of the wrist of the arm.
      */
     public void shoulderMotorPIDInit(ArmPosition armPosition) {
-
+        _currentArmPos = armPosition;
         Arm2DPosition setpoint;
         switch (armPosition) {
             case GroundPickUp:
@@ -572,7 +579,7 @@ public class Arm extends SubsystemBase {
      * @param setpoint Setpoint of the arm as a whole.
      */
     public void elbowMotorPIDInit(ArmPosition armPosition) {
-
+        _currentArmPos = armPosition;
         Arm2DPosition setpoint;
         switch (armPosition) {
             case GroundPickUp:
@@ -757,6 +764,7 @@ public class Arm extends SubsystemBase {
     }
 
     public void setWristPosition(ArmPosition armPosition) {
+        _currentArmPos = armPosition;
         // Sets Wrist Position based off of arm position
         switch (armPosition) {
             case GroundPickUp:
@@ -847,5 +855,52 @@ public class Arm extends SubsystemBase {
         ArmJointAngles angles = this.jointAnglesFrom2DPose(setpoint);
         _shoulderMotorPID.setGoal(angles.shoulderJointAngle);
         _elbowMotorPID.setGoal(angles.elbowJointAngle);
+    }
+    public ArmPosition getIntermediateFromPos(ArmPosition position) {
+        ArmPosition interPos = ArmPosition.CurrentPosition;
+
+       
+        if (_currentArmPos == ArmPosition.Stored) {
+            switch (position) {
+                case GroundPickUp:
+                    interPos = ArmPosition.IntermediatePickup;
+                    break;
+                case Stored:
+                    interPos = ArmPosition.CurrentPosition;
+                    break;
+                default:
+                    interPos = ArmPosition.IntermediateScoring;
+                    break;
+            }
+        }
+
+
+        if (_currentArmPos == ArmPosition.GroundPickUp) {
+            switch (position) {
+                case LowScore:
+                    interPos = ArmPosition.IntermediateScoring;
+                case GroundPickUp:
+                    interPos = ArmPosition.CurrentPosition;
+                    break;
+                default:
+                    interPos = ArmPosition.IntermediatePickup;
+                    break;
+            }
+        }
+
+        if (_currentArmPos == ArmPosition.LowScore) {
+            switch (position) {
+                case LowScore:
+                    interPos = ArmPosition.CurrentPosition;
+                case GroundPickUp:
+                    interPos = ArmPosition.IntermediatePickup;
+                    break;
+                default:
+                    interPos = ArmPosition.IntermediatePickup;
+                    break;
+            }
+        }
+
+        return interPos;
     }
 }
