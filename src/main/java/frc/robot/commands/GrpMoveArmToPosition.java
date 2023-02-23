@@ -6,6 +6,7 @@ import frc.robot.subsystems.Arm.ArmPosition;
 
 public class GrpMoveArmToPosition extends SequentialCommandGroup {
   public GrpMoveArmToPosition(Arm armSubsystem, ArmPosition position) {
+    this.addRequirements(armSubsystem);
 
     addCommands(
       // Update arm goal to the intermediate position

@@ -13,7 +13,7 @@ public class CmdArmDefault extends CommandBase {
     public CmdArmDefault(Arm armSubsystem) {
         _armSubsystem = armSubsystem;
 
-        this.addRequirements(armSubsystem);
+        //this.addRequirements(armSubsystem);
     }
 
     @Override

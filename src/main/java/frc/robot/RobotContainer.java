@@ -70,7 +70,6 @@ public class RobotContainer {
                                                () -> (-modifyAxis(_driverController.getLeftX()) * Drive.MAX_VELOCITY_METERS_PER_SECOND * _driveSubsystem.getSpeedMultiplier()),
                                                () -> (-modifyAxis(_driverController.getRightX()) * Drive.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND * _driveSubsystem.getSpeedMultiplier())));
         
-        _armSubsystem.setDefaultCommand(new CmdArmDefault(_armSubsystem));
 
         configureButtonBindings();
     }
@@ -117,7 +116,8 @@ public class RobotContainer {
         // _opButtonFour.whileTrue(new CmdArmUpdateGoal(_armSubsystem, ArmPosition.MiddleCone));
         // _opButtonFive.whileTrue(new CmdArmUpdateGoal(_armSubsystem, ArmPosition.HighCube));
         // _opButtonSix.whileTrue(new CmdArmUpdateGoal(_armSubsystem, ArmPosition.HighCone));
-        _opButtonEight.onTrue(new GrpMoveArmToPosition(_armSubsystem, ArmPosition.LoadStationPickUp));
+        _opButtonSeven.onTrue(new GrpMoveArmToPosition(_armSubsystem, ArmPosition.Stored));
+        _opButtonEight.onTrue(new GrpMoveArmToPosition(_armSubsystem, ArmPosition.GroundPickUp));
     }
 
     /**
@@ -133,6 +133,10 @@ public class RobotContainer {
 
     public Command getInitialArmPosCommand() {
         return new CmdArmUpdateGoal(_armSubsystem, ArmPosition.Stored);
+    }
+
+    public Command getPIDCommand() {
+        return new CmdArmDefault(_armSubsystem);
     }
 
     private static double deadband(double value, double deadband) {
