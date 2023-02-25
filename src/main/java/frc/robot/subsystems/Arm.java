@@ -8,6 +8,7 @@ import java.util.Optional;
 
 import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.StatorCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.IdleMode;
@@ -36,7 +37,7 @@ public class Arm extends SubsystemBase {
     private final double SHOULDER_UPPER_SOFT_STOP = 115;
     private final double SHOULDER_LOWER_SOFT_STOP = 5;
     private final double ELBOW_UPPER_SOFT_STOP = 120;
-    private final double ELBOW_LOWER_SOFT_STOP = -2;
+    private final double ELBOW_LOWER_SOFT_STOP = -10;
 
     // The y,z position of the shoulder joint relative to the floor
     private final double SHOULDER_JOINT_Z_POS = 17; // inches
@@ -153,12 +154,11 @@ public class Arm extends SubsystemBase {
         MiddleCube,
         IntermediateScoring,
         IntermediatePickup,
-        CurrentPosition
         // Low Goal
     }
 
     private final double STORED_SHOULDER_POS = 95;
-    private final double STORED_ELBOW_POS = 18;
+    private final double STORED_ELBOW_POS = 17;
 
     private final double MID_CONE_SHOULDER_POS = 83;
     private final double MID_CONE_ELBOW_POS = 88;
@@ -178,17 +178,17 @@ public class Arm extends SubsystemBase {
     private final double HIGH_CUBE_SHOULDER_POS = 80;
     private final double HIGH_CUBE_ELBOW_POS = 91;
 
-    private final double HUMAN_PLAYER_SHOULDER_POS = 110;
-    private final double HUMAN_PLAYER_ELBOW_POS = 93;
+    private final double HUMAN_PLAYER_SHOULDER_POS = 100;
+    private final double HUMAN_PLAYER_ELBOW_POS = 90;
 
     private final double GROUND_PICKUP_SHOULDER_POS = 42;
     private final double GROUND_PICKUP_ELBOW_POS = -7;
 
-    private final double INTERMEDIATE_SCORING_SHOULDER_POS = 42;
-    private final double INTERMEDIATE_SCORING_ELBOW_POS = -7;
+    private final double INTERMEDIATE_SCORING_SHOULDER_POS = 95;
+    private final double INTERMEDIATE_SCORING_ELBOW_POS = 31;
 
-    private final double INTERMEDIATE_PICKUP_SHOULDER_POS = 42;
-    private final double INTERMEDIATE_PICKUP_ELBOW_POS = -7;
+    private final double INTERMEDIATE_PICKUP_SHOULDER_POS = 50;
+    private final double INTERMEDIATE_PICKUP_ELBOW_POS = 25;
 
     /**
      * constants for the above defined in the ArmPosition Enum.
@@ -316,6 +316,9 @@ public class Arm extends SubsystemBase {
         _elbowMotor.configVoltageCompSaturation(this.MAX_MOTOR_VOLTAGE);
         _elbowMotor.enableVoltageCompensation(true);
 
+        // TODO: current limit is 0.83 amps
+        //_shoulderMotor.configStatorCurrentLimit(new StatorCurrentLimitConfiguration())
+
         // set motor breaking
         _shoulderMotor.setNeutralMode(NeutralMode.Brake);
         _elbowMotor.setNeutralMode(NeutralMode.Brake);
@@ -360,6 +363,7 @@ public class Arm extends SubsystemBase {
         SmartDashboard.putNumber("Elbow Pot", this.getElbowPotPos());
         SmartDashboard.putNumber("Elbow Motor Output", this._elbowMotor.get());
         SmartDashboard.putNumber("Shoulder Motor Output", this._shoulderMotor.get());
+        SmartDashboard.putString("Current Position", this._currentArmPos.toString());
     }
 
     private void shuffleBoardInit() {
@@ -581,14 +585,22 @@ public class Arm extends SubsystemBase {
         setElbowMotorSpeed(voltage);
     }
 
+    public double getShoulderError() {
+        return Math.abs(_shoulderMotorPID.getGoal().position - this.getShoulderJointAngle());
+    }
+
+    public double getElbowError() {
+        return Math.abs(_elbowMotorPID.getGoal().position - this.getElbowJointAngle());
+    }
+
     /** Checks if the joint motors are at their setpoints **/
     public boolean shoulderAtSetpoint() {
-        return _shoulderMotorPID.atSetpoint();
+        return getShoulderError() < SHOULDER_MOTOR_TOLERANCE;
     }
 
     /** Checks if the joint motors are at their setpoints **/
     public boolean elbowAtSetpoint() {
-        return _elbowMotorPID.atSetpoint();
+        return getElbowError() < ELBOW_MOTOR_TOLERANCE;
     }
 
     public void setShoulderMotorSpeed(double speed) {
@@ -754,7 +766,7 @@ public class Arm extends SubsystemBase {
     }
 
     public ArmPosition getIntermediatePosition(ArmPosition position) {
-        ArmPosition interPos = ArmPosition.CurrentPosition;
+        ArmPosition interPos = position;
 
         // We only want to run these intermediate positions if we are going somewhere
         // from stow
@@ -765,7 +777,6 @@ public class Arm extends SubsystemBase {
                     interPos = ArmPosition.IntermediatePickup;
                     break;
                 case Stored:
-                    interPos = ArmPosition.CurrentPosition;
                     break;
                 default:
                     interPos = ArmPosition.IntermediateScoring;
@@ -779,7 +790,6 @@ public class Arm extends SubsystemBase {
             switch (position) {
                 case LowScore:
                 case GroundPickUp:
-                    interPos = ArmPosition.CurrentPosition;
                     break;
                 default:
                     interPos = ArmPosition.IntermediatePickup;
