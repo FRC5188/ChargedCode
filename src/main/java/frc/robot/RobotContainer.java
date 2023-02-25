@@ -11,12 +11,7 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-import frc.robot.commands.DefaultDriveCommand;
-import frc.robot.commands.CmdArmRunIntake;
-import frc.robot.commands.CmdArmUpdateGoal;
-import frc.robot.commands.CmdArmWristPosition;
-import frc.robot.commands.CmdDriveChangeSpeedMult;
-import frc.robot.commands.CmdArmDefault;
+import frc.robot.commands.*;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Drive;
 import frc.robot.subsystems.Vision;
@@ -38,7 +33,10 @@ public class RobotContainer {
     private final Arm _armSubsystem = new Arm();
 
     private final XboxController _driverController = new XboxController(0);
+    private final JoystickButton _driverButtonRB = new JoystickButton(_driverController, Constants.ButtonMappings.RIGHT_BUMPER);
     private final JoystickButton _driverButtonX = new JoystickButton(_driverController, Constants.ButtonMappings.X_BUTTON);
+    private final JoystickButton _driverButtonA = new JoystickButton(_driverController, Constants.ButtonMappings.A_BUTTON);
+
     
     private final Joystick _operatorController = new Joystick(1);
     
@@ -97,8 +95,11 @@ public class RobotContainer {
         // .whenPressed(m_drivetrainSubsystem::zeroGyroscope);
 
         // Driver Reduce Speed 40%
-        _driverButtonX.whileFalse(new CmdDriveChangeSpeedMult(_driveSubsystem, 0.4));
-        _driverButtonX.whileTrue(new CmdDriveChangeSpeedMult(_driveSubsystem, 1.0)); 
+        _driverButtonRB.whileFalse(new CmdDriveChangeSpeedMult(_driveSubsystem, 0.4));
+        _driverButtonRB.whileTrue(new CmdDriveChangeSpeedMult(_driveSubsystem, 1.0)); 
+
+        // Reset Gyro
+        _driverButtonA.whileTrue(new CmdDriveResetGyro(_driveSubsystem));
 
         // Intake On/Off
         _opButtonTwo.whileTrue(new CmdArmRunIntake(_armSubsystem, 0.4));
