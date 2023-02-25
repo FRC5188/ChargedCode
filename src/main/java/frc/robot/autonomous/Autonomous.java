@@ -68,6 +68,16 @@ public abstract class Autonomous {
         RIGHT_SIDE_GRID_CUBE_CLOSEST,
         RIGHT_SIDE_GRID_CUBE_SECOND_CLOSEST,
         RIGHT_SIDE_GRID_CUBE_THIRD_CLOSEST,
+
+        //Left side posititions for intermediate auto start positions
+        LEFT_SIDE_INTERMEDIATE_AUTO_CLOSEST,
+        LEFT_SIDE_INTERMEDIATE_AUTO_SECOND_CLOSEST,
+        LEFT_SIDE_INTERMEDIATE_AUTO_THIRD_CLOSEST,
+
+        //Right side posititions for intermediate auto start positions
+        RIGHT_SIDE_INTERMEDIATE_AUTO_CLOSEST,
+        RIGHT_SIDE_INTERMEDIATE_AUTO_SECOND_CLOSEST,
+        RIGHT_SIDE_INTERMEDIATE_AUTO_THIRD_CLOSEST,
     }
     /** Assocaites each positon that robot could be at with a PathPoint used to create on-the-fly autonomous. */
     private static final HashMap<FIELD_POSITIONS, PathPoint> fieldPositionsCoordinateMap = new HashMap<FIELD_POSITIONS, PathPoint>(){{
@@ -107,6 +117,15 @@ public abstract class Autonomous {
     put(FIELD_POSITIONS.RIGHT_SIDE_GRID_CUBE_CLOSEST, new PathPoint(new Translation2d(14.4, 0.49), new Rotation2d(0)));
     put(FIELD_POSITIONS.RIGHT_SIDE_GRID_CUBE_SECOND_CLOSEST, new PathPoint(new Translation2d(14.4, 2.75), new Rotation2d(0)));
     put(FIELD_POSITIONS.RIGHT_SIDE_GRID_CUBE_THIRD_CLOSEST, new PathPoint(new Translation2d(14.4, 4.41), new Rotation2d(0)));
+    put(FIELD_POSITIONS.LEFT_SIDE_INTERMEDIATE_AUTO_CLOSEST, new PathPoint(new Translation2d(2.2, 0.6), new Rotation2d(0)));
+    put(FIELD_POSITIONS.LEFT_SIDE_INTERMEDIATE_AUTO_SECOND_CLOSEST, new PathPoint(new Translation2d(2.2, 2.6), new Rotation2d(0)));
+    put(FIELD_POSITIONS.LEFT_SIDE_INTERMEDIATE_AUTO_THIRD_CLOSEST, new PathPoint(new Translation2d(2.2, 4.6), new Rotation2d(0)));
+    put(FIELD_POSITIONS.RIGHT_SIDE_INTERMEDIATE_AUTO_CLOSEST, new PathPoint(new Translation2d(14.4, 0.65), new Rotation2d(0)));
+    put(FIELD_POSITIONS.RIGHT_SIDE_INTERMEDIATE_AUTO_SECOND_CLOSEST, new PathPoint(new Translation2d(14.4, 2.65), new Rotation2d(0)));
+    put(FIELD_POSITIONS.RIGHT_SIDE_INTERMEDIATE_AUTO_THIRD_CLOSEST, new PathPoint(new Translation2d(14.4, 4.65), new Rotation2d(0)));
+
+
+
     }};
 
     
