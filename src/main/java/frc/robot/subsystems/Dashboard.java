@@ -9,7 +9,10 @@ import java.util.Map;
 import com.kauailabs.navx.frc.AHRS;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.subsystems.Arm.ArmPosition;
+import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.networktables.NetworkTableEntry;
+import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -27,6 +30,13 @@ public class Dashboard extends SubsystemBase {
   	Vision _visionSubsystem;
 
   	private SendableChooser<Command> _autonomousChooser;
+
+	
+	private GenericEntry _hasGamepieceEntry;
+	private NetworkTableEntry _ArmPositionEntry;
+	private boolean _hasGamepiece;
+	private ArmPosition _armPosition;
+	private GenericEntry _armPositionEntry;
 
 
 
@@ -48,7 +58,19 @@ public class Dashboard extends SubsystemBase {
 	  	.withSize(2, 4)
 	  	.withWidget(BuiltInWidgets.kGyro);
 
+		dashboard.add("Autonomous Selector", _autonomousChooser)
+	  	.withPosition(5, 4)
+	  	.withSize(5, 1)
+	  	.withWidget(BuiltInWidgets.kComboBoxChooser);
 
+		_hasGamepiece = false;
+		ShuffleboardLayout arm = dashboard.getLayout("Arm Subsystem", BuiltInLayouts.kList)
+		  .withPosition(5,1)
+		  .withSize(3, 3)
+		  .withProperties(Map.of("Label position", "BOTTOM"));
+
+		_hasGamepieceEntry = arm.add("Has Gamepiece", _hasGamepiece).withWidget(BuiltInWidgets.kBooleanBox).withProperties(Map.of("Color when true", "Lime", "Color when false", "Red")).getEntry();
+		_armPositionEntry = arm.add("Arm Position", _armPosition).withWidget(BuiltInWidgets.kTextView).getEntry();
 
   	}
 
