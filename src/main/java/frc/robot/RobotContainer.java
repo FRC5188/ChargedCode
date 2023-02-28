@@ -20,6 +20,7 @@ import frc.robot.commands.CmdDriveChangeSpeedMult;
 import frc.robot.commands.CmdArmDefault;
 import frc.robot.commands.*;
 import frc.robot.subsystems.Arm;
+import frc.robot.subsystems.Dashboard;
 import frc.robot.subsystems.Drive;
 import frc.robot.subsystems.Vision;
 import frc.robot.subsystems.Arm.ArmPosition;
@@ -38,6 +39,8 @@ public class RobotContainer {
     private final Vision _visionSubsystem = new Vision();
     private final Drive _driveSubsystem = new Drive(_visionSubsystem);
     private final Arm _armSubsystem = new Arm();
+    private final Dashboard _dashboardSubsystem = new Dashboard(_armSubsystem, _driveSubsystem, _visionSubsystem);
+
 
     private final XboxController _driverController = new XboxController(0);
     private final JoystickButton _driverButtonRB = new JoystickButton(_driverController, Constants.ButtonMappings.RIGHT_BUMPER);
