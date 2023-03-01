@@ -124,7 +124,7 @@ public class RobotContainer {
         // _opButtonTen.whileTrue(new CmdArmUpdateGoal(_armSubsystem, ArmPosition.LoadStationPickUp));
         // _opButtonThree.whileTrue(new CmdArmUpdateGoal(_armSubsystem, ArmPosition.MiddleCube));
         // _opButtonFour.whileTrue(new CmdArmUpdateGoal(_armSubsystem, ArmPosition.MiddleCone));
-        _opButtonSix.whileTrue(new CmdArmUpdateGoal(_armSubsystem, ArmPosition.High));
+        //_opButtonSix.whileTrue(new CmdArmUpdateGoal(_armSubsystem, ArmPosition.High));
         _opButtonSeven.onTrue(new GrpMoveArmToPosition(_armSubsystem, ArmPosition.Stored));
         _opButtonEight.onTrue(new GrpMoveArmToPosition(_armSubsystem, ArmPosition.GroundPickUp));
     }

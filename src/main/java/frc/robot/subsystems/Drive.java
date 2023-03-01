@@ -200,6 +200,10 @@ public class Drive extends SubsystemBase {
         return _instance;
     }
 
+    public AHRS getGyroInstance() {
+        return _navx;
+    }
+
     /**
      * Sets the gyroscope angle to zero. This can be used to set the direction the
      * 'forwards' direction.
