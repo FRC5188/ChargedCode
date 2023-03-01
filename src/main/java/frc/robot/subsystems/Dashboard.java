@@ -58,19 +58,15 @@ public class Dashboard extends SubsystemBase {
 	  	.withSize(2, 4)
 	  	.withWidget(BuiltInWidgets.kGyro);
 
-		dashboard.add("Autonomous Selector", _autonomousChooser)
-	  	.withPosition(5, 4)
-	  	.withSize(5, 1)
-	  	.withWidget(BuiltInWidgets.kComboBoxChooser);
-
 		_hasGamepiece = false;
+        _armPosition = ArmPosition.Stored;
 		ShuffleboardLayout arm = dashboard.getLayout("Arm Subsystem", BuiltInLayouts.kList)
 		  .withPosition(5,1)
 		  .withSize(3, 3)
 		  .withProperties(Map.of("Label position", "BOTTOM"));
 
 		_hasGamepieceEntry = arm.add("Has Gamepiece", _hasGamepiece).withWidget(BuiltInWidgets.kBooleanBox).withProperties(Map.of("Color when true", "Lime", "Color when false", "Red")).getEntry();
-		_armPositionEntry = arm.add("Arm Position", _armPosition).withWidget(BuiltInWidgets.kTextView).getEntry();
+		_armPositionEntry = arm.add("Arm Position", _armPosition.toString()).withWidget(BuiltInWidgets.kTextView).getEntry();
 
   	}
 

@@ -85,7 +85,7 @@ public class Robot extends TimedRobot {
       m_autonomousCommand.cancel();
     }
 
-    m_robotContainer.getPIDCommand().schedule();
+    // m_robotContainer.getPIDCommand().schedule();
     m_robotContainer.getInitialArmPosCommand().schedule();
   }
 
