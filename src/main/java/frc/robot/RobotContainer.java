@@ -11,18 +11,12 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-import frc.robot.commands.DefaultDriveCommand;
-import frc.robot.commands.GrpMoveArmToPosition;
-import frc.robot.commands.CmdArmRunIntake;
-import frc.robot.commands.CmdArmUpdateGoal;
-import frc.robot.commands.CmdArmWristPosition;
-import frc.robot.commands.CmdDriveChangeSpeedMult;
-import frc.robot.commands.CmdArmDefault;
 import frc.robot.commands.*;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Dashboard;
 import frc.robot.subsystems.Drive;
 import frc.robot.subsystems.Vision;
+import frc.robot.subsystems.Arm.ArmMode;
 import frc.robot.subsystems.Arm.ArmPosition;
 
 /**
@@ -124,7 +118,9 @@ public class RobotContainer {
         // _opButtonTen.whileTrue(new CmdArmUpdateGoal(_armSubsystem, ArmPosition.LoadStationPickUp));
         // _opButtonThree.whileTrue(new CmdArmUpdateGoal(_armSubsystem, ArmPosition.MiddleCube));
         // _opButtonFour.whileTrue(new CmdArmUpdateGoal(_armSubsystem, ArmPosition.MiddleCone));
-        _opButtonSix.whileTrue(new CmdArmUpdateGoal(_armSubsystem, ArmPosition.High));
+        _opButtonFive.whileTrue(new CmdArmSetMode(_armSubsystem, ArmMode.Cone));
+        _opButtonFive.whileFalse(new CmdArmSetMode(_armSubsystem, ArmMode.Cube));
+        _opButtonSix.onTrue(new CmdArmUpdateGoal(_armSubsystem, ArmPosition.High));
         _opButtonSeven.onTrue(new GrpMoveArmToPosition(_armSubsystem, ArmPosition.Stored));
         _opButtonEight.onTrue(new GrpMoveArmToPosition(_armSubsystem, ArmPosition.GroundPickUp));
     }
