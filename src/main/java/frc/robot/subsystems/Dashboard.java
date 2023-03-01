@@ -32,11 +32,11 @@ public class Dashboard extends SubsystemBase {
   	private SendableChooser<Command> _autonomousChooser;
 
 	
-	private GenericEntry _hasGamepieceEntry;
-	private NetworkTableEntry _ArmPositionEntry;
+	private NetworkTableEntry _hasGamepieceEntry;
+	private NetworkTableEntry _armPositionEntry;
 	private boolean _hasGamepiece;
 	private ArmPosition _armPosition;
-	private GenericEntry _armPositionEntry;
+	
 
 
 
@@ -59,7 +59,7 @@ public class Dashboard extends SubsystemBase {
 	  	.withWidget(BuiltInWidgets.kGyro);
 
 		_hasGamepiece = false;
-        _armPosition = ArmPosition.Stored;
+		_armPosition = ArmPosition.Stored;
 		ShuffleboardLayout arm = dashboard.getLayout("Arm Subsystem", BuiltInLayouts.kList)
 		  .withPosition(5,1)
 		  .withSize(3, 3)
@@ -73,6 +73,8 @@ public class Dashboard extends SubsystemBase {
   	@Override
   	public void periodic() {
 		// This method will be called once per scheduler run
+		_hasGamepieceEntry.setBoolean(_hasGamepiece);
+		_armPositionEntry.setString(_armPosition);
   	}
 
   	public void addAuto(String name, Command command) {
@@ -85,5 +87,13 @@ public class Dashboard extends SubsystemBase {
 
 	public void setDefaultAuto(String name, Command command) {
 		_autonomousChooser.setDefaultOption(name, command);
+	}
+
+	public void setHasGamepiece(boolean state) {
+		_hasGamepiece = state;
+	}
+
+	public void setArmPosition(ArmPosition state) {
+		_armPosition = state;
 	}
 }
