@@ -154,7 +154,14 @@ public class Arm extends SubsystemBase {
         MiddleCube,
         IntermediateScoring,
         IntermediatePickup,
+        Middle,
+        High
         // Low Goal
+    }
+
+    public enum ArmMode {
+        Cone,
+        Cube
     }
 
     private final double STORED_SHOULDER_POS = 95;
@@ -269,6 +276,7 @@ public class Arm extends SubsystemBase {
     private ProfiledPIDController _elbowMotorPID;
 
     private ArmPosition _currentArmPos;
+    private ArmMode _armMode;
 
     // shoulder PID constants
     private final double SHOULD_MOTOR_KP = 0.015;
@@ -332,6 +340,7 @@ public class Arm extends SubsystemBase {
         _intakeMotor.setIdleMode(IdleMode.kBrake);
 
         _currentArmPos = ArmPosition.Stored;
+        _armMode = ArmMode.Cube;
 
         // Create Shoulder PID controller
         _shoulderMotorPID = new ProfiledPIDController(this.SHOULD_MOTOR_KP,
@@ -364,6 +373,7 @@ public class Arm extends SubsystemBase {
         SmartDashboard.putNumber("Elbow Motor Output", this._elbowMotor.get());
         SmartDashboard.putNumber("Shoulder Motor Output", this._shoulderMotor.get());
         SmartDashboard.putString("Current Position", this._currentArmPos.toString());
+        SmartDashboard.putString("Current Mode", this.getArmMode().toString());
     }
 
     private void shuffleBoardInit() {
@@ -750,6 +760,24 @@ public class Arm extends SubsystemBase {
                 shoulderPos = INTERMEDIATE_PICKUP_SHOULDER_POS;
                 elbowPos = INTERMEDIATE_PICKUP_ELBOW_POS;
                 break;
+            case Middle:
+                if (_armMode == ArmMode.Cone) {
+                    shoulderPos = MID_CONE_SHOULDER_POS;
+                    elbowPos = MID_CONE_ELBOW_POS;
+                } else {
+                    shoulderPos = MID_CUBE_SHOULDER_POS;
+                    elbowPos = MID_CUBE_ELBOW_POS;
+                }
+                break;
+            case High:
+                if (_armMode == ArmMode.Cone) {
+                    shoulderPos = HIGH_CONE_DROP_SHOULDER_POS;
+                    elbowPos = HIGH_CONE_DROP_ELBOW_POS;
+                } else {
+                    shoulderPos = HIGH_CUBE_SHOULDER_POS;
+                    elbowPos = HIGH_CUBE_ELBOW_POS;
+                }
+                break;
             default:
                 // If we hit default that means we don't know what position we are in
                 // So we just wanna stay put until we get a new position
@@ -798,6 +826,14 @@ public class Arm extends SubsystemBase {
         }
 
         return interPos;
+    }
+
+    public ArmMode getArmMode() {
+        return _armMode;
+    }
+
+    public void setArmMode(ArmMode mode) {
+        _armMode = mode;
     }
 
     @Override
