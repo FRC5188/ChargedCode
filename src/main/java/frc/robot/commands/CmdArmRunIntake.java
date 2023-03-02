@@ -38,6 +38,7 @@ public class CmdArmRunIntake extends CommandBase {
 
     @Override
     public boolean isFinished() {
-        return false;
+        return _armSubsystem.intakeHasPiece();
+        //return false;
     }
 }

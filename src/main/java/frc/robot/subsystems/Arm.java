@@ -263,7 +263,7 @@ public class Arm extends SubsystemBase {
     private final double MAX_MOTOR_VOLTAGE = 11.5; // May want to adjust -Garrett
 
     private CANSparkMax _intakeMotor;
-    private final double INTAKE_HAS_PIECE_CURRENT = 2;
+    private final double INTAKE_HAS_PIECE_CURRENT = 32;
 
     private Solenoid _wristSolenoid;
 
@@ -325,7 +325,8 @@ public class Arm extends SubsystemBase {
         _elbowMotor.enableVoltageCompensation(true);
 
         // TODO: current limit is 0.83 amps
-        //_shoulderMotor.configStatorCurrentLimit(new StatorCurrentLimitConfiguration())
+        // _shoulderMotor.configStatorCurrentLimit(new
+        // StatorCurrentLimitConfiguration())
 
         // set motor breaking
         _shoulderMotor.setNeutralMode(NeutralMode.Brake);
@@ -337,6 +338,7 @@ public class Arm extends SubsystemBase {
 
         // Intake
         _intakeMotor = new CANSparkMax(Constants.CanIDs.ARM_INTAKE_MOTOR_ID, MotorType.kBrushless);
+        _intakeMotor.setInverted(true);
         _intakeMotor.setIdleMode(IdleMode.kBrake);
 
         _currentArmPos = ArmPosition.Stored;
@@ -652,7 +654,9 @@ public class Arm extends SubsystemBase {
     }
 
     public boolean intakeHasPiece() {
+        System.out.println(_intakeMotor.getOutputCurrent());
         return _intakeMotor.getOutputCurrent() >= INTAKE_HAS_PIECE_CURRENT;
+
     }
 
     public void setWristPosition(ArmPosition armPosition) {
@@ -681,6 +685,21 @@ public class Arm extends SubsystemBase {
                 break;
             case Stored:
                 setWristPosition(STORED_WRIST_POS);
+                break;
+            case Middle:
+                if (_armMode == _armMode.Cone) {
+                    setWristPosition(MIDDLE_CONE_WRIST_POS);
+                } else {
+                    setWristPosition(MIDDLE_CUBE_WRIST_POS);
+                }
+
+                break;
+            case High:
+                if (_armMode == _armMode.Cone) {
+                    setWristPosition(HIGH_CONE_WRIST_POS);
+                } else {
+                    setWristPosition(HIGH_CUBE_WRIST_POS);
+                }
                 break;
             default:
                 break;
@@ -839,6 +858,7 @@ public class Arm extends SubsystemBase {
     @Override
     public void periodic() {
         // Update the dashboard
+        System.out.println(_intakeMotor.getOutputCurrent());
         this.updateShuffleBoard();
     }
 }

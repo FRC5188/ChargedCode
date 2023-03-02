@@ -105,8 +105,11 @@ public class RobotContainer {
         _driverButtonA.whileTrue(new CmdDriveResetGyro(_driveSubsystem));
 
         // Intake On/Off
-        _opButtonTwo.whileTrue(new CmdArmRunIntake(_armSubsystem, 0.4));
-
+        _opButtonTwo.onTrue(new CmdArmRunIntake(_armSubsystem, -0.4));
+        
+        // Spit Out Gamepiece
+        _opButtonThree.whileTrue(new CmdArmRunIntake(_armSubsystem, 0.4));
+        
         // Set Wrist Position
         _opButtonOne.whileTrue(new CmdArmWristPosition(_armSubsystem));
 
