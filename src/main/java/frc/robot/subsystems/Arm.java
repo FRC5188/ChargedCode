@@ -373,7 +373,7 @@ public class Arm extends SubsystemBase {
         SmartDashboard.putNumber("Elbow Motor Output", this._elbowMotor.get());
         SmartDashboard.putNumber("Shoulder Motor Output", this._shoulderMotor.get());
         SmartDashboard.putString("Current Position", this._currentArmPos.toString());
-        SmartDashboard.putString("Current Mode", this.getArmMode().toString());
+        SmartDashboard.putString("Current Mode", this._armMode.toString());
     }
 
     private void shuffleBoardInit() {

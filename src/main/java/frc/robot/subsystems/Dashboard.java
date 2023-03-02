@@ -65,16 +65,16 @@ public class Dashboard extends SubsystemBase {
 		  .withSize(3, 3)
 		  .withProperties(Map.of("Label position", "BOTTOM"));
 
-		_hasGamepieceEntry = arm.add("Has Gamepiece", _hasGamepiece).withWidget(BuiltInWidgets.kBooleanBox).withProperties(Map.of("Color when true", "Lime", "Color when false", "Red")).getEntry();
-		_armPositionEntry = arm.add("Arm Position", _armPosition.toString()).withWidget(BuiltInWidgets.kTextView).getEntry();
+		// _hasGamepieceEntry = arm.add("Has Gamepiece", _hasGamepiece).withWidget(BuiltInWidgets.kBooleanBox).withProperties(Map.of("Color when true", "Lime", "Color when false", "Red")).getEntry();
+		// _armPositionEntry = arm.add("Arm Position", _armPosition.toString()).withWidget(BuiltInWidgets.kTextView).getEntry();
 
   	}
 
   	@Override
   	public void periodic() {
 		// This method will be called once per scheduler run
-		_hasGamepieceEntry.setBoolean(_hasGamepiece);
-		_armPositionEntry.setString(_armPosition);
+		// _hasGamepieceEntry.setBoolean(_hasGamepiece);
+		// _armPositionEntry.setString(_armPosition);
   	}
 
   	public void addAuto(String name, Command command) {
