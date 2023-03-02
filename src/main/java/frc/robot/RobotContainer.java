@@ -98,34 +98,41 @@ public class RobotContainer {
         // .whenPressed(m_drivetrainSubsystem::zeroGyroscope);
 
         // Driver Reduce Speed 40%
-        _driverButtonRB.whileFalse(new CmdDriveChangeSpeedMult(_driveSubsystem, 0.4));
-        _driverButtonRB.whileTrue(new CmdDriveChangeSpeedMult(_driveSubsystem, 1.0)); 
+        _driverButtonRB.onFalse(new CmdDriveChangeSpeedMult(_driveSubsystem, 0.4));
+        _driverButtonRB.onTrue(new CmdDriveChangeSpeedMult(_driveSubsystem, 1.0)); 
 
         // Reset Gyro
         _driverButtonA.whileTrue(new CmdDriveResetGyro(_driveSubsystem));
 
-        // Intake On/Off
-        _opButtonTwo.onTrue(new CmdArmRunIntake(_armSubsystem, -0.4));
-        
-        // Spit Out Gamepiece
-        _opButtonThree.whileTrue(new CmdArmRunIntake(_armSubsystem, 0.4));
-        
-        // Set Wrist Position
-        _opButtonOne.whileTrue(new CmdArmWristPosition(_armSubsystem));
+        // -- Operator Controls --
 
-        // Flip Around Intake
-        //_opButtonEight.whileTrue(new CmdArmRunIntake(_armSubsystem, -0.4));
+        // Toggle between cone and cube mode by holding down trigger
+        _opButtonOne.onTrue(new CmdArmSetMode(_armSubsystem, ArmMode.Cone));
+        _opButtonOne.onFalse(new CmdArmSetMode(_armSubsystem, ArmMode.Cube));
 
-        //_opButtonSeven.whileTrue(new CmdArmUpdateGoal(_armSubsystem, ArmPosition.LowScore));
-        // _opButtonNine.whileTrue(new CmdArmUpdateGoal(_armSubsystem, ArmPosition.Stored));
-        // _opButtonTen.whileTrue(new CmdArmUpdateGoal(_armSubsystem, ArmPosition.LoadStationPickUp));
-        // _opButtonThree.whileTrue(new CmdArmUpdateGoal(_armSubsystem, ArmPosition.MiddleCube));
-        // _opButtonFour.whileTrue(new CmdArmUpdateGoal(_armSubsystem, ArmPosition.MiddleCone));
-        _opButtonFive.whileTrue(new CmdArmSetMode(_armSubsystem, ArmMode.Cone));
-        _opButtonFive.whileFalse(new CmdArmSetMode(_armSubsystem, ArmMode.Cube));
-        _opButtonSix.onTrue(new CmdArmUpdateGoal(_armSubsystem, ArmPosition.High));
-        _opButtonSeven.onTrue(new GrpMoveArmToPosition(_armSubsystem, ArmPosition.Stored));
-        _opButtonEight.onTrue(new GrpMoveArmToPosition(_armSubsystem, ArmPosition.GroundPickUp));
+        // Go to stow
+        _opButtonThree.onTrue(new GrpMoveArmToPosition(_armSubsystem, ArmPosition.Stored));
+
+        // Run intake (shouldn't need this, but just in case)
+        _opButtonFive.onTrue(new CmdArmRunIntake(_armSubsystem, -0.4));
+
+        // Spit out game piece
+        _opButtonSix.whileTrue(new CmdArmRunIntake(_armSubsystem, 0.4));
+
+        // Go to high position. Will change based on if you are in cone or cube mode
+        _opButtonSeven.onTrue(new GrpMoveArmToPosition(_armSubsystem, ArmPosition.High));
+
+        // Go to mid position. Will change based on if you are in cone or cube mode
+        _opButtonNine.onTrue(new GrpMoveArmToPosition(_armSubsystem, ArmPosition.Middle));
+
+        // Go to loading station pickup
+        _opButtonTen.onTrue(new GrpMoveArmToPosition(_armSubsystem, ArmPosition.LoadStationPickUp));
+
+        // Go to low position
+        _opButtonEleven.onTrue(new GrpMoveArmToPosition(_armSubsystem, ArmPosition.LowScore));
+
+        // Go to ground pickup
+        _opButtonTwelve.onTrue(new GrpMoveArmToPosition(_armSubsystem, ArmPosition.GroundPickUp));
     }
 
     /**

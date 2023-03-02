@@ -156,13 +156,30 @@ public class Arm extends SubsystemBase {
         IntermediatePickup,
         Middle,
         High
-        // Low Goal
     }
 
     public enum ArmMode {
         Cone,
         Cube
     }
+
+    /* How to update a setpoint:
+     * 1) Get the robot ready. You MUST comment out the lines letting the 
+     *    shoulder and elbow move (_shoulderMotor.set for example). 
+     *    There should only be 2 spots this happens, but I suggest searching 
+     *    for .set( to make sure everything is commented out. You also need to change 
+     *    the idle mode to coast instead of brake so you can move the arm. 
+     *    That gets handled in the constructor. Do for both joints.
+     * 2) Open up shuffleboard. If you go to the smart dashboard tab, you should
+     *    see a bunch of numbers. What you are looking for is the ones labeled 
+     *    elbow angle and shoulder angle. Those should update as you move the arm.
+     * 3) Move to your new position and take note of those angles. They will 
+     *    get displayed in the smart dashboard.
+     * 4) Change the values in code. Make sure you pick the correct position
+     *    and update the numbers for the shoulder and elbow angles you just took
+     * 5) Uncomment the stuff you commented out and change the idle mode back
+     *    to brake. Go ahead and test. MAKE SURE YOU'RE READY TO DISABLE! 
+     */
 
     private final double STORED_SHOULDER_POS = 95;
     private final double STORED_ELBOW_POS = 17;
@@ -176,7 +193,7 @@ public class Arm extends SubsystemBase {
     private final double MID_CUBE_SHOULDER_POS = 90;
     private final double MID_CUBE_ELBOW_POS = 67;
 
-    private final double HIGH_CONE_SPIT_SHOUDLER_POS = 53;
+    private final double HIGH_CONE_SPIT_SHOULDER_POS = 53;
     private final double HIGH_CONE_SPIT_ELBOW_POS = 110;
 
     private final double HIGH_CONE_DROP_SHOULDER_POS = 38;
@@ -279,15 +296,15 @@ public class Arm extends SubsystemBase {
     private ArmMode _armMode;
 
     // shoulder PID constants
-    private final double SHOULD_MOTOR_KP = 0.015;
-    private final double SHOLDER_MOTOR_KI = 0.002;
+    private final double SHOULDER_MOTOR_KP = 0.015;
+    private final double SHOULDER_MOTOR_KI = 0.002;
     private final double SHOULDER_MOTOR_KD = 0.0;
     private final double SHOULDER_MOTOR_TOLERANCE = 1.0;
 
     // shoulder motion profile constraints
     private final double SHOULDER_MAX_VELOCITY = 70; // max speed that this joint should move at
     private final double SHOULDER_MAX_ACCELERATION = 40; // max acceleration this joint should move at
-    private final TrapezoidProfile.Constraints SHOLDER_MOTION_PROFILE_CONSTRAINTS = new TrapezoidProfile.Constraints(
+    private final TrapezoidProfile.Constraints SHOULDER_MOTION_PROFILE_CONSTRAINTS = new TrapezoidProfile.Constraints(
             SHOULDER_MAX_VELOCITY,
             SHOULDER_MAX_ACCELERATION);
 
@@ -300,7 +317,7 @@ public class Arm extends SubsystemBase {
     // shoulder motion profile constraints
     private final double ELBOW_MAX_VELOCITY = 70; // max speed that this joint should move at
     private final double ELBOW_MAX_ACCELERATION = 60; // max acceleration this joint should move at
-    private final TrapezoidProfile.Constraints ELBOW_MOTION_PORFILE_CONSTRAINTS = new TrapezoidProfile.Constraints(
+    private final TrapezoidProfile.Constraints ELBOW_MOTION_PROFILE_CONSTRAINTS = new TrapezoidProfile.Constraints(
             ELBOW_MAX_VELOCITY,
             ELBOW_MAX_ACCELERATION);
 
@@ -345,25 +362,20 @@ public class Arm extends SubsystemBase {
         _armMode = ArmMode.Cube;
 
         // Create Shoulder PID controller
-        _shoulderMotorPID = new ProfiledPIDController(this.SHOULD_MOTOR_KP,
-                this.SHOLDER_MOTOR_KI,
+        _shoulderMotorPID = new ProfiledPIDController(this.SHOULDER_MOTOR_KP,
+                this.SHOULDER_MOTOR_KI,
                 this.SHOULDER_MOTOR_KD,
-                this.SHOLDER_MOTION_PROFILE_CONSTRAINTS);
+                this.SHOULDER_MOTION_PROFILE_CONSTRAINTS);
         _shoulderMotorPID.setTolerance(this.SHOULDER_MOTOR_TOLERANCE);
 
         // create elbow PID controller
         _elbowMotorPID = new ProfiledPIDController(this.ELBOW_MOTOR_KP,
                 this.ELBOW_MOTOR_KI,
                 this.ELBOW_MOTOR_KD,
-                this.ELBOW_MOTION_PORFILE_CONSTRAINTS);
+                this.ELBOW_MOTION_PROFILE_CONSTRAINTS);
         _elbowMotorPID.setTolerance(this.ELBOW_MOTOR_TOLERANCE);
 
         this.updateShuffleBoard();
-    }
-
-    public void setElbowBrakeMode(NeutralMode mode) {
-        System.out.println("Setting elbow brake mode to " + mode);
-        this._elbowMotor.setNeutralMode(mode);
     }
 
     private void updateShuffleBoard() {
@@ -521,10 +533,9 @@ public class Arm extends SubsystemBase {
     /**
      * Convert the current pot value of the eblow into an angle.
      * 
-     * @return Current elbow joint angle in xx units.
+     * @return Current elbow joint angle relative to the shoulder
      */
     public double getElbowJointAngle() {
-        // TODO check this is correct
         double diff = this.ELBOW_neg90_DEGREE_POT_OFFSET - this.ELBOW_0_DEGREE_POT_OFFSET;
         double potValPerDegree = diff / 90;
         double curAnglePot = this.getElbowPotPos() - this.ELBOW_0_DEGREE_POT_OFFSET;
@@ -534,10 +545,9 @@ public class Arm extends SubsystemBase {
     /**
      * Convert the current pot value of the shoulder into an angle.
      * 
-     * @return Current shoulder joint anlge in xx units.
+     * @return Current shoulder joint angle where 90 is perpendicular to the ground
      */
     public double getShoulderJointAngle() {
-        // TODO check this is correct
         double diff = this.SHOULDER_90_DEGREE_POT_OFFSET - this.SHOULDER_0_DEGREE_POT_OFFSET;
         double potValPerDegree = diff / 90;
         double curAnglePot = this.getShoulderPotPos() - this.SHOULDER_0_DEGREE_POT_OFFSET;
@@ -579,11 +589,9 @@ public class Arm extends SubsystemBase {
      * ramping the PID output and setting any limits.
      */
     public void shoulderMotorPIDExec() {
-        // i think we want to work in angles and not pot values -garrett 2/9
         double angle = getShoulderJointAngle();
-        double voltage = _shoulderMotorPID.calculate(angle);
-
-        setShoulderMotorSpeed(voltage);
+        double speed = _shoulderMotorPID.calculate(angle);
+        setShoulderMotorSpeed(speed);
     }
 
     /**
@@ -591,16 +599,23 @@ public class Arm extends SubsystemBase {
      * ramping the PID output and setting any limits.
      */
     public void elbowMotorPIDExec() {
-        // i think we want to work in angles and not pot values -garrett 2/9
         double angle = getElbowJointAngle();
-        double voltage = _elbowMotorPID.calculate(angle);
-        setElbowMotorSpeed(voltage);
+        double speed = _elbowMotorPID.calculate(angle);
+        setElbowMotorSpeed(speed);
     }
 
+    /**
+     * Finds the error, which is how far away from our shoulder setpoint we are
+     * @return The error of the shoulder
+     */
     public double getShoulderError() {
         return Math.abs(_shoulderMotorPID.getGoal().position - this.getShoulderJointAngle());
     }
 
+    /**
+     * Finds the error, which is how far away from our elbow setpoint we are
+     * @return The error of the elbow
+     */
     public double getElbowError() {
         return Math.abs(_elbowMotorPID.getGoal().position - this.getElbowJointAngle());
     }
@@ -653,10 +668,15 @@ public class Arm extends SubsystemBase {
         _intakeMotor.set(speed);
     }
 
+    /**
+     * Checks if we have a gamepiece based on current spikes.
+     * When the motor starts stalling, which it does when we have a piece,
+     * the current will spike. So we check if we have spiked, meaning we
+     * have a piece, and send back a true when the motor has started stalling
+     * @return true if we have a gamepiece based on stalling current, false otherwise
+     */
     public boolean intakeHasPiece() {
-        System.out.println(_intakeMotor.getOutputCurrent());
         return _intakeMotor.getOutputCurrent() >= INTAKE_HAS_PIECE_CURRENT;
-
     }
 
     public void setWristPosition(ArmPosition armPosition) {
@@ -687,15 +707,14 @@ public class Arm extends SubsystemBase {
                 setWristPosition(STORED_WRIST_POS);
                 break;
             case Middle:
-                if (_armMode == _armMode.Cone) {
+                if (_armMode == ArmMode.Cone) {
                     setWristPosition(MIDDLE_CONE_WRIST_POS);
                 } else {
                     setWristPosition(MIDDLE_CUBE_WRIST_POS);
                 }
-
                 break;
             case High:
-                if (_armMode == _armMode.Cone) {
+                if (_armMode == ArmMode.Cone) {
                     setWristPosition(HIGH_CONE_WRIST_POS);
                 } else {
                     setWristPosition(HIGH_CUBE_WRIST_POS);
@@ -804,14 +823,21 @@ public class Arm extends SubsystemBase {
         }
 
         // Set the PIDs to their new positions
+        // We first reset the PIDs so when they draw the new profile it 
+        // starts from where the arm currently is, and then we give
+        // the PIDs the new angles we want to go to
         _shoulderMotorPID.reset(this.getShoulderJointAngle());
         _shoulderMotorPID.setGoal(shoulderPos);
         _elbowMotorPID.reset(this.getElbowJointAngle());
         _elbowMotorPID.setGoal(elbowPos);
-
-        System.out.println("Arm Setpoint: (" + shoulderPos + ", " + elbowPos + ")");
     }
 
+    /**
+     * Finds what intermediate position to use, if any, for the position we want the 
+     * arm to move to
+     * @param position The desired final position
+     * @return The intermediate position the arm must move to before the final position
+     */
     public ArmPosition getIntermediatePosition(ArmPosition position) {
         ArmPosition interPos = position;
 
@@ -858,7 +884,6 @@ public class Arm extends SubsystemBase {
     @Override
     public void periodic() {
         // Update the dashboard
-        System.out.println(_intakeMotor.getOutputCurrent());
         this.updateShuffleBoard();
     }
 }
