@@ -57,6 +57,8 @@ public class RobotContainer {
     private JoystickButton _opButtonEleven = new JoystickButton(_operatorController, 11);
     private JoystickButton _opButtonTwelve = new JoystickButton(_operatorController, 12);
 
+    public final Joystick _toggleSwitch = new Joystick(2);
+
     // Constant Arm Multiplier In To Reduce Arm Speed
     private static final double ARM_MULTIPLIER = 0.3;
 
@@ -133,6 +135,7 @@ public class RobotContainer {
 
         // Go to ground pickup
         _opButtonTwelve.onTrue(new GrpMoveArmToPosition(_armSubsystem, ArmPosition.GroundPickUp));
+
     }
 
     /**
@@ -151,7 +154,7 @@ public class RobotContainer {
     }
 
     public Command getPIDCommand() {
-        return new CmdArmDefault(_armSubsystem);
+        return new CmdArmDefault(_armSubsystem, null);
     }
 
     private static double deadband(double value, double deadband) {
