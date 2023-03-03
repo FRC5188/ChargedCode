@@ -184,29 +184,29 @@ public class Arm extends SubsystemBase {
     private final double STORED_SHOULDER_POS = 95;
     private final double STORED_ELBOW_POS = 17;
 
-    private final double MID_CONE_SHOULDER_POS = 83;
-    private final double MID_CONE_ELBOW_POS = 88;
+    private final double MID_CONE_SHOULDER_POS = 68;
+    private final double MID_CONE_ELBOW_POS = 78;
 
-    private final double MID_CONE_SHOULDER_PLACE_POS = 76;
-    private final double MID_CONE_ELBOW_PLACE_POS = 59;
+    private final double MID_CONE_SHOULDER_PLACE_POS = 68;
+    private final double MID_CONE_ELBOW_PLACE_POS = 78;
 
-    private final double MID_CUBE_SHOULDER_POS = 90;
-    private final double MID_CUBE_ELBOW_POS = 67;
+    private final double MID_CUBE_SHOULDER_POS = 84;
+    private final double MID_CUBE_ELBOW_POS = 63;
 
     private final double HIGH_CONE_SPIT_SHOULDER_POS = 53;
     private final double HIGH_CONE_SPIT_ELBOW_POS = 110;
 
-    private final double HIGH_CONE_DROP_SHOULDER_POS = 38;
-    private final double HIGH_CONE_DROP_ELBOW_POS = 121;
+    private final double HIGH_CONE_DROP_SHOULDER_POS = 21;
+    private final double HIGH_CONE_DROP_ELBOW_POS = 116;
 
-    private final double HIGH_CUBE_SHOULDER_POS = 80;
-    private final double HIGH_CUBE_ELBOW_POS = 91;
+    private final double HIGH_CUBE_SHOULDER_POS = 57;
+    private final double HIGH_CUBE_ELBOW_POS = 81;
 
-    private final double HUMAN_PLAYER_SHOULDER_POS = 100;
-    private final double HUMAN_PLAYER_ELBOW_POS = 90;
+    private final double HUMAN_PLAYER_SHOULDER_POS = 99;
+    private final double HUMAN_PLAYER_ELBOW_POS = 80;
 
-    private final double GROUND_PICKUP_SHOULDER_POS = 42;
-    private final double GROUND_PICKUP_ELBOW_POS = -7;
+    private final double GROUND_PICKUP_SHOULDER_POS = 34;
+    private final double GROUND_PICKUP_ELBOW_POS = -9;
 
     private final double INTERMEDIATE_SCORING_SHOULDER_POS = 95;
     private final double INTERMEDIATE_SCORING_ELBOW_POS = 31;

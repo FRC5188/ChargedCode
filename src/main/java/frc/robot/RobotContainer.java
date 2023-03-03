@@ -102,37 +102,52 @@ public class RobotContainer {
         _driverButtonRB.onTrue(new CmdDriveChangeSpeedMult(_driveSubsystem, 1.0)); 
 
         // Reset Gyro
-        _driverButtonA.whileTrue(new CmdDriveResetGyro(_driveSubsystem));
+       // _driverButtonA.whileTrue(new CmdDriveResetGyro(_driveSubsystem));
 
         // -- Operator Controls --
 
         // Toggle between cone and cube mode by holding down trigger
         _opButtonOne.onTrue(new CmdArmSetMode(_armSubsystem, ArmMode.Cone));
+        System.out.println("Cone mode");
         _opButtonOne.onFalse(new CmdArmSetMode(_armSubsystem, ArmMode.Cube));
+        System.out.println("Cube mode");
 
         // Go to stow
         _opButtonThree.onTrue(new GrpMoveArmToPosition(_armSubsystem, ArmPosition.Stored));
+        System.out.println("Going to stored");
 
         // Run intake (shouldn't need this, but just in case)
         _opButtonFive.onTrue(new CmdArmRunIntake(_armSubsystem, -0.4));
 
         // Spit out game piece
         _opButtonSix.whileTrue(new CmdArmRunIntake(_armSubsystem, 0.4));
+        System.out.println("Spitting");
+
 
         // Go to high position. Will change based on if you are in cone or cube mode
         _opButtonSeven.onTrue(new GrpMoveArmToPosition(_armSubsystem, ArmPosition.High));
+        System.out.println("Going to high");
+
 
         // Go to mid position. Will change based on if you are in cone or cube mode
         _opButtonNine.onTrue(new GrpMoveArmToPosition(_armSubsystem, ArmPosition.Middle));
+        System.out.println("Going to middle");
+
 
         // Go to loading station pickup
         _opButtonTen.onTrue(new GrpMoveArmToPosition(_armSubsystem, ArmPosition.LoadStationPickUp));
+        System.out.println("Going to loading station");
+
 
         // Go to low position
         _opButtonEleven.onTrue(new GrpMoveArmToPosition(_armSubsystem, ArmPosition.LowScore));
+        System.out.println("Going to low score");
+
 
         // Go to ground pickup
         _opButtonTwelve.onTrue(new GrpMoveArmToPosition(_armSubsystem, ArmPosition.GroundPickUp));
+        System.out.println("Going to ground pickup");
+
     }
 
     /**
