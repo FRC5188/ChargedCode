@@ -11,6 +11,8 @@ public class CmdArmUpdateGoal extends CommandBase {
     public CmdArmUpdateGoal(Arm armSubsystem, ArmPosition position) {
         _armSubsystem = armSubsystem;
         _position = position;
+
+        this.addRequirements(armSubsystem);
     }
 
     @Override
@@ -26,6 +28,8 @@ public class CmdArmUpdateGoal extends CommandBase {
 
     @Override
     public void end(boolean interrupted) {
+        if (interrupted)
+            System.out.println("Interrupted");
     }
 
     @Override

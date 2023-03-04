@@ -11,16 +11,12 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-import frc.robot.commands.DefaultDriveCommand;
-import frc.robot.commands.GrpMoveArmToPosition;
-import frc.robot.commands.CmdArmRunIntake;
-import frc.robot.commands.CmdArmUpdateGoal;
-import frc.robot.commands.CmdArmWristPosition;
-import frc.robot.commands.CmdDriveChangeSpeedMult;
-import frc.robot.commands.CmdArmDefault;
+import frc.robot.commands.*;
 import frc.robot.subsystems.Arm;
+import frc.robot.subsystems.Dashboard;
 import frc.robot.subsystems.Drive;
 import frc.robot.subsystems.Vision;
+import frc.robot.subsystems.Arm.ArmMode;
 import frc.robot.subsystems.Arm.ArmPosition;
 
 /**
@@ -37,9 +33,14 @@ public class RobotContainer {
     private final Vision _visionSubsystem = new Vision();
     private final Drive _driveSubsystem = new Drive(_visionSubsystem);
     private final Arm _armSubsystem = new Arm();
+    private final Dashboard _dashboardSubsystem = new Dashboard(_armSubsystem, _driveSubsystem, _visionSubsystem);
+
 
     private final XboxController _driverController = new XboxController(0);
+    private final JoystickButton _driverButtonRB = new JoystickButton(_driverController, Constants.ButtonMappings.RIGHT_BUMPER);
     private final JoystickButton _driverButtonX = new JoystickButton(_driverController, Constants.ButtonMappings.X_BUTTON);
+    private final JoystickButton _driverButtonA = new JoystickButton(_driverController, Constants.ButtonMappings.A_BUTTON);
+
     
     private final Joystick _operatorController = new Joystick(1);
     
@@ -56,6 +57,10 @@ public class RobotContainer {
     private JoystickButton _opButtonEleven = new JoystickButton(_operatorController, 11);
     private JoystickButton _opButtonTwelve = new JoystickButton(_operatorController, 12);
 
+    public final Joystick _sliderJoystick = new Joystick(2);
+
+    public final Joystick _toggleSwitch = new Joystick(2);
+
     // Constant Arm Multiplier In To Reduce Arm Speed
     private static final double ARM_MULTIPLIER = 0.3;
 
@@ -70,7 +75,6 @@ public class RobotContainer {
                                                () -> (-modifyAxis(_driverController.getLeftX()) * Drive.MAX_VELOCITY_METERS_PER_SECOND * _driveSubsystem.getSpeedMultiplier()),
                                                () -> (-modifyAxis(_driverController.getRightX()) * Drive.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND * _driveSubsystem.getSpeedMultiplier())));
         
-        _armSubsystem.setDefaultCommand(new CmdArmDefault(_armSubsystem));
 
         configureButtonBindings();
     }
@@ -98,26 +102,55 @@ public class RobotContainer {
         // .whenPressed(m_drivetrainSubsystem::zeroGyroscope);
 
         // Driver Reduce Speed 40%
-        _driverButtonX.whileFalse(new CmdDriveChangeSpeedMult(_driveSubsystem, 0.4));
-        _driverButtonX.whileTrue(new CmdDriveChangeSpeedMult(_driveSubsystem, 1.0)); 
+        _driverButtonRB.onFalse(new CmdDriveChangeSpeedMult(_driveSubsystem, 0.4));
+        _driverButtonRB.onTrue(new CmdDriveChangeSpeedMult(_driveSubsystem, 1.0)); 
 
-        // Intake On/Off
-        _opButtonTwo.whileTrue(new CmdArmRunIntake(_armSubsystem, 0.4));
+        // Reset Gyro
+       // _driverButtonA.whileTrue(new CmdDriveResetGyro(_driveSubsystem));
 
-        // Set Wrist Position
-        _opButtonOne.whileTrue(new CmdArmWristPosition(_armSubsystem));
+        // -- Operator Controls --
 
-        // Flip Around Intake
-        //_opButtonEight.whileTrue(new CmdArmRunIntake(_armSubsystem, -0.4));
+        // Toggle between cone and cube mode by holding down trigger
+        _opButtonOne.onTrue(new CmdArmSetMode(_armSubsystem, ArmMode.Cone));
+        System.out.println("Cone mode");
+        _opButtonOne.onFalse(new CmdArmSetMode(_armSubsystem, ArmMode.Cube));
+        System.out.println("Cube mode");
 
-        //_opButtonSeven.whileTrue(new CmdArmUpdateGoal(_armSubsystem, ArmPosition.LowScore));
-        // _opButtonNine.whileTrue(new CmdArmUpdateGoal(_armSubsystem, ArmPosition.Stored));
-        // _opButtonTen.whileTrue(new CmdArmUpdateGoal(_armSubsystem, ArmPosition.LoadStationPickUp));
-        // _opButtonThree.whileTrue(new CmdArmUpdateGoal(_armSubsystem, ArmPosition.MiddleCube));
-        // _opButtonFour.whileTrue(new CmdArmUpdateGoal(_armSubsystem, ArmPosition.MiddleCone));
-        // _opButtonFive.whileTrue(new CmdArmUpdateGoal(_armSubsystem, ArmPosition.HighCube));
-        // _opButtonSix.whileTrue(new CmdArmUpdateGoal(_armSubsystem, ArmPosition.HighCone));
-        _opButtonEight.onTrue(new GrpMoveArmToPosition(_armSubsystem, ArmPosition.LoadStationPickUp));
+        // Go to stow
+        _opButtonThree.onTrue(new GrpMoveArmToPosition(_armSubsystem, ArmPosition.Stored));
+        System.out.println("Going to stored");
+
+        // Run intake (shouldn't need this, but just in case)
+        _opButtonFive.onTrue(new CmdArmRunIntake(_armSubsystem, -0.4));
+
+        // Spit out game piece
+        _opButtonSix.whileTrue(new CmdArmRunIntake(_armSubsystem, 0.4));
+        System.out.println("Spitting");
+
+
+        // Go to high position. Will change based on if you are in cone or cube mode
+        _opButtonSeven.onTrue(new GrpMoveArmToPosition(_armSubsystem, ArmPosition.High));
+        System.out.println("Going to high");
+
+
+        // Go to mid position. Will change based on if you are in cone or cube mode
+        _opButtonNine.onTrue(new GrpMoveArmToPosition(_armSubsystem, ArmPosition.Middle));
+        System.out.println("Going to middle");
+
+
+        // Go to loading station pickup
+        _opButtonTen.onTrue(new GrpMoveArmToPosition(_armSubsystem, ArmPosition.LoadStationPickUp));
+        System.out.println("Going to loading station");
+
+
+        // Go to low position
+        _opButtonEleven.onTrue(new GrpMoveArmToPosition(_armSubsystem, ArmPosition.LowScore));
+        System.out.println("Going to low score");
+
+
+        // Go to ground pickup
+        _opButtonTwelve.onTrue(new GrpMoveArmToPosition(_armSubsystem, ArmPosition.GroundPickUp));
+
     }
 
     /**
@@ -133,6 +166,10 @@ public class RobotContainer {
 
     public Command getInitialArmPosCommand() {
         return new CmdArmUpdateGoal(_armSubsystem, ArmPosition.Stored);
+    }
+
+    public Command getPIDCommand() {
+        return new CmdArmDefault(_armSubsystem, null);
     }
 
     private static double deadband(double value, double deadband) {

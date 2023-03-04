@@ -27,6 +27,7 @@ import frc.robot.Constants;
 import frc.robot.sds.Mk4iSwerveModuleHelper;
 import frc.robot.sds.SdsModuleConfigurations;
 import frc.robot.sds.SwerveModule;
+import frc.robot.vision.Vision;
 
 /**
  * Singleton subsystem for Drivebase.
@@ -74,9 +75,7 @@ public class Drive extends SubsystemBase {
     private static final double BACK_LEFT_MODULE_ENCODER_OFFSET = -142.81640625;
     /** The offset to get the encoder to read 0 when facing forward */
     private static final double BACK_RIGHT_MODULE_ENCODER_OFFSET = -352.873828125;
-
-    private Vision _visionSubsystem;
-
+    
     /**
      * This object does the math to convert a motion vector into individual module
      * vectors
@@ -124,8 +123,7 @@ public class Drive extends SubsystemBase {
      * Represents the drive chassis of the robot. Contains all of the code to
      * move in a swerve format using either a joystick or supplied values.
      */
-    public Drive(Vision visionSubsystem) {
-        _visionSubsystem = visionSubsystem;
+    public Drive() {
 
         ShuffleboardTab shuffleboardTab = Shuffleboard.getTab("Drivetrain Info");
 
@@ -192,8 +190,8 @@ public class Drive extends SubsystemBase {
         _navx.reset();
     }
 
-    public static void setInstance(Vision visionSubsystem) {
-        _instance = (_instance == null) ? (new Drive(visionSubsystem)) : (_instance);
+    public static void setInstance() {
+        _instance = (_instance == null) ? (new Drive()) : (_instance);
     }
 
     public static Drive getInstance() {
@@ -241,28 +239,6 @@ public class Drive extends SubsystemBase {
         return this._speedMultiplier;
     }
 
-    public Command followTrajectoryCommand(PathPlannerTrajectory traj, boolean isFirstPath) {
-        return new SequentialCommandGroup(
-                new InstantCommand(() -> {
-                    // Reset odometry for the first path you run during auto
-                    if (isFirstPath) {
-                        SwerveModulePosition modulePositionArray[] = { _frontLeftModule.getModulePosition(),
-                                _frontRightModule.getModulePosition(), _backLeftModule.getModulePosition(),
-                                _backRightModule.getModulePosition() };
-
-                        _odometry.resetPosition(
-                                getGyroscopeRotation(),
-                                modulePositionArray,
-                                traj.getInitialHolonomicPose());
-                    }
-                }),
-
-                new PPSwerveControllerCommand(traj,
-                        this::getPose, new PIDController(0, 0, 0),
-                        new PIDController(0, 0, 0), new PIDController(0, 0, 0),
-                        this::drive, this));
-    };
-
     public void drive(ChassisSpeeds chassisSpeeds) {
         _chassisSpeeds = chassisSpeeds;
     }
@@ -276,7 +252,7 @@ public class Drive extends SubsystemBase {
         SwerveDriveKinematics.desaturateWheelSpeeds(states, MAX_VELOCITY_METERS_PER_SECOND);
 
         // Update odometry if applicable
-        _visionSubsystem.getVisionEstimatedRobotPose(_odometry);
+        Vision.getVisionEstimatedRobotPose(_odometry);
         _odometry.updateWithTime(Timer.getFPGATimestamp(), getGyroscopeRotation(), new SwerveModulePosition[] {
                 _frontLeftModule.getModulePosition(), _frontRightModule.getModulePosition(),
                 _backLeftModule.getModulePosition(), _backRightModule.getModulePosition()

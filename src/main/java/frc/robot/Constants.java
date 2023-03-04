@@ -84,50 +84,6 @@ public final class Constants {
     }
 
     /**
-     * {@summary} For vision subsystem. 
-     */
-
-    public static class Vision {
-        /**
-         * {@summary} For information about our camera model. 
-         */
-        public static class Camera {
-            /*
-            Assume that you're looking at the robot from above it. In our code we treat the robot like a single point in an XY-Plane. Where the front of the robot is the
-            positive X, and where the left side of the robot is the negative Y. 
-            */
-            // How far foward/backward the camera is from robot center. 
-            private static final double CAMERA_X_FROM_ROBOT_CENTER = 0;
-            // How far left/right the camera is from robot center. 
-            private static final double CAMERA_Y_FROM_ROBOT_CENTER = 0;
-            // How far up/down the camera is from center if we look at robot from side in 3D space. 
-            private static final double CAMERA_Z_FROM_ROBOT_CENTER = 0;
-            private static final double CAMERA_ROLL = 0;
-            private static final double CAMERA_PITCH = 0;
-            private static final double CAMERA_YAW = 0;
-
-            /**
-            * {@summary} Represents the difference between where our camera is an where the robot is. 
-            */
-            public static final Transform3d DIFFERENCE_BETWEEN_ROBOT_CAMERA = new Transform3d(
-                new Translation3d(CAMERA_X_FROM_ROBOT_CENTER, CAMERA_Y_FROM_ROBOT_CENTER, CAMERA_Z_FROM_ROBOT_CENTER),
-                new Rotation3d(CAMERA_ROLL, CAMERA_PITCH, CAMERA_YAW)
-            );
-        }
-        /**
-         * {@summary} For information about our PhotonVision Pipeline
-         */
-        public static class PhotonVision {
-            /**
-            * {@summary} Represents the name of the camera set in the PhotonVision local utiliy. 
-            */
-            public static final String PHOTON_CAMERA_NAME = "photoncamera";
-
-            
-        }
-    }
-
-    /**
      * {@summary} For information about the 2023 FRC ChargedUp Field
      */
     public static class Field {

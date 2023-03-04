@@ -9,13 +9,16 @@ import java.util.function.DoubleSupplier;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Arm;
+import frc.robot.subsystems.Arm.ArmPosition;
 
-public class CmdArmRunIntake extends CommandBase {
+public class CmdArmRunIntakeByPosition extends CommandBase {
     private Arm _armSubsystem;
+    private ArmPosition _position;
     private double _intakeSpeed;
 
-    public CmdArmRunIntake(Arm armSubsystem, double intakeSpeed) {
+    public CmdArmRunIntakeByPosition(Arm armSubsystem, ArmPosition position, double intakeSpeed) {
         this._armSubsystem = armSubsystem;
+        _position = position;
         this._intakeSpeed = intakeSpeed;
 
         this.addRequirements(_armSubsystem);
@@ -23,7 +26,12 @@ public class CmdArmRunIntake extends CommandBase {
 
     @Override
     public void initialize() {
-        
+        // We want the intake to start running only in certain positions
+        // If it tries to run in a position we don't want it to run in, 
+        // cancel the command
+        if (_position != ArmPosition.GroundPickUp || _position != ArmPosition.LoadStationPickUp) {
+          this.cancel();
+        }
     }
 
     @Override
