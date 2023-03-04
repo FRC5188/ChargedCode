@@ -57,7 +57,7 @@ public class RobotContainer {
     private JoystickButton _opButtonEleven = new JoystickButton(_operatorController, 11);
     private JoystickButton _opButtonTwelve = new JoystickButton(_operatorController, 12);
 
-    public final Joystick _sliderJoystick = new Joystick(2);
+    public final Joystick _sliderJoystick = new Joystick(1);
 
     public final Joystick _toggleSwitch = new Joystick(2);
 

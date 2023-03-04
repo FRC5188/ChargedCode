@@ -5,6 +5,7 @@ import java.util.function.DoubleSupplier;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Arm;
+import frc.robot.subsystems.Arm.ArmMode;
 import frc.robot.subsystems.Arm.ArmPosition;
 import frc.robot.subsystems.Arm.WristPosition;
 import java.util.function.DoubleSupplier;
@@ -32,9 +33,9 @@ public class CmdArmDefault extends CommandBase {
         _armSubsystem.elbowMotorPIDExec();
 
         if (_mToggle.getAsDouble() >= 0){
-            //set arm mode
+            _armSubsystem.setArmMode(ArmMode.Cone);
         }else {
-            //set other arm mode
+            _armSubsystem.setArmMode(ArmMode.Cube);
         }
 
         
