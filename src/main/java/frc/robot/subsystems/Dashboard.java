@@ -27,7 +27,6 @@ public class Dashboard extends SubsystemBase {
   	/** Creates a new Dashboard. */
   	Arm _armSubsystem;
  	Drive _driveSubsystem;
-  	Vision _visionSubsystem;
 
   	private SendableChooser<Command> _autonomousChooser;
 
@@ -40,11 +39,10 @@ public class Dashboard extends SubsystemBase {
 
 
 
-  	public Dashboard(Arm armSubsystem, Drive driveSubsystem, Vision visionSubsystem) {
+  	public Dashboard(Arm armSubsystem, Drive driveSubsystem) {
 	  	ShuffleboardTab dashboard = Shuffleboard.getTab("Dashboard");
 	  	_armSubsystem = armSubsystem;
 	  	_driveSubsystem = driveSubsystem;
-	  	_visionSubsystem = visionSubsystem;
 
 	  	_autonomousChooser = new SendableChooser<Command>();
 

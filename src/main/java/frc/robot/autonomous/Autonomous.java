@@ -1,10 +1,12 @@
 package frc.robot.autonomous;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.function.Consumer;
 
 import javax.print.attribute.standard.Fidelity;
 
+import com.pathplanner.lib.PathPlanner;
 import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.PathPoint;
 import com.pathplanner.lib.commands.PPSwerveControllerCommand;
@@ -15,6 +17,8 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.subsystems.Drive;
 
 public abstract class Autonomous {
@@ -123,19 +127,18 @@ public abstract class Autonomous {
     put(FIELD_POSITIONS.RIGHT_SIDE_INTERMEDIATE_AUTO_CLOSEST, new PathPoint(new Translation2d(14.4, 0.65), new Rotation2d(0)));
     put(FIELD_POSITIONS.RIGHT_SIDE_INTERMEDIATE_AUTO_SECOND_CLOSEST, new PathPoint(new Translation2d(14.4, 2.65), new Rotation2d(0)));
     put(FIELD_POSITIONS.RIGHT_SIDE_INTERMEDIATE_AUTO_THIRD_CLOSEST, new PathPoint(new Translation2d(14.4, 4.65), new Rotation2d(0)));
-
-
-
     }};
 
+    // Constants used in autonomous.
+    private static final double MAX_VELOCITY = 3;
+    private static final double MAX_ACCELERATION = 4;
+
     
-
-
     public static Command getMovementCommand(FIELD_POSITIONS targetPosition, Drive driveSubsystem, Consumer<ChassisSpeeds> chassisSpeed){
         // Create the trajectory to be executed to move to that position. 
         PathPlannerTrajectory targetTrajectory = new TrajectoryBuilder()
                                                 .setStartPositionAsCurrent(driveSubsystem.getPose())
-                                                .addConstraints(3, 4)
+                                                .addConstraints(MAX_VELOCITY, MAX_ACCELERATION)
                                                 .addPathPoint(fieldPositionsCoordinateMap.get(targetPosition))
                                                 .buildTrajectory();
         /* The aformentioned builder takes the current postion of the robot and makes it the start of the trajectory. Then adds default limitations on the path
@@ -153,8 +156,15 @@ public abstract class Autonomous {
         );
     }
 
-    
-
-    public Autonomous() {
+    public static Command getPreloadedPathCommand(String pathName, double maxVelocity, double maxAcceleration, Drive driveSubsystem, Consumer<ChassisSpeeds> chassisSpeed){
+        return new PPSwerveControllerCommand(
+            PathPlanner.loadPath(pathName, MAX_VELOCITY, MAX_ACCELERATION),
+            driveSubsystem::getPose,
+            new PIDController(0, 0, 0),
+            new PIDController(0, 0, 0),
+            new PIDController(0, 0, 0),
+            chassisSpeed,
+            driveSubsystem
+        );
     }
 }
