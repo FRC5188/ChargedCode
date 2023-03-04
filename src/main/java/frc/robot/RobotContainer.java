@@ -11,11 +11,11 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import frc.robot.autonomous.Autonomous;
 import frc.robot.commands.*;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Dashboard;
 import frc.robot.subsystems.Drive;
-import frc.robot.subsystems.Vision;
 import frc.robot.subsystems.Arm.ArmMode;
 import frc.robot.subsystems.Arm.ArmPosition;
 
@@ -30,10 +30,9 @@ import frc.robot.subsystems.Arm.ArmPosition;
  */
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
-    private final Vision _visionSubsystem = new Vision();
-    private final Drive _driveSubsystem = new Drive(_visionSubsystem);
+    private final Drive _driveSubsystem = new Drive();
     private final Arm _armSubsystem = new Arm();
-    private final Dashboard _dashboardSubsystem = new Dashboard(_armSubsystem, _driveSubsystem, _visionSubsystem);
+    private final Dashboard _dashboardSubsystem = new Dashboard(_armSubsystem, _driveSubsystem);
 
 
     private final XboxController _driverController = new XboxController(0);
@@ -159,9 +158,7 @@ public class RobotContainer {
      * @return the command to run in autonomous
      */
     public Command getAutonomousCommand() {
-        return _driveSubsystem.followTrajectoryCommand(
-      PathPlanner.loadPath("TEST_Straight_Line", 3, 4), 
-          true);
+        return _driveSubsystem.getAutonomousCommand();
     }
 
     public Command getInitialArmPosCommand() {
