@@ -156,7 +156,7 @@ public abstract class Autonomous {
         );
     }
 
-    public static Command getPreloadedPathCommand(String pathName, double maxVelocity, double maxAcceleration, Drive driveSubsystem, Consumer<ChassisSpeeds> chassisSpeed){
+    public static Command getPreloadedPathCommand(String pathName, Drive driveSubsystem, Consumer<ChassisSpeeds> chassisSpeed){
         return new PPSwerveControllerCommand(
             PathPlanner.loadPath(pathName, MAX_VELOCITY, MAX_ACCELERATION),
             driveSubsystem::getPose,

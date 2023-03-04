@@ -24,6 +24,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.autonomous.Autonomous;
 import frc.robot.sds.Mk4iSwerveModuleHelper;
 import frc.robot.sds.SdsModuleConfigurations;
 import frc.robot.sds.SwerveModule;
@@ -241,6 +242,14 @@ public class Drive extends SubsystemBase {
 
     public void drive(ChassisSpeeds chassisSpeeds) {
         _chassisSpeeds = chassisSpeeds;
+    }
+
+    public ChassisSpeeds getChassisSpeeds(){
+        return this._chassisSpeeds;
+    }
+
+    public Command getAutonomousCommand(){
+        return Autonomous.getPreloadedPathCommand("TEST_Straight_Line", this, this::drive);
     }
 
 
