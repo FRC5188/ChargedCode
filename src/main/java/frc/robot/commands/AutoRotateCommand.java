@@ -26,21 +26,21 @@ public class AutoRotateCommand extends CommandBase {
     }
     @Override
     public void initialize(){
-        this.m_drivetrainSubsystem.rotatePIDInit(m_rotationSetpoint);
+        //this.m_drivetrainSubsystem.rotatePIDInit(m_rotationSetpoint);
     }
 
     @Override
     public void execute() {
         // You can use `new ChassisSpeeds(...)` for robot-oriented movement instead of field-oriented movement
-        double rotationPower = this.m_drivetrainSubsystem.rotatePIDExec();
-        m_drivetrainSubsystem.drive(
-                ChassisSpeeds.fromFieldRelativeSpeeds(
-                        m_translationXSupplier.getAsDouble(),
-                        m_translationYSupplier.getAsDouble(),
-                        rotationPower,
-                        m_drivetrainSubsystem.getGyroscopeRotation()
-                )
-        );
+        // double rotationPower = this.m_drivetrainSubsystem.rotatePIDExec();
+        // m_drivetrainSubsystem.drive(
+        //         ChassisSpeeds.fromFieldRelativeSpeeds(
+        //                 m_translationXSupplier.getAsDouble(),
+        //                 m_translationYSupplier.getAsDouble(),
+        //                 rotationPower,
+        //                 m_drivetrainSubsystem.getGyroscopeRotation()
+        //         )
+        // );
     }
 
     @Override
@@ -55,6 +55,7 @@ public class AutoRotateCommand extends CommandBase {
 
     @Override
     public boolean isFinished(){
-        return this.m_drivetrainSubsystem.rotatePIDAtSetpoint();
+        //return this.m_drivetrainSubsystem.rotatePIDAtSetpoint();
+        return true;
     }
 }
