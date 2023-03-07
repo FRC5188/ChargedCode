@@ -56,9 +56,10 @@ public class RobotContainer {
     private JoystickButton _opButtonEleven = new JoystickButton(_operatorController, 11);
     private JoystickButton _opButtonTwelve = new JoystickButton(_operatorController, 12);
 
-    public final Joystick _sliderJoystick = new Joystick(1);
+    public final Joystick _sliderJoystick = new Joystick(2);
+    private JoystickButton _opButtonThirteen = new JoystickButton(_operatorController, 13);
 
-    public final Joystick _toggleSwitch = new Joystick(2);
+    public final Joystick _toggleSwitch = new Joystick(3);
 
     // Constant Arm Multiplier In To Reduce Arm Speed
     private static final double ARM_MULTIPLIER = 0.3;
@@ -67,10 +68,12 @@ public class RobotContainer {
      * The container for the robot. Contains subsystems, OI devices, and commands.
      */
     public RobotContainer() {
+        _sliderJoystick.getRawAxis(0);
+
         // Driver Configuration
         _driveSubsystem.setDefaultCommand(new DefaultDriveCommand(
                                                _driveSubsystem,
-                                               () -> (-modifyAxis(_driverController.getLeftY()) * Drive.MAX_VELOCITY_METERS_PER_SECOND * _driveSubsystem.getSpeedMultiplier()),
+                                               () -> (-modifyAxis(_driverController.getLeftY() )* Drive.MAX_VELOCITY_METERS_PER_SECOND * _driveSubsystem.getSpeedMultiplier()),
                                                () -> (-modifyAxis(_driverController.getLeftX()) * Drive.MAX_VELOCITY_METERS_PER_SECOND * _driveSubsystem.getSpeedMultiplier()),
                                                () -> (-modifyAxis(_driverController.getRightX()) * Drive.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND * _driveSubsystem.getSpeedMultiplier())));
         
@@ -81,7 +84,6 @@ public class RobotContainer {
     // private double getShoulderSpeed(){
     //     return ARM_MULTIPLIER*((_operatorController.getLeftY()> 0) ? (0) : (_operatorController.getZ()));
     // }
-
     // private double getArmSpeed(){
     //     return ARM_MULTIPLIER*((_operatorController.getThrottle() > 0) ? (_operatorController.getZ()) : (0));
     // }
@@ -149,6 +151,11 @@ public class RobotContainer {
 
         // Go to ground pickup
         _opButtonTwelve.onTrue(new GrpMoveArmToPosition(_armSubsystem, ArmPosition.GroundPickUp));
+
+        // Move arm to position manual
+        _opButtonThirteen.whileTrue(new GrpMoveArmToPositionManual(_armSubsystem, 
+        () -> _sliderJoystick.getrawAxis(0), 
+        () -> _sliderJoystick.getrawAxis(0)));
 
     }
 
