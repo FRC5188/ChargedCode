@@ -16,7 +16,6 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
@@ -24,15 +23,18 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants.OperatorConstants.CanIDs;
+import frc.robot.Constants;
+import frc.robot.autonomous.Autonomous;
 import frc.robot.sds.Mk4iSwerveModuleHelper;
 import frc.robot.sds.SdsModuleConfigurations;
 import frc.robot.sds.SwerveModule;
+import frc.robot.vision.Vision;
 
 /**
  * Singleton subsystem for Drivebase.
  */
 public class Drive extends SubsystemBase {
+
     /** The width of the chassis from the centers of the swerve modules */
     private static final double CHASSIS_WIDTH_METERS = Units.inchesToMeters(20.75);
     /** The height of the chassis from the centers of the swerve modules */
@@ -77,17 +79,19 @@ public class Drive extends SubsystemBase {
 
     private Vision _visionSubsystem;
 
+    
     /**
      * This object does the math to convert a motion vector into individual module
      * vectors
      * <p>
      * See WPILib's documentation for more information
-     */
+     **/
     // We divide our chassis width and height by 2 so we can represent each module
     // as a point relative to the
     // center of the robot. Positive along x means going to the left from the
     // center, and positive along
     // y means going up from the center
+
     private SwerveDriveKinematics _kinematics;
 
     /**
@@ -98,6 +102,7 @@ public class Drive extends SubsystemBase {
     private AHRS _navx;
 
     private SwerveDrivePoseEstimator _odometry;
+    private double _speedMultiplier = 0.4;
 
     // These are our modules
     private SwerveModule _frontLeftModule;
@@ -117,13 +122,13 @@ public class Drive extends SubsystemBase {
 
     // Holds the instance of the drive subsystem
     private static Drive _instance = null;
+    double tolerance = 1.0;
 
     /**
      * Represents the drive chassis of the robot. Contains all of the code to
      * move in a swerve format using either a joystick or supplied values.
      */
-    private Drive(Vision visionSubsystem) {
-        _visionSubsystem = visionSubsystem;
+    public Drive() {
 
         ShuffleboardTab shuffleboardTab = Shuffleboard.getTab("Drivetrain Info");
 
@@ -132,9 +137,9 @@ public class Drive extends SubsystemBase {
                         .withSize(6, 8)
                         .withPosition(0, 0),
                 Mk4iSwerveModuleHelper.GearRatio.L2,
-                CanIDs.FRONT_LEFT_DRIVE_ID,
-                CanIDs.FRONT_LEFT_TURNING_ID,
-                CanIDs.FRONT_LEFT_ENCODER_ID,
+                Constants.CanIDs.FRONT_LEFT_DRIVE_ID,
+                Constants.CanIDs.FRONT_LEFT_TURNING_ID,
+                Constants.CanIDs.FRONT_LEFT_ENCODER_ID,
                 FRONT_LEFT_MODULE_ENCODER_OFFSET);
 
         _frontRightModule = Mk4iSwerveModuleHelper.createFalcon500(
@@ -142,9 +147,9 @@ public class Drive extends SubsystemBase {
                         .withSize(6, 8)
                         .withPosition(6, 0),
                 Mk4iSwerveModuleHelper.GearRatio.L2,
-                CanIDs.FRONT_RIGHT_DRIVE_ID,
-                CanIDs.FRONT_RIGHT_TURNING_ID,
-                CanIDs.FRONT_RIGHT_ENCODER_ID,
+                Constants.CanIDs.FRONT_RIGHT_DRIVE_ID,
+                Constants.CanIDs.FRONT_RIGHT_TURNING_ID,
+                Constants.CanIDs.FRONT_RIGHT_ENCODER_ID,
                 FRONT_RIGHT_MODULE_ENCODER_OFFSET);
 
         _backLeftModule = Mk4iSwerveModuleHelper.createFalcon500(
@@ -152,9 +157,9 @@ public class Drive extends SubsystemBase {
                         .withSize(6, 8)
                         .withPosition(0, 8),
                 Mk4iSwerveModuleHelper.GearRatio.L2,
-                CanIDs.BACK_LEFT_DRIVE_ID,
-                CanIDs.BACK_LEFT_TURNING_ID,
-                CanIDs.BACK_LEFT_ENCODER_ID,
+                Constants.CanIDs.BACK_LEFT_DRIVE_ID,
+                Constants.CanIDs.BACK_LEFT_TURNING_ID,
+                Constants.CanIDs.BACK_LEFT_ENCODER_ID,
                 BACK_LEFT_MODULE_ENCODER_OFFSET);
 
         _backRightModule = Mk4iSwerveModuleHelper.createFalcon500(
@@ -162,15 +167,15 @@ public class Drive extends SubsystemBase {
                         .withSize(6, 8)
                         .withPosition(6, 8),
                 Mk4iSwerveModuleHelper.GearRatio.L2,
-                CanIDs.BACK_RIGHT_DRIVE_ID,
-                CanIDs.BACK_RIGHT_TURNING_ID,
-                CanIDs.BACK_RIGHT_ENCODER_ID,
+                Constants.CanIDs.BACK_RIGHT_DRIVE_ID,
+                Constants.CanIDs.BACK_RIGHT_TURNING_ID,
+                Constants.CanIDs.BACK_RIGHT_ENCODER_ID,
                 BACK_RIGHT_MODULE_ENCODER_OFFSET);
 
         _kinematics = new SwerveDriveKinematics(
                 // Front left
                 new Translation2d(CHASSIS_WIDTH_METERS / 2.0, CHASSIS_HEIGHT_METERS / 2.0),
-                // Front right
+                //
                 new Translation2d(CHASSIS_WIDTH_METERS / 2.0, -CHASSIS_HEIGHT_METERS / 2.0),
                 // Back left
                 new Translation2d(-CHASSIS_WIDTH_METERS / 2.0, CHASSIS_HEIGHT_METERS / 2.0),
@@ -190,8 +195,8 @@ public class Drive extends SubsystemBase {
         _navx.reset();
     }
 
-    public static void setInstance(Vision visionSubsystem) {
-        _instance = (_instance == null) ? (new Drive(visionSubsystem)) : (_instance);
+    public static void setInstance() {
+        _instance = (_instance == null) ? (new Drive()) : (_instance);
     }
 
     public static Drive getInstance() {
@@ -200,7 +205,6 @@ public class Drive extends SubsystemBase {
 
     /**
      * Sets the gyroscope angle to zero. This can be used to set the direction the
-     * robot is currently facing to the
      * 'forwards' direction.
      */
     public void zeroGyroscope() {
@@ -232,6 +236,16 @@ public class Drive extends SubsystemBase {
         // counter-clockwise makes the angle increase.
         return Rotation2d.fromDegrees(360.0 - _navx.getYaw());
     }
+    public void setSpeedMultiplier(double multiplier){
+        _speedMultiplier = multiplier;
+    }
+
+    public double getSpeedMultiplier(){
+        return this._speedMultiplier;
+    }
+    public double getRobotPitch(){
+        return _navx.getPitch();
+    }
 
     public Command followTrajectoryCommand(PathPlannerTrajectory traj, boolean isFirstPath) {
         return new SequentialCommandGroup(
@@ -259,6 +273,15 @@ public class Drive extends SubsystemBase {
         _chassisSpeeds = chassisSpeeds;
     }
 
+    public ChassisSpeeds getChassisSpeeds(){
+        return this._chassisSpeeds;
+    }
+
+    public Command getAutonomousCommand(){
+        return Autonomous.getPreloadedPathCommand("BLUE_LeaveBalance", this, this::drive);
+    }
+
+
     @Override
     public void periodic() {
         // Convert the drive base vector into module vectors
@@ -267,7 +290,7 @@ public class Drive extends SubsystemBase {
         SwerveDriveKinematics.desaturateWheelSpeeds(states, MAX_VELOCITY_METERS_PER_SECOND);
 
         // Update odometry if applicable
-        //_visionSubsystem.getVisionEstimatedRobotPose(_odometry);
+        Vision.getVisionEstimatedRobotPose(_odometry);
         _odometry.updateWithTime(Timer.getFPGATimestamp(), getGyroscopeRotation(), new SwerveModulePosition[] {
                 _frontLeftModule.getModulePosition(), _frontRightModule.getModulePosition(),
                 _backLeftModule.getModulePosition(), _backRightModule.getModulePosition()

@@ -6,6 +6,8 @@ import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 import com.ctre.phoenix.motorcontrol.TalonFXInvertType;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
+
+import frc.robot.Constants;
 import frc.robot.sds.DriveController;
 import frc.robot.sds.DriveControllerFactory;
 import frc.robot.sds.ModuleConfiguration;
@@ -93,6 +95,8 @@ public final class Falcon500DriveControllerFactoryBuilder {
         private ControllerImplementation(TalonFX motor, double sensorVelocityCoefficient) {
             this.motor = motor;
             this.sensorVelocityCoefficient = sensorVelocityCoefficient;
+
+            motor.configOpenloopRamp(Constants.AssortedConstants.DRIVE_RAMP_SECONDS);
         }
 
         @Override
