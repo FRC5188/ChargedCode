@@ -154,8 +154,8 @@ public class RobotContainer {
 
         // Move arm to position manual
         _opButtonThirteen.whileTrue(new GrpMoveArmToPositionManual(_armSubsystem, 
-        () -> _sliderJoystick.getrawAxis(0), 
-        () -> _sliderJoystick.getrawAxis(0)));
+        () -> _sliderJoystick.getRawAxis(0), 
+        () -> _sliderJoystick.getRawAxis(0)));
 
     }
 
