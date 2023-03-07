@@ -121,6 +121,11 @@ public class RobotContainer {
         _opButtonThree.onTrue(new GrpMoveArmToPosition(_armSubsystem, ArmPosition.Stored));
         System.out.println("Going to stored");
 
+        // Move arm to position manual
+        _opButtonFour.whileTrue(new GrpMoveArmToPositionManual(_armSubsystem, 
+        () -> _sliderJoystick.getRawAxis(0), 
+        () -> _sliderJoystick.getRawAxis(0)));
+        
         // Run intake (shouldn't need this, but just in case)
         _opButtonFive.onTrue(new CmdArmRunIntake(_armSubsystem, -0.4));
 
@@ -152,10 +157,7 @@ public class RobotContainer {
         // Go to ground pickup
         _opButtonTwelve.onTrue(new GrpMoveArmToPosition(_armSubsystem, ArmPosition.GroundPickUp));
 
-        // Move arm to position manual
-        _opButtonThirteen.whileTrue(new GrpMoveArmToPositionManual(_armSubsystem, 
-        () -> _sliderJoystick.getRawAxis(0), 
-        () -> _sliderJoystick.getRawAxis(0)));
+        
 
     }
 
