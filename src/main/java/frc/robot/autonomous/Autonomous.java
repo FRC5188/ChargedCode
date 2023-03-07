@@ -133,7 +133,7 @@ public abstract class Autonomous {
 
     private static HashMap<String, Command> eventMap = new HashMap<String, Command>()
     {{
-        // put("Balance", new CmdAutoBalance());
+         put("Balance", new CmdAutoBalance());
     }};
 
     // Constants used in autonomous.
