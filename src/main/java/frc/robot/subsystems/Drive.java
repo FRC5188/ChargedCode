@@ -67,13 +67,13 @@ public class Drive extends SubsystemBase {
             Math.hypot(CHASSIS_WIDTH_METERS / 2.0, CHASSIS_HEIGHT_METERS / 2.0) * 0.5;
 
     /** The offset to get the encoder to read 0 when facing forward */
-    private static final double FRONT_LEFT_MODULE_ENCODER_OFFSET = -323.7890625;
+    private static final double FRONT_LEFT_MODULE_ENCODER_OFFSET = -43.501171;
     /** The offset to get the encoder to read 0 when facing forward */
-    private static final double FRONT_RIGHT_MODULE_ENCODER_OFFSET = -351.73828125;
+    private static final double FRONT_RIGHT_MODULE_ENCODER_OFFSET = -290.390625;
     /** The offset to get the encoder to read 0 when facing forward */
-    private static final double BACK_LEFT_MODULE_ENCODER_OFFSET = -201.533203125;
+    private static final double BACK_LEFT_MODULE_ENCODER_OFFSET = -142.81640625;
     /** The offset to get the encoder to read 0 when facing forward */
-    private static final double BACK_RIGHT_MODULE_ENCODER_OFFSET = -312.355390125;
+    private static final double BACK_RIGHT_MODULE_ENCODER_OFFSET = -352.873828125;
 
     private Vision _visionSubsystem;
 
@@ -205,7 +205,7 @@ public class Drive extends SubsystemBase {
      */
     public void zeroGyroscope() {
         _navx.zeroYaw();
-        _odometry.resetPosition(getGyroscopeRotation(), null, null);
+        _odometry.resetPosition(getGyroscopeRotation(), this.getSwerveModulePositions(), this.getPose());
     }
 
     public SwerveModulePosition[] getSwerveModulePositions() {
@@ -267,11 +267,13 @@ public class Drive extends SubsystemBase {
         SwerveDriveKinematics.desaturateWheelSpeeds(states, MAX_VELOCITY_METERS_PER_SECOND);
 
         // Update odometry if applicable
-        _visionSubsystem.getVisionEstimatedRobotPose(_odometry);
+        //_visionSubsystem.getVisionEstimatedRobotPose(_odometry);
         _odometry.updateWithTime(Timer.getFPGATimestamp(), getGyroscopeRotation(), new SwerveModulePosition[] {
                 _frontLeftModule.getModulePosition(), _frontRightModule.getModulePosition(),
                 _backLeftModule.getModulePosition(), _backRightModule.getModulePosition()
         });
+
+        System.out.println(_odometry.getEstimatedPosition().getTranslation());
 
         // Set each module's speed and angle
         _frontLeftModule.set(states[0].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE,

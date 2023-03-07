@@ -63,6 +63,7 @@ public class SwerveModuleFactory<DriveConfiguration, SteerConfiguration> {
         public SwerveModulePosition getModulePosition() {
             return new SwerveModulePosition(driveController.getEncoderValue(), new Rotation2d(this.getSteerAngle()));
         }
+        
         public double getDriveEncoderPosition() {
             return driveController.getDriveEncoderPosition();
         }

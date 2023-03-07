@@ -47,9 +47,9 @@ public class RobotContainer {
     // Right stick X axis -> rotation
     _driveSubsystem.setDefaultCommand(new DefaultDriveCommand(
             _driveSubsystem,
-            () -> (-modifyAxis(_driveController.getLeftY()) * Drive.MAX_VELOCITY_METERS_PER_SECOND),
-            () -> (-modifyAxis(_driveController.getLeftX()) * Drive.MAX_VELOCITY_METERS_PER_SECOND),
-            () -> (-modifyAxis(_driveController.getRightX()) * Drive.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND)
+            () -> (-modifyAxis(_driveController.getLeftY()) * Drive.MAX_VELOCITY_METERS_PER_SECOND * 0.4),
+            () -> (-modifyAxis(_driveController.getLeftX()) * Drive.MAX_VELOCITY_METERS_PER_SECOND * 0.4),
+            () -> (-modifyAxis(_driveController.getRightX()) * Drive.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND * 0.4)
     ));
 
     // Configure the button bindings
@@ -77,7 +77,7 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     return _driveSubsystem.followTrajectoryCommand(
-      PathPlanner.loadPath("TEST_Straight_Line", 3, 4), 
+      PathPlanner.loadPath("AutoDriveOntoPlatform", 0.5, 0.5), 
       true);
   }
 
