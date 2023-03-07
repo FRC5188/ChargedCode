@@ -275,7 +275,7 @@ public class Drive extends SubsystemBase {
     }
 
     public Command getAutonomousCommand(){
-        return Autonomous.getPreloadedPathCommand("TEST_Straight_Line", this, this::drive);
+        return Autonomous.getPreloadedPathCommand("BLUE_LeaveBalance", this, this::drive);
     }
 
 
