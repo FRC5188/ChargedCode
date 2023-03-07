@@ -121,7 +121,7 @@ public class Arm extends SubsystemBase {
      * @param shoulderJointAngle The angle of the shoulder joint
      * @param elbowJointAngle    The angle of the elbow joint.
      */
-    private class ArmJointAngles {
+    public static class ArmJointAngles {
         private double shoulderJointAngle;
         private double elbowJointAngle;
 
@@ -433,7 +433,7 @@ public class Arm extends SubsystemBase {
      *         which yields
      *         the desired wrist 2D position.
      */
-    private ArmJointAngles jointAnglesFrom2DPose(Arm2DPosition arm2DPosition) {
+    public ArmJointAngles jointAnglesFrom2DPose(Arm2DPosition arm2DPosition) {
         // q2 = elbow angle (upper joint). note the angle is relative to the shoulder
         // angle in this form.
         // See this link

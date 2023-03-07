@@ -5,6 +5,7 @@ import java.util.function.DoubleSupplier;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Arm;
+import frc.robot.subsystems.Arm.Arm2DPosition;
 import frc.robot.subsystems.Arm.ArmMode;
 import frc.robot.subsystems.Arm.ArmPosition;
 import frc.robot.subsystems.Arm.WristPosition;
@@ -31,6 +32,10 @@ public class CmdArmDefault extends CommandBase {
     public void execute() {
         _armSubsystem.shoulderMotorPIDExec();
         _armSubsystem.elbowMotorPIDExec();
+        Arm2DPosition currentPos = _armSubsystem.getArm2DPosition();
+        System.out.println("Current arm position is" + currentPos);
+        System.out.println("Current shoulder angle: " + _armSubsystem.getShoulderJointAngle());
+        System.out.println("Current elbow angle: " + _armSubsystem.getElbowJointAngle());        
 
         if (_mToggle.getAsDouble() >= 0){
             _armSubsystem.setArmMode(ArmMode.Cone);
