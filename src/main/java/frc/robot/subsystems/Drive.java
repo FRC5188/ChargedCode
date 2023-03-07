@@ -119,6 +119,7 @@ public class Drive extends SubsystemBase {
 
     // Holds the instance of the drive subsystem
     private static Drive _instance = null;
+    double tolerance = 1.0;
 
     /**
      * Represents the drive chassis of the robot. Contains all of the code to
@@ -239,6 +240,31 @@ public class Drive extends SubsystemBase {
     public double getSpeedMultiplier(){
         return this._speedMultiplier;
     }
+    public double getRobotPitch(){
+        return _navx.getPitch();
+    }
+
+    public Command followTrajectoryCommand(PathPlannerTrajectory traj, boolean isFirstPath) {
+        return new SequentialCommandGroup(
+                new InstantCommand(() -> {
+                    // Reset odometry for the first path you run during auto
+                    if (isFirstPath) {
+                        SwerveModulePosition modulePositionArray[] = { _frontLeftModule.getModulePosition(),
+                                _frontRightModule.getModulePosition(), _backLeftModule.getModulePosition(),
+                                _backRightModule.getModulePosition() };
+
+                        _odometry.resetPosition(
+                                getGyroscopeRotation(),
+                                modulePositionArray,
+                                traj.getInitialHolonomicPose());
+                    }
+                }),
+
+                new PPSwerveControllerCommand(traj,
+                        this::getPose, new PIDController(0, 0, 0),
+                        new PIDController(0, 0, 0), new PIDController(0, 0, 0),
+                        this::drive, this));
+    };
 
     public void drive(ChassisSpeeds chassisSpeeds) {
         _chassisSpeeds = chassisSpeeds;

@@ -9,6 +9,7 @@ import javax.print.attribute.standard.Fidelity;
 import com.pathplanner.lib.PathPlanner;
 import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.PathPoint;
+import com.pathplanner.lib.commands.FollowPathWithEvents;
 import com.pathplanner.lib.commands.PPSwerveControllerCommand;
 
 import edu.wpi.first.math.controller.PIDController;
@@ -129,9 +130,18 @@ public abstract class Autonomous {
     put(FIELD_POSITIONS.RIGHT_SIDE_INTERMEDIATE_AUTO_THIRD_CLOSEST, new PathPoint(new Translation2d(14.4, 4.65), new Rotation2d(0)));
     }};
 
+
+    private static HashMap<String, Command> eventMap = new HashMap<String, Command>()
+    {{
+        // put("Balance", new CmdAutoBalance());
+    }};
+
     // Constants used in autonomous.
     private static final double MAX_VELOCITY = 3;
     private static final double MAX_ACCELERATION = 4;
+
+
+  
 
     
     public static Command getMovementCommand(FIELD_POSITIONS targetPosition, Drive driveSubsystem, Consumer<ChassisSpeeds> chassisSpeed){
@@ -141,6 +151,8 @@ public abstract class Autonomous {
                                                 .addConstraints(MAX_VELOCITY, MAX_ACCELERATION)
                                                 .addPathPoint(fieldPositionsCoordinateMap.get(targetPosition))
                                                 .buildTrajectory();
+
+        
         /* The aformentioned builder takes the current postion of the robot and makes it the start of the trajectory. Then adds default limitations on the path
            and sets the field position which you are moving to as the end postion of the path, then finally builds it. */
 
@@ -157,14 +169,16 @@ public abstract class Autonomous {
     }
 
     public static Command getPreloadedPathCommand(String pathName, Drive driveSubsystem, Consumer<ChassisSpeeds> chassisSpeed){
-        return new PPSwerveControllerCommand(
-            PathPlanner.loadPath(pathName, MAX_VELOCITY, MAX_ACCELERATION),
+        PathPlannerTrajectory path = PathPlanner.loadPath(pathName, MAX_VELOCITY, MAX_ACCELERATION);
+        
+        return new FollowPathWithEvents((new PPSwerveControllerCommand(
+            path,
             driveSubsystem::getPose,
             new PIDController(0, 0, 0),
             new PIDController(0, 0, 0),
             new PIDController(0, 0, 0),
             chassisSpeed,
             driveSubsystem
-        );
+        )),path.getMarkers(), eventMap);
     }
 }
