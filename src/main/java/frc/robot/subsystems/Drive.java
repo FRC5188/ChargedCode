@@ -117,6 +117,7 @@ public class Drive extends SubsystemBase {
 
     // Holds the instance of the drive subsystem
     private static Drive _instance = null;
+    double tolerance = 1.0;
 
     /**
      * Represents the drive chassis of the robot. Contains all of the code to
@@ -231,6 +232,10 @@ public class Drive extends SubsystemBase {
         // We have to invert the angle of the NavX so that rotating the robot
         // counter-clockwise makes the angle increase.
         return Rotation2d.fromDegrees(360.0 - _navx.getYaw());
+    }
+
+    public double getRobotPitch(){
+        return _navx.getPitch();
     }
 
     public Command followTrajectoryCommand(PathPlannerTrajectory traj, boolean isFirstPath) {
