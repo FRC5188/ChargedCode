@@ -133,12 +133,12 @@ public abstract class Autonomous {
 
     private static HashMap<String, Command> eventMap = new HashMap<String, Command>()
     {{
-         put("Balance", new CmdAutoBalance());
+         //put("Balance", new CmdAutoBalance());
     }};
 
     // Constants used in autonomous.
     private static final double MAX_VELOCITY = 3;
-    private static final double MAX_ACCELERATION = 4;
+    private static final double MAX_ACCELERATION = 1.5;
 
 
   

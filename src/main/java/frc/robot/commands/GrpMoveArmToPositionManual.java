@@ -28,7 +28,7 @@ public class GrpMoveArmToPositionManual extends SequentialCommandGroup{
         // Now go to actual position
         new CmdArmUpdateGoalManual(_armSubsystem, _goalPosition),
         // Turn on the intake if needed
-        new CmdArmRunIntakeByPosition(armSubsystem, armSubsystem.getCurrentArmPosition(), -0.4)
+        new CmdArmRunIntake(armSubsystem, -0.4)
         //
         
       );
