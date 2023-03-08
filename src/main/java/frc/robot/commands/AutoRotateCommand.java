@@ -17,7 +17,8 @@ public class AutoRotateCommand extends CommandBase {
     private final double m_angleSetpoint;
     private PIDController m_angleController;
 
-    private final double AUTO_ROTATE_KP = 0.0;
+    // windham gains were 0.02, 0.0, 0.0. It worked well for their week 1
+    private final double AUTO_ROTATE_KP = 0.01;
     private final double AUTO_ROTATE_KI = 0.0;
     private final double AUTO_ROTATE_KD = 0.0;
 
