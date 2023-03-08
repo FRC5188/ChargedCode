@@ -16,16 +16,13 @@ public class CmdArmDefault extends CommandBase {
     private double _shoulderGoal;
     private double _elbowGoal;
 
-    public final DoubleSupplier _mToggle;
-
-    public CmdArmDefault(Arm armSubsystem, DoubleSupplier toggle) {
+    public CmdArmDefault(Arm armSubsystem) {
         _armSubsystem = armSubsystem;
-        _mToggle = toggle;
     }
 
     @Override
     public void initialize() {
-      
+
     }
 
     @Override
@@ -33,24 +30,7 @@ public class CmdArmDefault extends CommandBase {
         _armSubsystem.shoulderMotorPIDExec();
         _armSubsystem.elbowMotorPIDExec();
         Arm2DPosition currentPos = _armSubsystem.getArm2DPosition();
-        System.out.println("Current arm position is" + currentPos);
-        System.out.println("Current shoulder angle: " + _armSubsystem.getShoulderJointAngle());
-        System.out.println("Current elbow angle: " + _armSubsystem.getElbowJointAngle());        
-
-        if (_mToggle.getAsDouble() >= 0){
-            _armSubsystem.setArmMode(ArmMode.Cone);
-        }else {
-            _armSubsystem.setArmMode(ArmMode.Cube);
-        }
-
-        
-
-       }
-
-       
-
-
-        
+    }
 
     @Override
     public void end(boolean interrupted) {

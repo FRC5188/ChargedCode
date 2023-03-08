@@ -153,9 +153,9 @@ public class RobotContainer {
         _opButtonTwelve.onTrue(new GrpMoveArmToPosition(_armSubsystem, ArmPosition.GroundPickUp));
 
         // Move arm to position manual
-        _opButtonThirteen.whileTrue(new GrpMoveArmToPositionManual(_armSubsystem, 
-        () -> _sliderJoystick.getRawAxis(0), 
-        () -> _sliderJoystick.getRawAxis(0)));
+        // _opButtonThirteen.whileTrue(new GrpMoveArmToPositionManual(_armSubsystem, 
+        // () -> _sliderJoystick.getRawAxis(0), 
+        // () -> _sliderJoystick.getRawAxis(0)));
 
     }
 
@@ -173,7 +173,7 @@ public class RobotContainer {
     }
 
     public Command getPIDCommand() {
-        return new CmdArmDefault(_armSubsystem, null);
+        return new CmdArmDefault(_armSubsystem);
     }
 
     private static double deadband(double value, double deadband) {

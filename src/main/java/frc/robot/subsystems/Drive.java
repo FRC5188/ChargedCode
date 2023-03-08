@@ -278,7 +278,7 @@ public class Drive extends SubsystemBase {
     }
 
     public Command getAutonomousCommand(){
-        return Autonomous.getPreloadedPathCommand("BLUE_LeaveBalance", this, this::drive);
+        return Autonomous.getPreloadedPathCommand("TEST_Short_Distance", this, this::drive);
     }
 
 
@@ -295,8 +295,6 @@ public class Drive extends SubsystemBase {
                 _frontLeftModule.getModulePosition(), _frontRightModule.getModulePosition(),
                 _backLeftModule.getModulePosition(), _backRightModule.getModulePosition()
         });
-
-        System.out.println(_odometry.getEstimatedPosition().getTranslation());
 
         // Set each module's speed and angle
         _frontLeftModule.set(states[0].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE,

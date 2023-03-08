@@ -255,7 +255,7 @@ public class Arm extends SubsystemBase {
 
     private final double LOW_SCORE_Y_POS = 0.0;
     private final double LOW_SCORE_X_POS = 0.0;
-    private final WristPosition LOW_SCORE_WRIST_POS = WristPosition.Parallel;
+    private final WristPosition LOW_SCORE_WRIST_POS = WristPosition.Perpendicular;
     private final Arm2DPosition LOW_SCORE_SETPOINT = new Arm2DPosition(LOW_SCORE_Y_POS,
             LOW_SCORE_X_POS,
             LOW_SCORE_WRIST_POS);
@@ -299,7 +299,7 @@ public class Arm extends SubsystemBase {
     private final double SHOULDER_MOTOR_KP = 0.015;
     private final double SHOULDER_MOTOR_KI = 0.002;
     private final double SHOULDER_MOTOR_KD = 0.0;
-    private final double SHOULDER_MOTOR_TOLERANCE = 1.0;
+    private final double SHOULDER_MOTOR_TOLERANCE = 2.0;
 
     // shoulder motion profile constraints
     private final double SHOULDER_MAX_VELOCITY = 70; // max speed that this joint should move at
@@ -409,14 +409,14 @@ public class Arm extends SubsystemBase {
      */
     public void setWristPosition(WristPosition position) {
         System.out.println("Setting wrist position to " + position);
-        _wristSolenoid.set(position == WristPosition.Perpendicular);
+        _wristSolenoid.set(position == WristPosition.Parallel);
     }
 
     /**
      * @return the current position of the wrist
      */
     public WristPosition getWristPosition() {
-        return _wristSolenoid.get() ? WristPosition.Perpendicular : WristPosition.Parallel;
+        return _wristSolenoid.get() ? WristPosition.Parallel : WristPosition.Perpendicular;
     }
 
     /**
