@@ -22,5 +22,6 @@ public class GrpMoveArmAuto extends SequentialCommandGroup {
       // Turn on the intake
       new CmdArmRunIntakeByPosition(armSubsystem, position, 0.4)
     );
+    }
 }
 
