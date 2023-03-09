@@ -106,6 +106,14 @@ public class RobotContainer {
         _driverButtonRB.onFalse(new CmdDriveChangeSpeedMult(_driveSubsystem, 0.4));
         _driverButtonRB.onTrue(new CmdDriveChangeSpeedMult(_driveSubsystem, 1.0)); 
 
+        _driverButtonA.onTrue(new AutoRotateCommand(
+            _driveSubsystem,
+            () -> (-modifyAxis(_driverController.getLeftY() )* Drive.MAX_VELOCITY_METERS_PER_SECOND * _driveSubsystem.getSpeedMultiplier()),
+            () -> (-modifyAxis(_driverController.getLeftX()) * Drive.MAX_VELOCITY_METERS_PER_SECOND * _driveSubsystem.getSpeedMultiplier()),
+            0));
+
+
+
         // Reset Gyro
        // _driverButtonA.whileTrue(new CmdDriveResetGyro(_driveSubsystem));
 
