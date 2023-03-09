@@ -181,38 +181,43 @@ public class Arm extends SubsystemBase {
      *    to brake. Go ahead and test. MAKE SURE YOU'RE READY TO DISABLE! 
      */
 
-    private final double STORED_SHOULDER_POS = 95;
-    private final double STORED_ELBOW_POS = 17;
+    private final double STORED_SHOULDER_POS = 81.7;
+    private final double STORED_ELBOW_POS = -1.3;
 
-    private final double MID_CONE_SHOULDER_POS = 68;
-    private final double MID_CONE_ELBOW_POS = 78;
+    private final double MID_CONE_SHOULDER_POS = 78.1;
+    private final double MID_CONE_ELBOW_POS = 86.6;
 
-    private final double MID_CONE_SHOULDER_PLACE_POS = 68;
-    private final double MID_CONE_ELBOW_PLACE_POS = 78;
+    private final double MID_CONE_SHOULDER_PLACE_POS = 78.1;
+    private final double MID_CONE_ELBOW_PLACE_POS = 67.1;
 
-    private final double MID_CUBE_SHOULDER_POS = 84;
-    private final double MID_CUBE_ELBOW_POS = 63;
+    private final double MID_CUBE_SHOULDER_POS = 107.8;
+    private final double MID_CUBE_ELBOW_POS = 80.7;
 
-    private final double HIGH_CONE_SPIT_SHOULDER_POS = 53;
-    private final double HIGH_CONE_SPIT_ELBOW_POS = 110;
+    private final double HIGH_CONE_SPIT_SHOULDER_POS = 40.2;
+    private final double HIGH_CONE_SPIT_ELBOW_POS = 105.9;
 
-    private final double HIGH_CONE_DROP_SHOULDER_POS = 21;
-    private final double HIGH_CONE_DROP_ELBOW_POS = 116;
+    // this is set to be the height prior to dropping. ignore the name. 
+    // needs refactored
+    private final double HIGH_CONE_DROP_SHOULDER_POS = 39.7;
+    private final double HIGH_CONE_DROP_ELBOW_POS = 118.5;
 
-    private final double HIGH_CUBE_SHOULDER_POS = 57;
-    private final double HIGH_CUBE_ELBOW_POS = 81;
+    private final double HIGH_CUBE_SHOULDER_POS = 77.3;
+    private final double HIGH_CUBE_ELBOW_POS = 95.0;
 
-    private final double HUMAN_PLAYER_SHOULDER_POS = 99;
-    private final double HUMAN_PLAYER_ELBOW_POS = 80;
+    private final double HUMAN_PLAYER_SHOULDER_POS = 113.5;
+    private final double HUMAN_PLAYER_ELBOW_POS = 92.5;
 
-    private final double GROUND_PICKUP_SHOULDER_POS = 34;
-    private final double GROUND_PICKUP_ELBOW_POS = -9;
+    private final double GROUND_PICKUP_SHOULDER_POS = 46.2;
+    private final double GROUND_PICKUP_ELBOW_POS = -1.14;
 
     private final double INTERMEDIATE_SCORING_SHOULDER_POS = 95;
     private final double INTERMEDIATE_SCORING_ELBOW_POS = 31;
 
     private final double INTERMEDIATE_PICKUP_SHOULDER_POS = 50;
     private final double INTERMEDIATE_PICKUP_ELBOW_POS = 25;
+
+    private final double INTERMEDIATE_ALL_SHOULDER_POS = 109.6;
+    private final double INTERMEDIATE_ALL_ELBOW_POS = 25.7;
 
     /**
      * constants for the above defined in the ArmPosition Enum.
@@ -346,8 +351,8 @@ public class Arm extends SubsystemBase {
         // StatorCurrentLimitConfiguration())
 
         // set motor breaking
-        _shoulderMotor.setNeutralMode(NeutralMode.Coast);
-        _elbowMotor.setNeutralMode(NeutralMode.Coast);
+        _shoulderMotor.setNeutralMode(NeutralMode.Brake);
+        _elbowMotor.setNeutralMode(NeutralMode.Brake);
 
         // Set inversion
         _shoulderMotor.setInverted(InvertType.None);
@@ -410,7 +415,7 @@ public class Arm extends SubsystemBase {
      */
     public void setWristPosition(WristPosition position) {
         System.out.println("Setting wrist position to " + position);
-        //_wristSolenoid.set(position == WristPosition.Perpendicular);
+        _wristSolenoid.set(position == WristPosition.Parallel);
     }
 
     /**
@@ -639,7 +644,7 @@ public class Arm extends SubsystemBase {
             speed = 0;
         }
         SmartDashboard.putNumber("Shoulder speed", speed);
-       // _shoulderMotor.set(speed);
+        _shoulderMotor.set(speed);
     }
 
     public void setElbowMotorSpeed(double speed) {
@@ -649,7 +654,7 @@ public class Arm extends SubsystemBase {
             speed = 0;
         }
         SmartDashboard.putNumber("Elbow speed", speed);
-        //_elbowMotor.set(speed);
+        _elbowMotor.set(speed);
     }
 
     public int getShoulderPotPos() {
@@ -666,7 +671,7 @@ public class Arm extends SubsystemBase {
      * @param speed between -1.0 and 1.0
      */
     public void setIntakeMotorSpeed(double speed) {
-       // _intakeMotor.set(speed);
+        _intakeMotor.set(speed);
     }
 
     /**
@@ -756,9 +761,9 @@ public class Arm extends SubsystemBase {
     public void setArmGoalsFromPosition(Arm2DPosition position) {
         ArmJointAngles goalAngles = this.jointAnglesFrom2DPose(position);
         _shoulderMotorPID.reset(this.getShoulderJointAngle());
-        //_shoulderMotorPID.setGoal(goalAngles.getShoulderJointAngle());
+        _shoulderMotorPID.setGoal(goalAngles.getShoulderJointAngle());
         _elbowMotorPID.reset(this.getElbowJointAngle());
-        //_elbowMotorPID.setGoal(goalAngles.getElbowJointAngle());
+        _elbowMotorPID.setGoal(goalAngles.getElbowJointAngle());
     }
 
     public void setArmGoalsFromPosition(ArmPosition position) {
@@ -836,11 +841,11 @@ public class Arm extends SubsystemBase {
         // starts from where the arm currently is, and then we give
         // the PIDs the new angles we want to go to
         _shoulderMotorPID.reset(this.getShoulderJointAngle());
-       // _shoulderMotorPID.setGoal(shoulderPos);
+        _shoulderMotorPID.setGoal(shoulderPos);
         _elbowMotorPID.reset(this.getElbowJointAngle());
-        //_elbowMotorPID.setGoal(elbowPos);
+        _elbowMotorPID.setGoal(elbowPos);
     }
-    //
+    
     public Arm2DPosition getArm2DPoseFromPosition(ArmPosition position) {
         double shoulderPos;
         double elbowPos;
