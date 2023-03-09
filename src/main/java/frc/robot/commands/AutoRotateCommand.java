@@ -17,9 +17,12 @@ public class AutoRotateCommand extends CommandBase {
     private final double m_angleSetpoint;
     private PIDController m_angleController;
 
-    private final double AUTO_ROTATE_KP = 0.0;
-    private final double AUTO_ROTATE_KI = 0.0;
+    // windham gains were 0.02, 0.0, 0.0. It worked well for their week 1
+    private final double AUTO_ROTATE_KP = 0.005;
+    private final double AUTO_ROTATE_KI = 0.001;
     private final double AUTO_ROTATE_KD = 0.0;
+    private final double AUTO_ROTATE_TOLERANCE = 3;
+
 
     /**
      * Auto Rotate the robot to a specified angle. This command will still allow the robot to drive while it rotates.
@@ -50,6 +53,8 @@ public class AutoRotateCommand extends CommandBase {
               
           this.m_angleController.enableContinuousInput(-180, 180);
           this.m_angleController.setSetpoint(this.m_angleSetpoint);
+          this.m_angleController.setTolerance(this.AUTO_ROTATE_TOLERANCE);
+          System.out.println("INSIDE COMMAND");
       
         }
       
@@ -71,6 +76,8 @@ public class AutoRotateCommand extends CommandBase {
                         m_drivetrainSubsystem.getGyroscopeRotation()
                 )
         );
+        System.out.println("Setpoint: " + this.m_angleSetpoint + "power " + rotationVal);
+        System.out.println("Current angle: " + -(MathUtil.inputModulus(this.m_drivetrainSubsystem.getGyroscopeRotation().getDegrees(), -180, 180)));
       
         }
       
@@ -92,6 +99,7 @@ public class AutoRotateCommand extends CommandBase {
         // Returns true when the command should end.
         @Override
         public boolean isFinished() {
-          return false;
+          System.out.println("COMMAND DONE");
+          return this.m_angleController.atSetpoint();
         }
 }
