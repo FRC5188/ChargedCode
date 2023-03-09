@@ -977,6 +977,15 @@ public class Arm extends SubsystemBase {
         _armMode = mode;
     }
 
+    public ArmPosition getScoringPosition(ArmPosition position) {
+        if (_armMode == ArmMode.Cone) {
+            
+        } else {
+            return position;
+        }
+
+    }
+
     @Override
     public void periodic() {
         // Update the dashboard
