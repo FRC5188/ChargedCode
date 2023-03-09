@@ -384,6 +384,7 @@ public class Arm extends SubsystemBase {
         SmartDashboard.putNumber("Sholder Angle Setpoint", this.getShoulderSetpoint());
         SmartDashboard.putNumber("Elbow Angle Setpoint", this.getElbowSetpoint());
         SmartDashboard.putNumber("Elbow Pot", this.getElbowPotPos());
+        SmartDashboard.putNumber("Shoulder Pot", this.getShoulderPotPos());
         SmartDashboard.putNumber("Elbow Motor Output", this._elbowMotor.get());
         SmartDashboard.putNumber("Shoulder Motor Output", this._shoulderMotor.get());
         SmartDashboard.putString("Current Position", this._currentArmPos.toString());
