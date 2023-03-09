@@ -138,6 +138,7 @@ public class RobotContainer {
         _opButtonSeven.onTrue(new GrpMoveArmToPosition(_armSubsystem, ArmPosition.High));
         System.out.println("Going to high");
 
+        
 
         // Go to mid position. Will change based on if you are in cone or cube mode
         _opButtonNine.onTrue(new GrpMoveArmToPosition(_armSubsystem, ArmPosition.Middle));
@@ -175,7 +176,7 @@ public class RobotContainer {
     }
 
     public Command getPIDCommand() {
-        return new CmdArmDefault(_armSubsystem, null);
+        return new CmdArmDefault(_armSubsystem, () -> _toggleSwitch.getX());
     }
 
     private static double deadband(double value, double deadband) {

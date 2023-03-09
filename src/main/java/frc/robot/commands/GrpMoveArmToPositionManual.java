@@ -14,11 +14,12 @@ public class GrpMoveArmToPositionManual extends SequentialCommandGroup{
   //
   
     public GrpMoveArmToPositionManual(Arm armSubsystem, DoubleSupplier ySlider, DoubleSupplier zSlider) {
-      this.addRequirements(armSubsystem);
-      Arm2DPosition _currentPosition = armSubsystem.getArm2DPosition();
+      _armSubsystem = armSubsystem;
+      this.addRequirements(_armSubsystem);
+      Arm2DPosition _currentPosition = _armSubsystem.getArm2DPosition();
       double _newYPosition = _currentPosition.gety() + ySlider.getAsDouble() * conversionY;
       double _newZPosition = _currentPosition.getz() + zSlider.getAsDouble() * conversionZ;
-      Arm2DPosition _goalPosition = new Arm2DPosition(_newYPosition, _newZPosition, armSubsystem.getWristPosition());
+      Arm2DPosition _goalPosition = new Arm2DPosition(_newYPosition, _newZPosition, _armSubsystem.getWristPosition());
   //
       System.out.println("Goal position updated to: " + _goalPosition);
       ArmJointAngles goalAngles = _armSubsystem.jointAnglesFrom2DPose(_goalPosition);
@@ -28,7 +29,7 @@ public class GrpMoveArmToPositionManual extends SequentialCommandGroup{
         // Now go to actual position
         new CmdArmUpdateGoalManual(_armSubsystem, _goalPosition),
         // Turn on the intake if needed
-        new CmdArmRunIntakeByPosition(armSubsystem, armSubsystem.getCurrentArmPosition(), -0.4)
+        new CmdArmRunIntakeByPosition(_armSubsystem, _armSubsystem.getCurrentArmPosition(), -0.4)
         //
         
       );

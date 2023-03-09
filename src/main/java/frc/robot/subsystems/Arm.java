@@ -28,10 +28,10 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
 public class Arm extends SubsystemBase {
-    private final double SHOULDER_0_DEGREE_POT_OFFSET = 2307;
-    private final double SHOULDER_90_DEGREE_POT_OFFSET = 1953;
-    private final double ELBOW_0_DEGREE_POT_OFFSET = 1706;
-    private final double ELBOW_neg90_DEGREE_POT_OFFSET = 2058;
+    private final double SHOULDER_0_DEGREE_POT_OFFSET = 2217;
+    private final double SHOULDER_90_DEGREE_POT_OFFSET = 1868;
+    private final double ELBOW_0_DEGREE_POT_OFFSET = 1708;
+    private final double ELBOW_neg90_DEGREE_POT_OFFSET = 2060;
 
     // All in degrees
     private final double SHOULDER_UPPER_SOFT_STOP = 115;
@@ -346,8 +346,8 @@ public class Arm extends SubsystemBase {
         // StatorCurrentLimitConfiguration())
 
         // set motor breaking
-        _shoulderMotor.setNeutralMode(NeutralMode.Brake);
-        _elbowMotor.setNeutralMode(NeutralMode.Brake);
+        _shoulderMotor.setNeutralMode(NeutralMode.Coast);
+        _elbowMotor.setNeutralMode(NeutralMode.Coast);
 
         // Set inversion
         _shoulderMotor.setInverted(InvertType.None);
@@ -410,7 +410,7 @@ public class Arm extends SubsystemBase {
      */
     public void setWristPosition(WristPosition position) {
         System.out.println("Setting wrist position to " + position);
-        _wristSolenoid.set(position == WristPosition.Perpendicular);
+        //_wristSolenoid.set(position == WristPosition.Perpendicular);
     }
 
     /**
@@ -639,7 +639,7 @@ public class Arm extends SubsystemBase {
             speed = 0;
         }
         SmartDashboard.putNumber("Shoulder speed", speed);
-        _shoulderMotor.set(speed);
+       // _shoulderMotor.set(speed);
     }
 
     public void setElbowMotorSpeed(double speed) {
@@ -649,7 +649,7 @@ public class Arm extends SubsystemBase {
             speed = 0;
         }
         SmartDashboard.putNumber("Elbow speed", speed);
-        _elbowMotor.set(speed);
+        //_elbowMotor.set(speed);
     }
 
     public int getShoulderPotPos() {
@@ -666,7 +666,7 @@ public class Arm extends SubsystemBase {
      * @param speed between -1.0 and 1.0
      */
     public void setIntakeMotorSpeed(double speed) {
-        _intakeMotor.set(speed);
+       // _intakeMotor.set(speed);
     }
 
     /**
@@ -756,9 +756,9 @@ public class Arm extends SubsystemBase {
     public void setArmGoalsFromPosition(Arm2DPosition position) {
         ArmJointAngles goalAngles = this.jointAnglesFrom2DPose(position);
         _shoulderMotorPID.reset(this.getShoulderJointAngle());
-        _shoulderMotorPID.setGoal(goalAngles.getShoulderJointAngle());
+        //_shoulderMotorPID.setGoal(goalAngles.getShoulderJointAngle());
         _elbowMotorPID.reset(this.getElbowJointAngle());
-        _elbowMotorPID.setGoal(goalAngles.getElbowJointAngle());
+        //_elbowMotorPID.setGoal(goalAngles.getElbowJointAngle());
     }
 
     public void setArmGoalsFromPosition(ArmPosition position) {
@@ -836,9 +836,9 @@ public class Arm extends SubsystemBase {
         // starts from where the arm currently is, and then we give
         // the PIDs the new angles we want to go to
         _shoulderMotorPID.reset(this.getShoulderJointAngle());
-        _shoulderMotorPID.setGoal(shoulderPos);
+       // _shoulderMotorPID.setGoal(shoulderPos);
         _elbowMotorPID.reset(this.getElbowJointAngle());
-        _elbowMotorPID.setGoal(elbowPos);
+        //_elbowMotorPID.setGoal(elbowPos);
     }
     //
     public Arm2DPosition getArm2DPoseFromPosition(ArmPosition position) {
