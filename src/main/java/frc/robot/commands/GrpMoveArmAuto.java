@@ -20,7 +20,7 @@ public class GrpMoveArmAuto extends SequentialCommandGroup {
       // Wait for arm to reach final position
       new CmdArmWaitForArm(armSubsystem),
       // Turn on the intake
-      new CmdArmRunIntakeByPosition(armSubsystem, position, 0.4)
+      new CmdArmRunIntake(armSubsystem, 0.4)
     );
     }
 }
