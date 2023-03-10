@@ -9,12 +9,12 @@ import frc.robot.subsystems.Arm.ArmPosition;
 
 public class GrpMoveArmToScore extends SequentialCommandGroup {
 
-  public GrpMoveArmToScore(Arm armSubsystem, ArmPosition armPosition) {
+  public GrpMoveArmToScore(Arm armSubsystem) {
 
     addCommands(
-     new CmdArmUpdateGoal(armSubsystem, armPosition),
+     new CmdArmUpdateToScorePos(armSubsystem),
      new CmdArmWaitForArm(armSubsystem),
-     new CmdArmRunIntake(armSubsystem, 0.4)
+     new CmdArmSpit(armSubsystem, 0.4)
     );
   }
 }

@@ -155,7 +155,9 @@ public class Arm extends SubsystemBase {
         IntermediateScoring,
         IntermediatePickup,
         Middle,
-        High
+        High,
+        ScoringConeMiddle,
+        ScoringConeHigh
     }
 
     public enum ArmMode {
@@ -163,56 +165,63 @@ public class Arm extends SubsystemBase {
         Cube
     }
 
-    /* How to update a setpoint:
-     * 1) Get the robot ready. You MUST comment out the lines letting the 
-     *    shoulder and elbow move (_shoulderMotor.set for example). 
-     *    There should only be 2 spots this happens, but I suggest searching 
-     *    for .set( to make sure everything is commented out. You also need to change 
-     *    the idle mode to coast instead of brake so you can move the arm. 
-     *    That gets handled in the constructor. Do for both joints.
+    /*
+     * How to update a setpoint:
+     * 1) Get the robot ready. You MUST comment out the lines letting the
+     * shoulder and elbow move (_shoulderMotor.set for example).
+     * There should only be 2 spots this happens, but I suggest searching
+     * for .set( to make sure everything is commented out. You also need to change
+     * the idle mode to coast instead of brake so you can move the arm.
+     * That gets handled in the constructor. Do for both joints.
      * 2) Open up shuffleboard. If you go to the smart dashboard tab, you should
-     *    see a bunch of numbers. What you are looking for is the ones labeled 
-     *    elbow angle and shoulder angle. Those should update as you move the arm.
-     * 3) Move to your new position and take note of those angles. They will 
-     *    get displayed in the smart dashboard.
+     * see a bunch of numbers. What you are looking for is the ones labeled
+     * elbow angle and shoulder angle. Those should update as you move the arm.
+     * 3) Move to your new position and take note of those angles. They will
+     * get displayed in the smart dashboard.
      * 4) Change the values in code. Make sure you pick the correct position
-     *    and update the numbers for the shoulder and elbow angles you just took
+     * and update the numbers for the shoulder and elbow angles you just took
      * 5) Uncomment the stuff you commented out and change the idle mode back
-     *    to brake. Go ahead and test. MAKE SURE YOU'RE READY TO DISABLE! 
+     * to brake. Go ahead and test. MAKE SURE YOU'RE READY TO DISABLE!
      */
 
-    private final double STORED_SHOULDER_POS = 95;
-    private final double STORED_ELBOW_POS = 17;
-
-    private final double MID_CONE_SHOULDER_POS = 68;
-    private final double MID_CONE_ELBOW_POS = 78;
-
-    private final double MID_CONE_SHOULDER_PLACE_POS = 68;
-    private final double MID_CONE_ELBOW_PLACE_POS = 78;
-
-    private final double MID_CUBE_SHOULDER_POS = 84;
-    private final double MID_CUBE_ELBOW_POS = 63;
-
-    private final double HIGH_CONE_SPIT_SHOULDER_POS = 53;
-    private final double HIGH_CONE_SPIT_ELBOW_POS = 110;
-
-    private final double HIGH_CONE_DROP_SHOULDER_POS = 21;
-    private final double HIGH_CONE_DROP_ELBOW_POS = 116;
-
-    private final double HIGH_CUBE_SHOULDER_POS = 57;
-    private final double HIGH_CUBE_ELBOW_POS = 81;
-
-    private final double HUMAN_PLAYER_SHOULDER_POS = 99;
-    private final double HUMAN_PLAYER_ELBOW_POS = 80;
-
-    private final double GROUND_PICKUP_SHOULDER_POS = 34;
-    private final double GROUND_PICKUP_ELBOW_POS = -9;
-
-    private final double INTERMEDIATE_SCORING_SHOULDER_POS = 95;
-    private final double INTERMEDIATE_SCORING_ELBOW_POS = 31;
-
-    private final double INTERMEDIATE_PICKUP_SHOULDER_POS = 50;
-    private final double INTERMEDIATE_PICKUP_ELBOW_POS = 25;
+     private final double STORED_SHOULDER_POS = 81.7;
+     private final double STORED_ELBOW_POS = -1.3;
+ 
+     private final double MID_CONE_SHOULDER_POS = 78.1;
+     private final double MID_CONE_ELBOW_POS = 86.6;
+ 
+     private final double MID_CONE_SHOULDER_PLACE_POS = 78.1;
+     private final double MID_CONE_ELBOW_PLACE_POS = 67.1;
+ 
+     private final double MID_CUBE_SHOULDER_POS = 107.8;
+     private final double MID_CUBE_ELBOW_POS = 80.7;
+ 
+     private final double HIGH_CONE_SPIT_SHOULDER_POS = 40.2;
+     private final double HIGH_CONE_SPIT_ELBOW_POS = 105.9;
+ 
+     // this is set to be the height prior to dropping. ignore the name. 
+     // needs refactored
+     private final double HIGH_CONE_DROP_SHOULDER_POS = 39.7;
+     private final double HIGH_CONE_DROP_ELBOW_POS = 118.5;
+ 
+     private final double HIGH_CUBE_SHOULDER_POS = 77.3;
+     private final double HIGH_CUBE_ELBOW_POS = 95.0;
+ 
+     private final double HUMAN_PLAYER_SHOULDER_POS = 113.5;
+     private final double HUMAN_PLAYER_ELBOW_POS = 92.5;
+ 
+     private final double GROUND_PICKUP_SHOULDER_POS = 46.2;
+     private final double GROUND_PICKUP_ELBOW_POS = -1.14;
+ 
+     private final double INTERMEDIATE_SCORING_SHOULDER_POS = 95;
+     private final double INTERMEDIATE_SCORING_ELBOW_POS = 31;
+ 
+     private final double INTERMEDIATE_PICKUP_SHOULDER_POS = 50;
+     private final double INTERMEDIATE_PICKUP_ELBOW_POS = 25;
+ 
+     private final double INTERMEDIATE_ALL_SHOULDER_POS = 109.6;
+     private final double INTERMEDIATE_ALL_ELBOW_POS = 25.7;
+ 
 
     /**
      * constants for the above defined in the ArmPosition Enum.
@@ -606,6 +615,7 @@ public class Arm extends SubsystemBase {
 
     /**
      * Finds the error, which is how far away from our shoulder setpoint we are
+     * 
      * @return The error of the shoulder
      */
     public double getShoulderError() {
@@ -614,6 +624,7 @@ public class Arm extends SubsystemBase {
 
     /**
      * Finds the error, which is how far away from our elbow setpoint we are
+     * 
      * @return The error of the elbow
      */
     public double getElbowError() {
@@ -673,7 +684,9 @@ public class Arm extends SubsystemBase {
      * When the motor starts stalling, which it does when we have a piece,
      * the current will spike. So we check if we have spiked, meaning we
      * have a piece, and send back a true when the motor has started stalling
-     * @return true if we have a gamepiece based on stalling current, false otherwise
+     * 
+     * @return true if we have a gamepiece based on stalling current, false
+     *         otherwise
      */
     public boolean intakeHasPiece() {
         return _intakeMotor.getOutputCurrent() >= INTAKE_HAS_PIECE_CURRENT;
@@ -824,6 +837,13 @@ public class Arm extends SubsystemBase {
                     elbowPos = HIGH_CUBE_ELBOW_POS;
                 }
                 break;
+            case ScoringConeMiddle:
+                shoulderPos = MID_CONE_SHOULDER_PLACE_POS;
+                elbowPos = MID_CONE_ELBOW_PLACE_POS;
+                break;
+            case ScoringConeHigh:
+                shoulderPos = HIGH_CONE_SPIT_SHOULDER_POS;
+                elbowPos = HIGH_CONE_SPIT_ELBOW_POS;
             default:
                 // If we hit default that means we don't know what position we are in
                 // So we just wanna stay put until we get a new position
@@ -831,7 +851,7 @@ public class Arm extends SubsystemBase {
         }
 
         // Set the PIDs to their new positions
-        // We first reset the PIDs so when they draw the new profile it 
+        // We first reset the PIDs so when they draw the new profile it
         // starts from where the arm currently is, and then we give
         // the PIDs the new angles we want to go to
         _shoulderMotorPID.reset(this.getShoulderJointAngle());
@@ -839,6 +859,7 @@ public class Arm extends SubsystemBase {
         _elbowMotorPID.reset(this.getElbowJointAngle());
         _elbowMotorPID.setGoal(elbowPos);
     }
+
     //
     public Arm2DPosition getArm2DPoseFromPosition(ArmPosition position) {
         double shoulderPos;
@@ -929,10 +950,12 @@ public class Arm extends SubsystemBase {
     }
 
     /**
-     * Finds what intermediate position to use, if any, for the position we want the 
+     * Finds what intermediate position to use, if any, for the position we want the
      * arm to move to
+     * 
      * @param position The desired final position
-     * @return The intermediate position the arm must move to before the final position
+     * @return The intermediate position the arm must move to before the final
+     *         position
      */
     public ArmPosition getIntermediatePosition(ArmPosition position) {
         ArmPosition interPos = position;
@@ -979,7 +1002,20 @@ public class Arm extends SubsystemBase {
 
     public ArmPosition getScoringPosition(ArmPosition position) {
         if (_armMode == ArmMode.Cone) {
-            
+            ArmPosition scorePos = position;
+
+            switch (position) {
+                case Middle:
+                    scorePos = ArmPosition.ScoringConeMiddle;
+                    break;
+                case High:
+                    scorePos = ArmPosition.ScoringConeHigh;
+                    break;
+                default:
+                    break;
+            }
+
+            return scorePos;
         } else {
             return position;
         }

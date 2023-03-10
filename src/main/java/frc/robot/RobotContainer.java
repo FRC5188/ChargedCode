@@ -37,7 +37,7 @@ public class RobotContainer {
 
     private final XboxController _driverController = new XboxController(0);
     private final JoystickButton _driverButtonRB = new JoystickButton(_driverController, Constants.ButtonMappings.RIGHT_BUMPER);
-    private final JoystickButton _driverButtonX = new JoystickButton(_driverController, Constants.ButtonMappings.X_BUTTON);
+    private final JoystickButton _driverButtonY = new JoystickButton(_driverController, Constants.ButtonMappings.Y_BUTTON);
     private final JoystickButton _driverButtonA = new JoystickButton(_driverController, Constants.ButtonMappings.A_BUTTON);
 
     
@@ -112,7 +112,7 @@ public class RobotContainer {
             () -> (-modifyAxis(_driverController.getLeftX()) * Drive.MAX_VELOCITY_METERS_PER_SECOND * _driveSubsystem.getSpeedMultiplier()),
             0));
 
-
+        _driverButtonY.onTrue(new GrpMoveArmToScore(_armSubsystem));
 
         // Reset Gyro
        // _driverButtonA.whileTrue(new CmdDriveResetGyro(_driveSubsystem));
@@ -121,40 +121,30 @@ public class RobotContainer {
 
         // Toggle between cone and cube mode by holding down trigger
         _opButtonOne.onTrue(new CmdArmSetMode(_armSubsystem, ArmMode.Cone));
-        System.out.println("Cone mode");
         _opButtonOne.onFalse(new CmdArmSetMode(_armSubsystem, ArmMode.Cube));
-        System.out.println("Cube mode");
 
         // Go to stow
         _opButtonThree.onTrue(new GrpMoveArmToPosition(_armSubsystem, ArmPosition.Stored));
-        System.out.println("Going to stored");
 
         // Run intake (shouldn't need this, but just in case)
         _opButtonFive.onTrue(new CmdArmRunIntake(_armSubsystem, -0.4));
 
         // Spit out game piece
-        _opButtonSix.whileTrue(new CmdArmRunIntake(_armSubsystem, 0.4));
-        System.out.println("Spitting");
-
+        _opButtonSix.whileTrue(new CmdArmSpit(_armSubsystem, 0.4));
 
         // Go to high position. Will change based on if you are in cone or cube mode
         _opButtonSeven.onTrue(new GrpMoveArmToPosition(_armSubsystem, ArmPosition.High));
-        System.out.println("Going to high");
-
 
         // Go to mid position. Will change based on if you are in cone or cube mode
         _opButtonNine.onTrue(new GrpMoveArmToPosition(_armSubsystem, ArmPosition.Middle));
-        System.out.println("Going to middle");
 
 
         // Go to loading station pickup
         _opButtonTen.onTrue(new GrpMoveArmToPosition(_armSubsystem, ArmPosition.LoadStationPickUp));
-        System.out.println("Going to loading station");
 
 
         // Go to low position
         _opButtonEleven.onTrue(new GrpMoveArmToPosition(_armSubsystem, ArmPosition.LowScore));
-        System.out.println("Going to low score");
 
 
         // Go to ground pickup
