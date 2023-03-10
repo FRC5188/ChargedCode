@@ -168,8 +168,8 @@ public abstract class Autonomous {
         );
     }
 
-    public static Command getPreloadedPathCommand(String pathName, Drive driveSubsystem, Consumer<ChassisSpeeds> chassisSpeed){
-        PathPlannerTrajectory path = PathPlanner.loadPath(pathName, MAX_VELOCITY, MAX_ACCELERATION);
+    public static Command getPreloadedPathCommand(String pathName, double maxVel, double maxAccel, Drive driveSubsystem, Consumer<ChassisSpeeds> chassisSpeed){
+        PathPlannerTrajectory path = PathPlanner.loadPath(pathName, maxVel, maxAccel);
         
         return new FollowPathWithEvents((new PPSwerveControllerCommand(
             path,

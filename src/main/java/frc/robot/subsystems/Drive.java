@@ -277,11 +277,6 @@ public class Drive extends SubsystemBase {
         return this._chassisSpeeds;
     }
 
-    public Command getAutonomousCommand(){
-        return Autonomous.getPreloadedPathCommand("TEST_Short_Distance", this, this::drive);
-    }
-
-
     @Override
     public void periodic() {
         // Convert the drive base vector into module vectors
