@@ -41,23 +41,26 @@ public class RobotContainer {
     private final JoystickButton _driverButtonA = new JoystickButton(_driverController, Constants.ButtonMappings.A_BUTTON);
 
     
-    private final Joystick _operatorController = new Joystick(1);
+    private final Joystick _operatorController1 = new Joystick(1);
+    private final Joystick _operatorController2 = new Joystick(2);
     
-    private JoystickButton _opButtonOne = new JoystickButton(_operatorController, 1);
-    private JoystickButton _opButtonTwo = new JoystickButton(_operatorController, 2);
-    private JoystickButton _opButtonThree = new JoystickButton(_operatorController, 3);
-    private JoystickButton _opButtonFour = new JoystickButton(_operatorController, 4);
-    private JoystickButton _opButtonFive = new JoystickButton(_operatorController, 5);
-    private JoystickButton _opButtonSix = new JoystickButton(_operatorController, 6);
-    private JoystickButton _opButtonSeven = new JoystickButton(_operatorController, 7);
-    private JoystickButton _opButtonEight = new JoystickButton(_operatorController, 8);
-    private JoystickButton _opButtonNine = new JoystickButton(_operatorController, 9);
-    private JoystickButton _opButtonTen = new JoystickButton(_operatorController, 10);
-    private JoystickButton _opButtonEleven = new JoystickButton(_operatorController, 11);
-    private JoystickButton _opButtonTwelve = new JoystickButton(_operatorController, 12);
+    private JoystickButton _opButtonOne = new JoystickButton(_operatorController1, 1);
+    private JoystickButton _opButtonTwo = new JoystickButton(_operatorController1, 2);
+    private JoystickButton _opButtonThree = new JoystickButton(_operatorController1, 3);
+    private JoystickButton _opButtonFour = new JoystickButton(_operatorController1, 4);
+    private JoystickButton _opButtonFive = new JoystickButton(_operatorController1, 5);
+    private JoystickButton _opButtonSix = new JoystickButton(_operatorController1, 6);
+    private JoystickButton _opButtonSeven = new JoystickButton(_operatorController1, 7);
+    private JoystickButton _opButtonEight = new JoystickButton(_operatorController1, 8);
+    private JoystickButton _opButtonNine = new JoystickButton(_operatorController1, 9);
+    private JoystickButton _opButtonTen = new JoystickButton(_operatorController1, 10);
+    private JoystickButton _opButtonEleven = new JoystickButton(_operatorController1, 11);
+    private JoystickButton _opButtonTwelve = new JoystickButton(_operatorController1, 12);
+
+    private JoystickButton _opToggle = new JoystickButton(_operatorController2, 10);
 
     public final Joystick _sliderJoystick = new Joystick(2);
-    private JoystickButton _opButtonThirteen = new JoystickButton(_operatorController, 13);
+    private JoystickButton _opButtonThirteen = new JoystickButton(_operatorController1, 13);
 
     public final Joystick _toggleSwitch = new Joystick(3);
 
@@ -120,37 +123,28 @@ public class RobotContainer {
 
         // -- Operator Controls --
 
-        // Toggle between cone and cube mode by holding down trigger
-        _opButtonOne.onTrue(new CmdArmSetMode(_armSubsystem, ArmMode.Cone));
-        _opButtonOne.onFalse(new CmdArmSetMode(_armSubsystem, ArmMode.Cube));
+        // Run Intake
+        _opButtonTwo.onTrue(new CmdArmRunIntake(_armSubsystem, -0.4));
 
-        // Go to stow
-        _opButtonThree.onTrue(new GrpMoveArmToPosition(_armSubsystem, ArmPosition.Stored));
+        // Spit game piece
+        _opButtonThree.onTrue(new CmdArmSpit(_armSubsystem, 0.4));
 
-        // Run intake (shouldn't need this, but just in case)
-        _opButtonFive.onTrue(new CmdArmRunIntake(_armSubsystem, -0.4));
+        // Loading Station
+        _opButtonFour.onTrue(new GrpMoveArmToPosition(_armSubsystem, ArmPosition.LoadStationPickUp));
 
-        // Spit out game piece
-        _opButtonSix.whileTrue(new CmdArmSpit(_armSubsystem, 0.4));
+        _opButtonFive.onTrue(new GrpMoveArmToPosition(_armSubsystem, ArmPosition.Stored));
 
-        // Go to high position. Will change based on if you are in cone or cube mode
+        _opButtonSix.onTrue(new GrpMoveArmToPosition(_armSubsystem, ArmPosition.GroundPickUp));
+
         _opButtonSeven.onTrue(new GrpMoveArmToPosition(_armSubsystem, ArmPosition.High));
 
-        // Go to mid position. Will change based on if you are in cone or cube mode
-        _opButtonNine.onTrue(new GrpMoveArmToPosition(_armSubsystem, ArmPosition.Middle));
+        _opButtonEight.onTrue(new GrpMoveArmToPosition(_armSubsystem, ArmPosition.Middle));
 
+        _opButtonNine.onTrue(new GrpMoveArmToPosition(_armSubsystem, ArmPosition.LowScore));
 
-        // Go to loading station pickup
-        _opButtonTen.onTrue(new GrpMoveArmToPosition(_armSubsystem, ArmPosition.LoadStationPickUp));
-
-
-        // Go to low position
-        _opButtonEleven.onTrue(new GrpMoveArmToPosition(_armSubsystem, ArmPosition.LowScore));
-
-
-        // Go to ground pickup
-        _opButtonTwelve.onTrue(new GrpMoveArmToPosition(_armSubsystem, ArmPosition.GroundPickUp));
-
+        _opButtonTen.onTrue(new CmdArmSetMode(_armSubsystem, ArmMode.Cone));
+        _opButtonTen.onFalse(new CmdArmSetMode(_armSubsystem, ArmMode.Cube));
+        
         // Move arm to position manual
         // _opButtonThirteen.whileTrue(new GrpMoveArmToPositionManual(_armSubsystem, 
         // () -> _sliderJoystick.getRawAxis(0), 

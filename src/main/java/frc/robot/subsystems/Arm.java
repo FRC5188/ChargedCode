@@ -197,7 +197,7 @@ public class Arm extends SubsystemBase {
      private final double MID_CUBE_ELBOW_POS = 80.7;
  
      private final double HIGH_CONE_SPIT_SHOULDER_POS = 40.2;
-     private final double HIGH_CONE_SPIT_ELBOW_POS = 105.9;
+     private final double HIGH_CONE_SPIT_ELBOW_POS = 110;
  
      // this is set to be the height prior to dropping. ignore the name. 
      // needs refactored
@@ -216,7 +216,7 @@ public class Arm extends SubsystemBase {
      private final double INTERMEDIATE_SCORING_SHOULDER_POS = 95;
      private final double INTERMEDIATE_SCORING_ELBOW_POS = 31;
  
-     private final double INTERMEDIATE_PICKUP_SHOULDER_POS = 50;
+     private final double INTERMEDIATE_PICKUP_SHOULDER_POS = 60;
      private final double INTERMEDIATE_PICKUP_ELBOW_POS = 25;
  
      private final double INTERMEDIATE_ALL_SHOULDER_POS = 109.6;
@@ -312,20 +312,20 @@ public class Arm extends SubsystemBase {
 
     // shoulder motion profile constraints
     private final double SHOULDER_MAX_VELOCITY = 70; // max speed that this joint should move at
-    private final double SHOULDER_MAX_ACCELERATION = 40; // max acceleration this joint should move at
+    private final double SHOULDER_MAX_ACCELERATION = 60; // max acceleration this joint should move at
     private final TrapezoidProfile.Constraints SHOULDER_MOTION_PROFILE_CONSTRAINTS = new TrapezoidProfile.Constraints(
             SHOULDER_MAX_VELOCITY,
             SHOULDER_MAX_ACCELERATION);
 
     // Elbow constants
     private final double ELBOW_MOTOR_KP = 0.02;
-    private final double ELBOW_MOTOR_KI = 0.001;
+    private final double ELBOW_MOTOR_KI = 0.0005;
     private final double ELBOW_MOTOR_KD = 0.00;
     private final double ELBOW_MOTOR_TOLERANCE = 2.0;
 
     // shoulder motion profile constraints
-    private final double ELBOW_MAX_VELOCITY = 70; // max speed that this joint should move at
-    private final double ELBOW_MAX_ACCELERATION = 60; // max acceleration this joint should move at
+    private final double ELBOW_MAX_VELOCITY = 90; // max speed that this joint should move at
+    private final double ELBOW_MAX_ACCELERATION = 80; // max acceleration this joint should move at
     private final TrapezoidProfile.Constraints ELBOW_MOTION_PROFILE_CONSTRAINTS = new TrapezoidProfile.Constraints(
             ELBOW_MAX_VELOCITY,
             ELBOW_MAX_ACCELERATION);
