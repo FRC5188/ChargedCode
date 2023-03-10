@@ -28,10 +28,10 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
 public class Arm extends SubsystemBase {
-    private final double SHOULDER_0_DEGREE_POT_OFFSET = 2307;
-    private final double SHOULDER_90_DEGREE_POT_OFFSET = 1953;
-    private final double ELBOW_0_DEGREE_POT_OFFSET = 1706;
-    private final double ELBOW_neg90_DEGREE_POT_OFFSET = 2058;
+    private final double SHOULDER_0_DEGREE_POT_OFFSET = 2217;
+    private final double SHOULDER_90_DEGREE_POT_OFFSET = 1868;
+    private final double ELBOW_0_DEGREE_POT_OFFSET = 1708;
+    private final double ELBOW_neg90_DEGREE_POT_OFFSET = 2060;
 
     // All in degrees
     private final double SHOULDER_UPPER_SOFT_STOP = 115;
@@ -318,7 +318,7 @@ public class Arm extends SubsystemBase {
             SHOULDER_MAX_ACCELERATION);
 
     // Elbow constants
-    private final double ELBOW_MOTOR_KP = 0.0175;
+    private final double ELBOW_MOTOR_KP = 0.02;
     private final double ELBOW_MOTOR_KI = 0.001;
     private final double ELBOW_MOTOR_KD = 0.00;
     private final double ELBOW_MOTOR_TOLERANCE = 2.0;
