@@ -94,4 +94,6 @@ public class Dashboard extends SubsystemBase {
 	public void setArmPosition(ArmPosition state) {
 		_armPosition = state;
 	}
+
+	// For the future: a battery voltage tracker w/ DriverStation.getInstance().getBatteryVoltage()
 }
