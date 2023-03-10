@@ -158,7 +158,7 @@ public class RobotContainer {
      * @return the command to run in autonomous
      */
     public Command getAutonomousCommand() {
-        return _driveSubsystem.getAutonomousCommand();
+        return _dashboardSubsystem.getSelectedAutonomousCommand();
     }
 
     public Command getInitialArmPosCommand() {
