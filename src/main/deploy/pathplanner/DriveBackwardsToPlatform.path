@@ -78,11 +78,11 @@
     },
     {
       "anchorPoint": {
-        "x": 7.1,
+        "x": 7.3,
         "y": 5.0
       },
       "prevControl": {
-        "x": 6.521057971896133,
+        "x": 6.721057971896133,
         "y": 5.0
       },
       "nextControl": null,
@@ -104,7 +104,7 @@
   "isReversed": null,
   "markers": [
     {
-      "position": 2.26,
+      "position": 2.1818181818181817,
       "names": [
         "StoreArm"
       ]
