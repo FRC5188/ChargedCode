@@ -75,17 +75,22 @@ public class Dashboard extends SubsystemBase {
 		dashboard.add("Has Gamepiece", _hasGamepiece)
 		.withPosition(23, 2)
 		.withSize(3, 3)
-		.withWidget(BuiltInWidgets.kBooleanBox);
+		.withWidget(BuiltInWidgets.kBooleanBox)
+		.withProperties(Map.of("Color when true", "Lime", "Color wben false", "Red")).getEntry();
 
 		dashboard.add("Elbow @ Setpoint", _elbowAtSetpoint)
 		.withPosition(26, 2)
 		.withSize(3, 3)
-		.withWidget(BuiltInWidgets.kBooleanBox);
+		.withWidget(BuiltInWidgets.kBooleanBox)
+		.withProperties(Map.of("Color when true", "Lime", "Color wben false", "Red")).getEntry();
+
 
 		dashboard.add("Shoulder @ Setpoint", _shoulderAtSetpoint)
 		.withPosition(23, 5)
 		.withSize(6, 3)
-		.withWidget(BuiltInWidgets.kBooleanBox);
+		.withWidget(BuiltInWidgets.kBooleanBox)
+		.withProperties(Map.of("Color when true", "Lime", "Color wben false", "Red")).getEntry();
+
 
 		_armPosition = ArmPosition.Stored;
 
