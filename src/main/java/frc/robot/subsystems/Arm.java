@@ -186,7 +186,7 @@ public class Arm extends SubsystemBase {
      */
 
     private final double STORED_SHOULDER_POS = 81.7;
-    private final double STORED_ELBOW_POS = -1.3;
+    private final double STORED_ELBOW_POS = 0;
 
     private final double MID_CONE_SHOULDER_POS = 78.1;
     private final double MID_CONE_ELBOW_POS = 91.6;
@@ -309,8 +309,8 @@ public class Arm extends SubsystemBase {
 
     // shoulder PID constants
     private final double SHOULDER_MOTOR_KP = 0.015;
-    private final double SHOULDER_MOTOR_KI = 0.002;
-    private final double SHOULDER_MOTOR_KD = 0.0;
+    private final double SHOULDER_MOTOR_KI = 0.0005;
+    private final double SHOULDER_MOTOR_KD = 0.0005;
     private final double SHOULDER_MOTOR_TOLERANCE = 3.0;
 
     // shoulder motion profile constraints
@@ -323,12 +323,12 @@ public class Arm extends SubsystemBase {
     // Elbow constants
     private final double ELBOW_MOTOR_KP = 0.02;
     private final double ELBOW_MOTOR_KI = 0.0005;
-    private final double ELBOW_MOTOR_KD = 0.00;
+    private final double ELBOW_MOTOR_KD = 0.0005;
     private final double ELBOW_MOTOR_TOLERANCE = 3.0;
 
     // shoulder motion profile constraints
     private final double ELBOW_MAX_VELOCITY = 70; // max speed that this joint should move at
-    private final double ELBOW_MAX_ACCELERATION = 70; // max acceleration this joint should move at
+    private final double ELBOW_MAX_ACCELERATION = 60; // max acceleration this joint should move at
     private final TrapezoidProfile.Constraints ELBOW_MOTION_PROFILE_CONSTRAINTS = new TrapezoidProfile.Constraints(
             ELBOW_MAX_VELOCITY,
             ELBOW_MAX_ACCELERATION);

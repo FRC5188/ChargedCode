@@ -160,13 +160,13 @@ public class RobotContainer {
      * @return the command to run in autonomous
      */
     public Command getAutonomousCommand() {
-        // HashMap<String, Command> eventMap = new HashMap<>();
-        // eventMap.put("HighCubeArm", new GrpMoveArmToPosition(_armSubsystem, ArmPosition.HighCube));
-        // eventMap.put("Spit", new CmdArmSpit(_armSubsystem, 0.4));
-        // eventMap.put("StoreArm", new GrpMoveArmToPosition(_armSubsystem, ArmPosition.Stored));
-        // return Autonomous.generateFullAuto("DriveBackwardsToPlatform", eventMap, 3, 0.5, _driveSubsystem);
+        HashMap<String, Command> eventMap = new HashMap<>();
+        eventMap.put("HighCubeArm", new GrpMoveArmToPosition(_armSubsystem, ArmPosition.HighCube));
+        eventMap.put("Spit", new CmdArmSpit(_armSubsystem, 0.4));
+        eventMap.put("StoreArm", new GrpMoveArmToPosition(_armSubsystem, ArmPosition.Stored));
+        return Autonomous.generateFullAuto("DriveBackwardsToPlatform", eventMap, 3, 0.5, _driveSubsystem);
 
-        return _dashboardSubsystem.getSelectedAutonomousCommand();
+        //return _dashboardSubsystem.getSelectedAutonomousCommand();
     }
 
     public Command getInitialArmPosCommand() {
