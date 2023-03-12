@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.autonomous.Autonomous;
 import frc.robot.commands.*;
@@ -42,8 +43,9 @@ public class RobotContainer {
     private final JoystickButton _driverButtonY = new JoystickButton(_driverController, Constants.ButtonMappings.Y_BUTTON);
     private final JoystickButton _driverButtonA = new JoystickButton(_driverController, Constants.ButtonMappings.A_BUTTON);
 
-    
+    //Top row of buttons
     private final Joystick _operatorController1 = new Joystick(1);
+    //Bottomrow of buttons
     private final Joystick _operatorController2 = new Joystick(2);
     
     private JoystickButton _opButtonOne = new JoystickButton(_operatorController1, 1);
@@ -59,7 +61,9 @@ public class RobotContainer {
     private JoystickButton _opButtonEleven = new JoystickButton(_operatorController1, 11);
     private JoystickButton _opButtonTwelve = new JoystickButton(_operatorController1, 12);
 
-    private JoystickButton _opToggle = new JoystickButton(_operatorController2, 10);
+    // private JoystickButton _opToggle = new JoystickButton(_operatorController2, 10);
+    private JoystickButton _op2ButtonOne = new JoystickButton(_operatorController2, 1);
+    private JoystickButton _op2ButtonTwo = new JoystickButton(_operatorController2, 2);
 
     public final Joystick _sliderJoystick = new Joystick(2);
     private JoystickButton _opButtonThirteen = new JoystickButton(_operatorController1, 13);
@@ -146,8 +150,15 @@ public class RobotContainer {
 
         _opButtonTen.onTrue(new CmdArmSetMode(_armSubsystem, ArmMode.Cone));
         _opButtonTen.onFalse(new CmdArmSetMode(_armSubsystem, ArmMode.Cube));
+
+        _opButtonOne.whileTrue(new CmdEnablePID(_armSubsystem));
+        _opButtonOne.whileFalse(new CmdDisablePID(_armSubsystem));
         
         // Move arm to position manual
+        double upAmount = 5.0;
+        double downAmount = -5.0;
+        _op2ButtonOne.onTrue(new CmdMoveElbowManual(_armSubsystem, downAmount));
+        _op2ButtonTwo.onTrue(new CmdMoveElbowManual(_armSubsystem, upAmount));
         // _opButtonThirteen.whileTrue(new GrpMoveArmToPositionManual(_armSubsystem, 
         // () -> _sliderJoystick.getRawAxis(0), 
         // () -> _sliderJoystick.getRawAxis(0)));
