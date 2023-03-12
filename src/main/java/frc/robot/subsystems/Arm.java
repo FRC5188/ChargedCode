@@ -406,7 +406,7 @@ public class Arm extends SubsystemBase {
         ShuffleboardTab tab = Shuffleboard.getTab("Arm");
     }
 
-    private double getElbowSetpoint() {
+    public double getElbowSetpoint() {
         return this._elbowMotorPID.getSetpoint().position;
     }
 
@@ -775,6 +775,11 @@ public class Arm extends SubsystemBase {
 
     public ArmPosition getCurrentArmPosition() {
         return _currentArmPos;
+    }
+
+    public void setElbowGoalFromAngle(double angle){
+        _elbowMotorPID.reset(this.getElbowJointAngle());
+        _elbowMotorPID.setGoal(angle);
     }
 
     public void setArmGoalsFromPosition(Arm2DPosition position) {
