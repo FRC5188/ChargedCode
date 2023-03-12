@@ -13,6 +13,8 @@ public class CmdDisablePID extends CommandBase{
     @Override
     public void initialize() {
         this._armsubsystem.disablePID();
+        _armsubsystem.setShoulderMotorSpeed(0);
+        _armsubsystem.setElbowMotorSpeed(0);
     }
 
     @Override

@@ -151,8 +151,8 @@ public class RobotContainer {
         _opButtonTen.onTrue(new CmdArmSetMode(_armSubsystem, ArmMode.Cone));
         _opButtonTen.onFalse(new CmdArmSetMode(_armSubsystem, ArmMode.Cube));
 
-        _opButtonOne.whileTrue(new CmdDisablePID(_armSubsystem));
-        _opButtonOne.whileFalse(new CmdEnablePID(_armSubsystem));
+        _opButtonOne.whileTrue(new CmdEnablePID(_armSubsystem));
+        _opButtonOne.whileFalse(new CmdDisablePID(_armSubsystem));
         
         // Move arm to position manual
         double upAmount = 5.0;
