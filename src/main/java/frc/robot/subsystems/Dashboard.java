@@ -12,6 +12,9 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.autonomous.Autonomous;
 import frc.robot.autonomous.GrpAutoHighCubeAndBalance;
 import frc.robot.subsystems.Arm.ArmPosition;
+import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.cscore.UsbCamera;
+import edu.wpi.first.cscore.VideoSource;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.util.sendable.Sendable;
@@ -36,7 +39,10 @@ public class Dashboard extends SubsystemBase {
 	private NetworkTableEntry _hasGamepieceEntry;
 	private NetworkTableEntry _armPositionEntry;
 	private boolean _hasGamepiece;
+	private boolean _elbowAtSetpoint;
+	private boolean _shoulderAtSetpoint;
 	private ArmPosition _armPosition;
+
 	
 
 
@@ -45,25 +51,49 @@ public class Dashboard extends SubsystemBase {
 	  	ShuffleboardTab dashboard = Shuffleboard.getTab("Dashboard");
 	  	_armSubsystem = armSubsystem;
 	  	_driveSubsystem = driveSubsystem;
-
+		_hasGamepiece = _armSubsystem.checkGamepiece();
+		_elbowAtSetpoint = _armSubsystem.elbowAtSetpoint();
+		_shoulderAtSetpoint = _armSubsystem.shoulderAtSetpoint();
+		
 	  	_autonomousChooser = new SendableChooser<Command>();
 
-	  	dashboard.add("Autonomous Selector", _autonomousChooser)
-	  	.withPosition(5, 4)
-	  	.withSize(5, 1)
-	  	.withWidget(BuiltInWidgets.kComboBoxChooser);
+	  	/*dashboard.add("Autonomous Selector", _autonomousChooser)
+	  	.withPosition(23, 0)
+	  	.withSize(8, 2)
+	  	.withWidget(BuiltInWidgets.kComboBoxChooser);*/
 
-		dashboard.add("Gyro", new AHRS())
-	  	.withPosition(8, 0)
-	  	.withSize(2, 4)
+		/*dashboard.add("Camera Stream", new UsbCamera(getName(), 0))
+		.withPosition(0,0)
+		.withSize(23,14)
+		.withWidget(BuiltInWidgets.kCameraStream);*/
+
+		dashboard.add("Gyro", _driveSubsystem.getGyroInstance())
+	  	.withPosition(23, 8)
+	  	.withSize(5, 5)
 	  	.withWidget(BuiltInWidgets.kGyro);
 
-		_hasGamepiece = false;
+		dashboard.add("Has Gamepiece", _hasGamepiece)
+		.withPosition(23, 2)
+		.withSize(3, 3)
+		.withWidget(BuiltInWidgets.kBooleanBox);
+
+		dashboard.add("Elbow @ Setpoint", _elbowAtSetpoint)
+		.withPosition(26, 2)
+		.withSize(3, 3)
+		.withWidget(BuiltInWidgets.kBooleanBox);
+
+		dashboard.add("Shoulder @ Setpoint", _shoulderAtSetpoint)
+		.withPosition(23, 5)
+		.withSize(6, 3)
+		.withWidget(BuiltInWidgets.kBooleanBox);
+
 		_armPosition = ArmPosition.Stored;
-		ShuffleboardLayout arm = dashboard.getLayout("Arm Subsystem", BuiltInLayouts.kList)
+
+		/*ShuffleboardLayout arm = dashboard.getLayout("Arm Subsystem", BuiltInLayouts.kList)
 		  .withPosition(5,1)
 		  .withSize(3, 3)
-		  .withProperties(Map.of("Label position", "BOTTOM"));
+		  .withProperties(Map.of("Label position", "BOTTOM"));*/
+
 
 		// _hasGamepieceEntry = arm.add("Has Gamepiece", _hasGamepiece).withWidget(BuiltInWidgets.kBooleanBox).withProperties(Map.of("Color when true", "Lime", "Color when false", "Red")).getEntry();
 		// _armPositionEntry = arm.add("Arm Position", _armPosition.toString()).withWidget(BuiltInWidgets.kTextView).getEntry();
@@ -72,6 +102,10 @@ public class Dashboard extends SubsystemBase {
 
   	@Override
   	public void periodic() {
+		_hasGamepiece = _armSubsystem.checkGamepiece();
+		_elbowAtSetpoint = _armSubsystem.elbowAtSetpoint();
+		_shoulderAtSetpoint = _armSubsystem.shoulderAtSetpoint();
+
 		// This method will be called once per scheduler run
 		// _hasGamepieceEntry.setBoolean(_hasGamepiece);
 		// _armPositionEntry.setString(_armPosition);

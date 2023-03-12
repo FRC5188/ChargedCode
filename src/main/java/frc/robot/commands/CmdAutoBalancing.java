@@ -59,7 +59,7 @@ public class CmdAutoBalancing extends CommandBase {
 	// Ends when pitch = 0
 	// TODO: Check that when running this the robot doesn't just flip from one side to the other and the command ends
 	public boolean isFinished() {
-		if (-pitchTolerance < _driveSubsystem.getRobotPitch() && _driveSubsystem.getRobotPitch() < pitchTolerance) {
+		if (Math.abs(_driveSubsystem.getRobotPitch()) < pitchTolerance) {
 			return true;
 		}
 		return false;

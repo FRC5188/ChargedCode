@@ -306,6 +306,7 @@ public class Arm extends SubsystemBase {
 
     private ArmPosition _currentArmPos;
     private ArmMode _armMode;
+    public boolean _hasGamepiece = true;
 
     // shoulder PID constants
     private final double SHOULDER_MOTOR_KP = 0.015;
@@ -681,6 +682,9 @@ public class Arm extends SubsystemBase {
      * @param speed between -1.0 and 1.0
      */
     public void setIntakeMotorSpeed(double speed) {
+        if(speed > 0.0){
+            _hasGamepiece = false;
+        }
         _intakeMotor.set(speed);
     }
 
@@ -694,7 +698,12 @@ public class Arm extends SubsystemBase {
      *         otherwise
      */
     public boolean intakeHasPiece() {
+        _hasGamepiece = true;
         return _intakeMotor.getOutputCurrent() >= INTAKE_HAS_PIECE_CURRENT;
+    }
+
+    public boolean checkGamepiece(){
+        return _hasGamepiece;
     }
 
     public void setWristPosition(ArmPosition armPosition) {
