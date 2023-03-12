@@ -251,6 +251,10 @@ public class Drive extends SubsystemBase {
         return _navx.getPitch();
     }
 
+    public AHRS getGyroInstance(){
+        return _navx;
+    }
+
     public Command followTrajectoryCommand(PathPlannerTrajectory traj, boolean isFirstPath) {
         return new SequentialCommandGroup(
                 new InstantCommand(() -> {
