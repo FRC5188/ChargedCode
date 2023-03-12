@@ -292,7 +292,7 @@ public class Arm extends SubsystemBase {
     private final double MAX_MOTOR_VOLTAGE = 11.5; // May want to adjust -Garrett
 
     private CANSparkMax _intakeMotor;
-    private final double INTAKE_HAS_PIECE_CURRENT = 35;
+    private final double INTAKE_HAS_PIECE_CURRENT = 40;
 
     private Solenoid _wristSolenoid;
 

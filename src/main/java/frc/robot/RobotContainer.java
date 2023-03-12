@@ -177,6 +177,8 @@ public class RobotContainer {
         eventMap.put("StoreArm", new GrpMoveArmToPosition(_armSubsystem, ArmPosition.Stored));
         return Autonomous.generateFullAuto("DriveBackwardsToPlatform", eventMap, 3, 0.5, _driveSubsystem);
 
+        //return Autonomous.generateFullAuto("HighScoreAndMobility", eventMap, 3, 0.5, _driveSubsystem);
+
         //return _dashboardSubsystem.getSelectedAutonomousCommand();
     }
 
