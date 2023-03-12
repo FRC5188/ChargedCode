@@ -311,7 +311,7 @@ public class Arm extends SubsystemBase {
     private final double SHOULDER_MOTOR_KP = 0.015;
     private final double SHOULDER_MOTOR_KI = 0.0005;
     private final double SHOULDER_MOTOR_KD = 0.0005;
-    private final double SHOULDER_MOTOR_TOLERANCE = 3.0;
+    private final double SHOULDER_MOTOR_TOLERANCE = 5.0;
 
     // shoulder motion profile constraints
     private final double SHOULDER_MAX_VELOCITY = 70; // max speed that this joint should move at
@@ -324,7 +324,7 @@ public class Arm extends SubsystemBase {
     private final double ELBOW_MOTOR_KP = 0.02;
     private final double ELBOW_MOTOR_KI = 0.0005;
     private final double ELBOW_MOTOR_KD = 0.0005;
-    private final double ELBOW_MOTOR_TOLERANCE = 3.0;
+    private final double ELBOW_MOTOR_TOLERANCE = 5.0;
 
     // shoulder motion profile constraints
     private final double ELBOW_MAX_VELOCITY = 70; // max speed that this joint should move at
