@@ -151,14 +151,14 @@ public class RobotContainer {
         _opButtonTen.onTrue(new CmdArmSetMode(_armSubsystem, ArmMode.Cone));
         _opButtonTen.onFalse(new CmdArmSetMode(_armSubsystem, ArmMode.Cube));
 
-        _opButtonTwelve.whileTrue(new CmdDisablePID(_armSubsystem));
-        _opButtonTwelve.whileFalse(new CmdEnablePID(_armSubsystem));
+        _opButtonOne.whileTrue(new CmdDisablePID(_armSubsystem));
+        _opButtonOne.whileFalse(new CmdEnablePID(_armSubsystem));
         
         // Move arm to position manual
-        double upAmount = 12.0;
-        double downAmount = -12.0;
-        _op2ButtonOne.onTrue(new CmdMoveElbowManual(_armSubsystem, upAmount));
-        _op2ButtonTwo.onTrue(new CmdMoveElbowManual(_armSubsystem, downAmount));
+        double upAmount = 5.0;
+        double downAmount = -5.0;
+        _op2ButtonOne.onTrue(new CmdMoveElbowManual(_armSubsystem, downAmount));
+        _op2ButtonTwo.onTrue(new CmdMoveElbowManual(_armSubsystem, upAmount));
         // _opButtonThirteen.whileTrue(new GrpMoveArmToPositionManual(_armSubsystem, 
         // () -> _sliderJoystick.getRawAxis(0), 
         // () -> _sliderJoystick.getRawAxis(0)));
