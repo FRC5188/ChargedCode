@@ -332,6 +332,7 @@ public class Arm extends SubsystemBase {
     private final TrapezoidProfile.Constraints ELBOW_MOTION_PROFILE_CONSTRAINTS = new TrapezoidProfile.Constraints(
             ELBOW_MAX_VELOCITY,
             ELBOW_MAX_ACCELERATION);
+    private boolean PIDEnable;
 
     public Arm() {
         // Motor Controllers and pnuematics
@@ -387,6 +388,7 @@ public class Arm extends SubsystemBase {
                 this.ELBOW_MOTION_PROFILE_CONSTRAINTS);
         _elbowMotorPID.setTolerance(this.ELBOW_MOTOR_TOLERANCE);
 
+        this.EnablePID();
         this.updateShuffleBoard();
     }
 
@@ -1048,4 +1050,18 @@ public class Arm extends SubsystemBase {
         // Update the dashboard
         this.updateShuffleBoard();
     }
+
+    public void disablePID() {
+        this.PIDEnable = false;
+    }
+
+    public void EnablePID() {
+        this.PIDEnable = true;
+    }
+
+    public boolean isPIDEnabled() {
+        return this.PIDEnable;
+    }
+
+
 }

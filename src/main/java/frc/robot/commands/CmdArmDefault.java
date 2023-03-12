@@ -9,22 +9,9 @@ public class CmdArmDefault extends CommandBase {
     private Arm _armSubsystem;
     private double _shoulderGoal;
     private double _elbowGoal;
-    private static boolean _isPIDdisabled;
 
     public CmdArmDefault(Arm armSubsystem) {
         _armSubsystem = armSubsystem;
-    }
-
-    public static void disablePID(){
-        _isPIDdisabled = false;
-    }
-
-    public static void enablePID(){
-        _isPIDdisabled = true;
-    }
-
-    public boolean getPIDState(){
-        return _isPIDdisabled;
     }
 
     @Override
@@ -34,7 +21,7 @@ public class CmdArmDefault extends CommandBase {
 
     @Override
     public void execute() {
-        if(!_isPIDdisabled){
+        if(!this._armSubsystem.isPIDEnabled()){
             _armSubsystem.shoulderMotorPIDExec();
             _armSubsystem.elbowMotorPIDExec();
             Arm2DPosition currentPos = _armSubsystem.getArm2DPosition();
