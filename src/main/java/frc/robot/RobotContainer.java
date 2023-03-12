@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import java.util.HashMap;
+
 import com.pathplanner.lib.PathPlanner;
 
 import edu.wpi.first.wpilibj.GenericHID;
@@ -114,8 +116,8 @@ public class RobotContainer {
         //     () -> (-modifyAxis(_driverController.getLeftY() )* Drive.MAX_VELOCITY_METERS_PER_SECOND * _driveSubsystem.getSpeedMultiplier()),
         //     () -> (-modifyAxis(_driverController.getLeftX()) * Drive.MAX_VELOCITY_METERS_PER_SECOND * _driveSubsystem.getSpeedMultiplier()),
         //     0));
-        _driverButtonA.onTrue(new CmdDriveResetGyro(_driveSubsystem));
-
+        //_driverButtonA.onTrue(new CmdDriveResetGyro(_driveSubsystem));
+        //_driverButtonA.onTrue(new CmdArmSpit(_armSubsystem, 0.4));
         _driverButtonY.onTrue(new GrpMoveArmToScore(_armSubsystem));
 
         // Reset Gyro
@@ -158,6 +160,12 @@ public class RobotContainer {
      * @return the command to run in autonomous
      */
     public Command getAutonomousCommand() {
+        // HashMap<String, Command> eventMap = new HashMap<>();
+        // eventMap.put("HighCubeArm", new GrpMoveArmToPosition(_armSubsystem, ArmPosition.HighCube));
+        // eventMap.put("Spit", new CmdArmSpit(_armSubsystem, 0.4));
+        // eventMap.put("StoreArm", new GrpMoveArmToPosition(_armSubsystem, ArmPosition.Stored));
+        // return Autonomous.generateFullAuto("DriveBackwardsToPlatform", eventMap, 3, 0.5, _driveSubsystem);
+
         return _dashboardSubsystem.getSelectedAutonomousCommand();
     }
 

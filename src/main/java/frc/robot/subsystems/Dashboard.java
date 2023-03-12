@@ -9,6 +9,8 @@ import java.util.Map;
 import com.kauailabs.navx.frc.AHRS;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.autonomous.Autonomous;
+import frc.robot.autonomous.GrpAutoHighCubeAndBalance;
 import frc.robot.subsystems.Arm.ArmPosition;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.networktables.NetworkTableEntry;
@@ -80,7 +82,9 @@ public class Dashboard extends SubsystemBase {
   	}
 
   	public Command getSelectedAutonomousCommand() {
-		return _autonomousChooser.getSelected();
+		//return _autonomousChooser.getSelected();
+		//return new GrpAutoHighCubeAndBalance(_driveSubsystem, _armSubsystem);
+        return Autonomous.getPreloadedPathCommand("TEST_Short_Distance", 3, 1.5, _driveSubsystem, _driveSubsystem::drive);
   	}
 
 	public void setDefaultAuto(String name, Command command) {

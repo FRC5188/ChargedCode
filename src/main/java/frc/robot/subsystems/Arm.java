@@ -153,7 +153,8 @@ public class Arm extends SubsystemBase {
         MiddleCone,
         MiddleCube,
         IntermediateScoring,
-        IntermediatePickup,
+        IntermediateToPickup,
+        IntermediateFromPickup,
         Middle,
         High,
         ScoringConeMiddle,
@@ -184,44 +185,46 @@ public class Arm extends SubsystemBase {
      * to brake. Go ahead and test. MAKE SURE YOU'RE READY TO DISABLE!
      */
 
-     private final double STORED_SHOULDER_POS = 81.7;
-     private final double STORED_ELBOW_POS = -1.3;
- 
-     private final double MID_CONE_SHOULDER_POS = 78.1;
-     private final double MID_CONE_ELBOW_POS = 86.6;
- 
-     private final double MID_CONE_SHOULDER_PLACE_POS = 78.1;
-     private final double MID_CONE_ELBOW_PLACE_POS = 67.1;
- 
-     private final double MID_CUBE_SHOULDER_POS = 107.8;
-     private final double MID_CUBE_ELBOW_POS = 80.7;
- 
-     private final double HIGH_CONE_SPIT_SHOULDER_POS = 40.2;
-     private final double HIGH_CONE_SPIT_ELBOW_POS = 110;
- 
-     // this is set to be the height prior to dropping. ignore the name. 
-     // needs refactored
-     private final double HIGH_CONE_DROP_SHOULDER_POS = 39.7;
-     private final double HIGH_CONE_DROP_ELBOW_POS = 118.5;
- 
-     private final double HIGH_CUBE_SHOULDER_POS = 77.3;
-     private final double HIGH_CUBE_ELBOW_POS = 95.0;
- 
-     private final double HUMAN_PLAYER_SHOULDER_POS = 113.5;
-     private final double HUMAN_PLAYER_ELBOW_POS = 92.5;
- 
-     private final double GROUND_PICKUP_SHOULDER_POS = 46.2;
-     private final double GROUND_PICKUP_ELBOW_POS = -1.14;
- 
-     private final double INTERMEDIATE_SCORING_SHOULDER_POS = 95;
-     private final double INTERMEDIATE_SCORING_ELBOW_POS = 31;
- 
-     private final double INTERMEDIATE_PICKUP_SHOULDER_POS = 60;
-     private final double INTERMEDIATE_PICKUP_ELBOW_POS = 25;
- 
-     private final double INTERMEDIATE_ALL_SHOULDER_POS = 109.6;
-     private final double INTERMEDIATE_ALL_ELBOW_POS = 25.7;
- 
+    private final double STORED_SHOULDER_POS = 81.7;
+    private final double STORED_ELBOW_POS = -1.3;
+
+    private final double MID_CONE_SHOULDER_POS = 78.1;
+    private final double MID_CONE_ELBOW_POS = 91.6;
+
+    private final double MID_CONE_SHOULDER_PLACE_POS = 78.1;
+    private final double MID_CONE_ELBOW_PLACE_POS = 67.1;
+
+    private final double MID_CUBE_SHOULDER_POS = 107.8;
+    private final double MID_CUBE_ELBOW_POS = 80.7;
+
+    private final double HIGH_CONE_SPIT_SHOULDER_POS = 40.2;
+    private final double HIGH_CONE_SPIT_ELBOW_POS = 110;
+
+    // this is set to be the height prior to dropping. ignore the name.
+    // needs refactored
+    private final double HIGH_CONE_DROP_SHOULDER_POS = 39.7;
+    private final double HIGH_CONE_DROP_ELBOW_POS = 118.5;
+
+    private final double HIGH_CUBE_SHOULDER_POS = 77.3;
+    private final double HIGH_CUBE_ELBOW_POS = 95.0;
+
+    private final double HUMAN_PLAYER_SHOULDER_POS = 113.5;
+    private final double HUMAN_PLAYER_ELBOW_POS = 92.5;
+
+    private final double GROUND_PICKUP_SHOULDER_POS = 46.2;
+    private final double GROUND_PICKUP_ELBOW_POS = 1;
+
+    private final double INTERMEDIATE_SCORING_SHOULDER_POS = 95;
+    private final double INTERMEDIATE_SCORING_ELBOW_POS = 31;
+
+    private final double INTERMEDIATE_TO_PICKUP_SHOULDER_POS = 50;
+    private final double INTERMEDIATE_TO_PICKUP_ELBOW_POS = 25;
+
+    private final double INTERMEDIATE_FROM_PICKUP_SHOULDER_POS = 87;
+    private final double INTERMEDIATE_FROM_PICKUP_ELBOW_POS = 25;
+
+    private final double INTERMEDIATE_ALL_SHOULDER_POS = 109.6;
+    private final double INTERMEDIATE_ALL_ELBOW_POS = 25.7;
 
     /**
      * constants for the above defined in the ArmPosition Enum.
@@ -289,7 +292,7 @@ public class Arm extends SubsystemBase {
     private final double MAX_MOTOR_VOLTAGE = 11.5; // May want to adjust -Garrett
 
     private CANSparkMax _intakeMotor;
-    private final double INTAKE_HAS_PIECE_CURRENT = 32;
+    private final double INTAKE_HAS_PIECE_CURRENT = 35;
 
     private Solenoid _wristSolenoid;
 
@@ -308,7 +311,7 @@ public class Arm extends SubsystemBase {
     private final double SHOULDER_MOTOR_KP = 0.015;
     private final double SHOULDER_MOTOR_KI = 0.002;
     private final double SHOULDER_MOTOR_KD = 0.0;
-    private final double SHOULDER_MOTOR_TOLERANCE = 2.0;
+    private final double SHOULDER_MOTOR_TOLERANCE = 3.0;
 
     // shoulder motion profile constraints
     private final double SHOULDER_MAX_VELOCITY = 70; // max speed that this joint should move at
@@ -321,11 +324,11 @@ public class Arm extends SubsystemBase {
     private final double ELBOW_MOTOR_KP = 0.02;
     private final double ELBOW_MOTOR_KI = 0.0005;
     private final double ELBOW_MOTOR_KD = 0.00;
-    private final double ELBOW_MOTOR_TOLERANCE = 2.0;
+    private final double ELBOW_MOTOR_TOLERANCE = 3.0;
 
     // shoulder motion profile constraints
-    private final double ELBOW_MAX_VELOCITY = 90; // max speed that this joint should move at
-    private final double ELBOW_MAX_ACCELERATION = 80; // max acceleration this joint should move at
+    private final double ELBOW_MAX_VELOCITY = 70; // max speed that this joint should move at
+    private final double ELBOW_MAX_ACCELERATION = 70; // max acceleration this joint should move at
     private final TrapezoidProfile.Constraints ELBOW_MOTION_PROFILE_CONSTRAINTS = new TrapezoidProfile.Constraints(
             ELBOW_MAX_VELOCITY,
             ELBOW_MAX_ACCELERATION);
@@ -719,6 +722,15 @@ public class Arm extends SubsystemBase {
             case Stored:
                 setWristPosition(STORED_WRIST_POS);
                 break;
+            case IntermediateToPickup:
+                setWristPosition(WristPosition.Perpendicular);
+                break;
+            case IntermediateFromPickup:
+                setWristPosition(WristPosition.Perpendicular);
+                break;
+            case IntermediateScoring:
+                setWristPosition(WristPosition.Perpendicular);
+                break;
             case Middle:
                 if (_armMode == ArmMode.Cone) {
                     setWristPosition(MIDDLE_CONE_WRIST_POS);
@@ -815,9 +827,13 @@ public class Arm extends SubsystemBase {
                 shoulderPos = INTERMEDIATE_SCORING_SHOULDER_POS;
                 elbowPos = INTERMEDIATE_SCORING_ELBOW_POS;
                 break;
-            case IntermediatePickup:
-                shoulderPos = INTERMEDIATE_PICKUP_SHOULDER_POS;
-                elbowPos = INTERMEDIATE_PICKUP_ELBOW_POS;
+            case IntermediateToPickup:
+                shoulderPos = INTERMEDIATE_TO_PICKUP_SHOULDER_POS;
+                elbowPos = INTERMEDIATE_TO_PICKUP_ELBOW_POS;
+                break;
+            case IntermediateFromPickup:
+                shoulderPos = INTERMEDIATE_FROM_PICKUP_SHOULDER_POS;
+                elbowPos = INTERMEDIATE_FROM_PICKUP_ELBOW_POS;
                 break;
             case Middle:
                 if (_armMode == ArmMode.Cone) {
@@ -911,9 +927,9 @@ public class Arm extends SubsystemBase {
                 elbowPos = INTERMEDIATE_SCORING_ELBOW_POS;
                 wristPos = getWristPosition();
                 break;
-            case IntermediatePickup:
-                shoulderPos = INTERMEDIATE_PICKUP_SHOULDER_POS;
-                elbowPos = INTERMEDIATE_PICKUP_ELBOW_POS;
+            case IntermediateToPickup:
+                shoulderPos = INTERMEDIATE_TO_PICKUP_SHOULDER_POS;
+                elbowPos = INTERMEDIATE_TO_PICKUP_ELBOW_POS;
                 wristPos = getWristPosition();
                 break;
             case Middle:
@@ -966,7 +982,7 @@ public class Arm extends SubsystemBase {
             switch (position) {
                 case LowScore:
                 case GroundPickUp:
-                    interPos = ArmPosition.IntermediatePickup;
+                    interPos = ArmPosition.IntermediateToPickup;
                     break;
                 case Stored:
                     break;
@@ -984,7 +1000,7 @@ public class Arm extends SubsystemBase {
                 case GroundPickUp:
                     break;
                 default:
-                    interPos = ArmPosition.IntermediatePickup;
+                    interPos = ArmPosition.IntermediateFromPickup;
                     break;
             }
         }

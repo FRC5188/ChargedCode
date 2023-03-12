@@ -1,14 +1,19 @@
 package frc.robot.autonomous;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.function.Consumer;
 
 import javax.print.attribute.standard.Fidelity;
 
+import com.pathplanner.lib.PathConstraints;
 import com.pathplanner.lib.PathPlanner;
 import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.PathPoint;
+import com.pathplanner.lib.auto.PIDConstants;
+import com.pathplanner.lib.auto.SwerveAutoBuilder;
 import com.pathplanner.lib.commands.FollowPathWithEvents;
 import com.pathplanner.lib.commands.PPSwerveControllerCommand;
 
@@ -180,5 +185,17 @@ public abstract class Autonomous {
             chassisSpeed,
             driveSubsystem
         )),path.getMarkers(), eventMap);
+    }
+
+    public static Command generateFullAuto(String autoName, HashMap<String, Command> eventMap, double maxVel, double maxAccel, Drive driveSubsystem) {
+        List<PathPlannerTrajectory> pathGroup = PathPlanner.loadPathGroup(autoName, new PathConstraints(maxVel, maxAccel), new PathConstraints(maxVel, maxAccel));
+
+        SwerveAutoBuilder builder = new SwerveAutoBuilder(driveSubsystem::getPose, 
+        driveSubsystem::resetPose, 
+            new PIDConstants(0, 0, 0),
+            new PIDConstants(0, 0, 0), 
+            driveSubsystem::drive, eventMap, false, driveSubsystem);
+
+        return builder.fullAuto(pathGroup);
     }
 }

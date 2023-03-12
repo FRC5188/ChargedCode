@@ -212,6 +212,10 @@ public class Drive extends SubsystemBase {
         _odometry.resetPosition(getGyroscopeRotation(), this.getSwerveModulePositions(), this.getPose());
     }
 
+    public void resetPose(Pose2d pose) {
+        _odometry.resetPosition(getGyroscopeRotation(), this.getSwerveModulePositions(), pose);
+    }
+
     public SwerveModulePosition[] getSwerveModulePositions() {
         return new SwerveModulePosition[] {
                 _frontLeftModule.getModulePosition(), _frontRightModule.getModulePosition(),
@@ -275,6 +279,10 @@ public class Drive extends SubsystemBase {
 
     public ChassisSpeeds getChassisSpeeds(){
         return this._chassisSpeeds;
+    }
+
+    public SwerveDriveKinematics getKinematics() {
+        return this._kinematics;
     }
 
     @Override

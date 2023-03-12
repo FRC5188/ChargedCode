@@ -19,6 +19,7 @@ public class CmdArmSpit extends CommandBase {
 
     @Override
     public void initialize() {
+        this._counter = 0;
     }
 
     @Override

@@ -20,7 +20,7 @@ public class GrpAutoHighCubeAndBalance extends SequentialCommandGroup {
         // Score the piece
         new GrpMoveArmToScore(armSubsystem),
         // Drive onto platform
-        Autonomous.getPreloadedPathCommand("TEST_Short_Distance", 3, 1.5, driveSubsystem, driveSubsystem::drive)
+        Autonomous.getPreloadedPathCommand("DriveBackwardsToPlatform", 3, 1.5, driveSubsystem, driveSubsystem::drive)
     );
   }
 }
