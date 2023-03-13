@@ -7,7 +7,7 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.robot.subsystems.Arm;
 
-public class CmdMoveElbowManual extends CommandBase {
+public class CmdMoveShoulderManual extends CommandBase {
 
     private final double changeAmount;
     private Arm _armSubsystem;
@@ -15,7 +15,7 @@ public class CmdMoveElbowManual extends CommandBase {
     /*
      * @param changeAmount, is in degrees
      */
-    public CmdMoveElbowManual(Arm armSubsystem, double changeAmount) {
+    public CmdMoveShoulderManual(Arm armSubsystem, double changeAmount) {
         this.addRequirements(armSubsystem);
         this.changeAmount = changeAmount;
         this._armSubsystem = armSubsystem;
@@ -24,9 +24,9 @@ public class CmdMoveElbowManual extends CommandBase {
 
     @Override
     public void initialize() {
-        double setPoint = _armSubsystem.getElbowSetpoint() + changeAmount;
+        double setPoint = _armSubsystem.getShoulderSetpoint() + changeAmount;
 
-        _armSubsystem.setElbowGoalFromAngle(setPoint);
+        _armSubsystem.setShoulderGoalFromAngle(setPoint);
     }
     
     @Override

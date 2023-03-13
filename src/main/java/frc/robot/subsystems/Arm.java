@@ -36,7 +36,7 @@ public class Arm extends SubsystemBase {
     // All in degrees
     private final double SHOULDER_UPPER_SOFT_STOP = 115;
     private final double SHOULDER_LOWER_SOFT_STOP = 5;
-    private final double ELBOW_UPPER_SOFT_STOP = 120;
+    private final double ELBOW_UPPER_SOFT_STOP = 130;
     private final double ELBOW_LOWER_SOFT_STOP = -10;
 
     // The y,z position of the shoulder joint relative to the floor
@@ -202,8 +202,8 @@ public class Arm extends SubsystemBase {
 
     // this is set to be the height prior to dropping. ignore the name.
     // needs refactored
-    private final double HIGH_CONE_DROP_SHOULDER_POS = 39.7;
-    private final double HIGH_CONE_DROP_ELBOW_POS = 118.5;
+    private final double HIGH_CONE_DROP_SHOULDER_POS = 44.7;
+    private final double HIGH_CONE_DROP_ELBOW_POS = 121.5;
 
     private final double HIGH_CUBE_SHOULDER_POS = 77.3;
     private final double HIGH_CUBE_ELBOW_POS = 95.0;
@@ -389,7 +389,7 @@ public class Arm extends SubsystemBase {
                 this.ELBOW_MOTION_PROFILE_CONSTRAINTS);
         _elbowMotorPID.setTolerance(this.ELBOW_MOTOR_TOLERANCE);
 
-        this.EnablePID();
+        this.enablePID();
         this.updateShuffleBoard();
     }
 
@@ -413,7 +413,7 @@ public class Arm extends SubsystemBase {
         return this._elbowMotorPID.getSetpoint().position;
     }
 
-    private double getShoulderSetpoint() {
+    public double getShoulderSetpoint() {
         return this._shoulderMotorPID.getSetpoint().position;
     }
 
@@ -1064,12 +1064,17 @@ public class Arm extends SubsystemBase {
         this.PIDEnable = false;
     }
 
-    public void EnablePID() {
+    public void enablePID() {
         this.PIDEnable = true;
     }
 
     public boolean isPIDEnabled() {
         return this.PIDEnable;
+    }
+
+    public void setShoulderGoalFromAngle(double setpoint) {
+        _elbowMotorPID.reset(this.getElbowJointAngle());
+        _elbowMotorPID.setGoal(setpoint);
     }
 
 

@@ -11,7 +11,7 @@ public class CmdEnablePID extends CommandBase{
 
     @Override
     public void initialize() {
-        _armSubsystem.EnablePID();;
+        _armSubsystem.enablePID();;
     }
 
     @Override
