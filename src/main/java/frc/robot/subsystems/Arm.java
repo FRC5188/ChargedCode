@@ -4,17 +4,15 @@
 
 package frc.robot.subsystems;
 
-import java.util.Optional;
-
 import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
-import com.ctre.phoenix.motorcontrol.StatorCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
@@ -22,8 +20,6 @@ import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
@@ -46,6 +42,18 @@ public class Arm extends SubsystemBase {
     // arm segments lengths
     private final double SHOULDER_ARM_LENGTH = 28; // inches
     private final double ELBOW_ARM_LENGTH = 28.5; // inches
+
+    private static final double ELBOW_LENGTH = 1.07;
+    private static final double ELBOW_MOI = 0.4;
+    private static final double ELBOW_CGRADIUS = 1.0;
+    private static final double ELBOW_MASS = 4.0;
+    private static final DCMotor ELBOW_MOTOR = DCMotor.getFalcon500(1).withReduction(200);
+
+    private static final double SHOULDER_LENGTH = 0.7072;
+    private static final double SHOULDER_MOI = 0.274;
+    private static final double SHOULDER_CGRADIUS = 1.0;
+    private static final double SHOULDER_MASS = 3.856;
+    private static final DCMotor SHOULDER_MOTOR = DCMotor.getFalcon500(1).withReduction(200);
 
     /**
      * A list of possible wrist positions.
@@ -682,7 +690,7 @@ public class Arm extends SubsystemBase {
      * @param speed between -1.0 and 1.0
      */
     public void setIntakeMotorSpeed(double speed) {
-        if(speed > 0.0){
+        if (speed > 0.0) {
             _hasGamepiece = false;
         }
         _intakeMotor.set(speed);
@@ -702,7 +710,7 @@ public class Arm extends SubsystemBase {
         return _intakeMotor.getOutputCurrent() >= INTAKE_HAS_PIECE_CURRENT;
     }
 
-    public boolean checkGamepiece(){
+    public boolean checkGamepiece() {
         return _hasGamepiece;
     }
 
@@ -788,7 +796,7 @@ public class Arm extends SubsystemBase {
         return _currentArmPos;
     }
 
-    public void setElbowGoalFromAngle(double angle){
+    public void setElbowGoalFromAngle(double angle) {
         _elbowMotorPID.reset(this.getElbowJointAngle());
         _elbowMotorPID.setGoal(angle);
     }
@@ -1076,6 +1084,5 @@ public class Arm extends SubsystemBase {
         _elbowMotorPID.reset(this.getElbowJointAngle());
         _elbowMotorPID.setGoal(setpoint);
     }
-
 
 }
