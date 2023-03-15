@@ -256,6 +256,11 @@ public class Drive extends SubsystemBase {
     }
 
     public Command followTrajectoryCommand(PathPlannerTrajectory traj, boolean isFirstPath) {
+        // TODO: These values are pulled from another team, we need to tune them
+        PIDController thetaController = new PIDController(2.0, 0, 0);
+        PIDController xController = new PIDController(1.3, 0, 0);
+        PIDController yController = new PIDController(1.2, 0, 0);
+
         return new SequentialCommandGroup(
                 new InstantCommand(() -> {
                     // Reset odometry for the first path you run during auto
@@ -272,8 +277,8 @@ public class Drive extends SubsystemBase {
                 }),
 
                 new PPSwerveControllerCommand(traj,
-                        this::getPose, new PIDController(0, 0, 0),
-                        new PIDController(0, 0, 0), new PIDController(0, 0, 0),
+                        this::getPose, xController,
+                        yController, thetaController,
                         this::drive, this));
     };
 
