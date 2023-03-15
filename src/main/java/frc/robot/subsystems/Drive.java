@@ -24,9 +24,11 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.autonomous.Autonomous;
 import frc.robot.sds.Mk4iSwerveModuleHelper;
 import frc.robot.sds.SdsModuleConfigurations;
 import frc.robot.sds.SwerveModule;
+import frc.robot.vision.Vision;
 
 /**
  * Singleton subsystem for Drivebase.
@@ -77,6 +79,7 @@ public class Drive extends SubsystemBase {
 
     private Vision _visionSubsystem;
 
+    
     /**
      * This object does the math to convert a motion vector into individual module
      * vectors
@@ -99,6 +102,7 @@ public class Drive extends SubsystemBase {
     private AHRS _navx;
 
     private SwerveDrivePoseEstimator _odometry;
+    private double _speedMultiplier = 0.4;
 
     // These are our modules
     private SwerveModule _frontLeftModule;
@@ -118,15 +122,13 @@ public class Drive extends SubsystemBase {
 
     // Holds the instance of the drive subsystem
     private static Drive _instance = null;
+    double tolerance = 1.0;
 
     /**
      * Represents the drive chassis of the robot. Contains all of the code to
      * move in a swerve format using either a joystick or supplied values.
      */
-    //TODO: reimplement visionSubsystem when rpi is mounted on the robot (also constructor was private for some reason idk -Mike)
-    public Drive() { 
-        //removed visionSubsystem paramater to allow robot to drive without implementing rpi 
-        //_visionSubsystem = visionSubsystem;
+    public Drive() {
 
         ShuffleboardTab shuffleboardTab = Shuffleboard.getTab("Drivetrain Info");
 
@@ -193,14 +195,13 @@ public class Drive extends SubsystemBase {
         _navx.reset();
     }
 
-    //TODO: uncomment when RPI is mounted and powered on robot
-    /*public static void setInstance(Vision visionSubsystem) {
-        _instance = (_instance == null) ? (new Drive(visionSubsystem)) : (_instance);
+    public static void setInstance() {
+        _instance = (_instance == null) ? (new Drive()) : (_instance);
     }
 
     public static Drive getInstance() {
         return _instance;
-    }*/
+    }
 
     /**
      * Sets the gyroscope angle to zero. This can be used to set the direction the
@@ -208,7 +209,11 @@ public class Drive extends SubsystemBase {
      */
     public void zeroGyroscope() {
         _navx.zeroYaw();
-        _odometry.resetPosition(getGyroscopeRotation(), null, null);
+        _odometry.resetPosition(getGyroscopeRotation(), this.getSwerveModulePositions(), this.getPose());
+    }
+
+    public void resetPose(Pose2d pose) {
+        _odometry.resetPosition(getGyroscopeRotation(), this.getSwerveModulePositions(), pose);
     }
 
     public SwerveModulePosition[] getSwerveModulePositions() {
@@ -234,6 +239,20 @@ public class Drive extends SubsystemBase {
         // We have to invert the angle of the NavX so that rotating the robot
         // counter-clockwise makes the angle increase.
         return Rotation2d.fromDegrees(360.0 - _navx.getYaw());
+    }
+    public void setSpeedMultiplier(double multiplier){
+        _speedMultiplier = multiplier;
+    }
+
+    public double getSpeedMultiplier(){
+        return this._speedMultiplier;
+    }
+    public double getRobotPitch(){
+        return _navx.getPitch();
+    }
+
+    public AHRS getGyroInstance(){
+        return _navx;
     }
 
     public Command followTrajectoryCommand(PathPlannerTrajectory traj, boolean isFirstPath) {
@@ -262,6 +281,14 @@ public class Drive extends SubsystemBase {
         _chassisSpeeds = chassisSpeeds;
     }
 
+    public ChassisSpeeds getChassisSpeeds(){
+        return this._chassisSpeeds;
+    }
+
+    public SwerveDriveKinematics getKinematics() {
+        return this._kinematics;
+    }
+
     @Override
     public void periodic() {
         // Convert the drive base vector into module vectors
@@ -269,9 +296,8 @@ public class Drive extends SubsystemBase {
         // Normalize the wheel speeds so we aren't trying to set above the max
         SwerveDriveKinematics.desaturateWheelSpeeds(states, MAX_VELOCITY_METERS_PER_SECOND);
 
-        //TODO: reenable odometry when vision subsystem is available
         // Update odometry if applicable
-        //_visionSubsystem.getVisionEstimatedRobotPose(_odometry);
+        Vision.getVisionEstimatedRobotPose(_odometry);
         _odometry.updateWithTime(Timer.getFPGATimestamp(), getGyroscopeRotation(), new SwerveModulePosition[] {
                 _frontLeftModule.getModulePosition(), _frontRightModule.getModulePosition(),
                 _backLeftModule.getModulePosition(), _backRightModule.getModulePosition()
