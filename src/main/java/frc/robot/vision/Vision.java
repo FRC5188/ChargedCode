@@ -38,7 +38,7 @@ public abstract class Vision {
     try {
       layout = AprilTagFields.k2023ChargedUp.loadAprilTagLayoutField();
     } catch(IOException e) {
-        // TODO decide what you want to do if the layout fails to load
+        System.out.println("[ERROR]: Failed to load Apriltag map");
     }};
 
 
