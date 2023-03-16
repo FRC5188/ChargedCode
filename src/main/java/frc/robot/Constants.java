@@ -70,6 +70,7 @@ public final class Constants {
         
         public static final int ARM_INTAKE_MOTOR_ID = 15; // Change this value
         public static final int CANdleID = 20; // Katie's note to self: correct this later.
+        // 
     }
 
     public static class PHPorts {
