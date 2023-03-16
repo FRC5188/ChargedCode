@@ -257,9 +257,9 @@ public class Drive extends SubsystemBase {
 
     public Command followTrajectoryCommand(PathPlannerTrajectory traj, boolean isFirstPath) {
         // TODO: These values are pulled from another team, we need to tune them
-        PIDController thetaController = new PIDController(2.0, 0, 0);
-        PIDController xController = new PIDController(1.3, 0, 0);
-        PIDController yController = new PIDController(1.2, 0, 0);
+        PIDController thetaController = new PIDController(6, 2, 0);
+        PIDController xController = new PIDController(6, 2, 0);
+        PIDController yController = new PIDController(6, 2, 0);
 
         return new SequentialCommandGroup(
                 new InstantCommand(() -> {
