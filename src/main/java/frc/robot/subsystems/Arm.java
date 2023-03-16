@@ -294,6 +294,8 @@ public class Arm extends SubsystemBase {
 
     private Solenoid _wristSolenoid;
 
+    private ArmPosition _targetPosition;
+
     /** Arm elbow and wrist potentionmeters. Measures arm angle **/
     private AnalogInput _elbowPotentiometer;
     private AnalogInput _shoulderPotentiometer;
@@ -389,6 +391,14 @@ public class Arm extends SubsystemBase {
 
         this.enablePID();
         this.updateShuffleBoard();
+    }
+
+    public ArmPosition getTargetArmPosition(){
+        return this._targetPosition;
+    }
+
+    public void setCurrentPosition(ArmPosition inputArmPosition){
+        this._currentArmPos = inputArmPosition;
     }
 
     private void updateShuffleBoard() {
@@ -807,7 +817,7 @@ public class Arm extends SubsystemBase {
     public void setArmGoalsFromPosition(ArmPosition position) {
         double shoulderPos = this.getShoulderJointAngle();
         double elbowPos = this.getElbowJointAngle();
-        _currentArmPos = position;
+        this._targetPosition = position;
 
         switch (position) {
             case GroundPickUp:
