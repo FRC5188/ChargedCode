@@ -33,8 +33,15 @@ public abstract class FeedForward {
     }
 
     private static Vector<N2> calculate(double upperSetpoint, double lowerSetpoint) {
-        double inputUpper = Math.toRadians(-upperSetpoint + 180);
-        double inputLower = Math.toRadians(lowerSetpoint - 90);
+        /* read the whitepaper (https://www.chiefdelphi.com/t/whitepaper-two-jointed-arm-dynamics/423060) for the
+        *  feedforward code, and the shoulder needs to be 0 at positive x axis and increase CCW (this is how we have it now)
+        *  The elbow needs to be relative to the shoulder, which is not how we measure the elbow normally. So we need to
+        *  have a different position method that doesn't make the elbow angle change when the shoulder angle changes. That
+        *  should just be returning the directly calculated angle instead of the one that uses the shoulder angle
+        */ 
+        
+        double inputUpper = Math.toRadians(upperSetpoint);
+        double inputLower = Math.toRadians(lowerSetpoint);
         Vector<N2> angles = VecBuilder.fill(inputLower, inputUpper);
         Vector<N2> vectorFF = doubleJointedArmFeedfoward.calculate(angles);
         return vectorFF;
