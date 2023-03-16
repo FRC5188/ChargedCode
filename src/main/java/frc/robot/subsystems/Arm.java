@@ -22,6 +22,7 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.arm.FeedForward;
 
 public class Arm extends SubsystemBase {
     private final double SHOULDER_0_DEGREE_POT_OFFSET = 2217;
@@ -42,18 +43,6 @@ public class Arm extends SubsystemBase {
     // arm segments lengths
     private final double SHOULDER_ARM_LENGTH = 28; // inches
     private final double ELBOW_ARM_LENGTH = 28.5; // inches
-
-    private static final double ELBOW_LENGTH = 1.07;
-    private static final double ELBOW_MOI = 0.4;
-    private static final double ELBOW_CGRADIUS = 1.0;
-    private static final double ELBOW_MASS = 4.0;
-    private static final DCMotor ELBOW_MOTOR = DCMotor.getFalcon500(1).withReduction(200);
-
-    private static final double SHOULDER_LENGTH = 0.7072;
-    private static final double SHOULDER_MOI = 0.274;
-    private static final double SHOULDER_CGRADIUS = 1.0;
-    private static final double SHOULDER_MASS = 3.856;
-    private static final DCMotor SHOULDER_MOTOR = DCMotor.getFalcon500(1).withReduction(200);
 
     /**
      * A list of possible wrist positions.
@@ -613,8 +602,8 @@ public class Arm extends SubsystemBase {
      */
     public void shoulderMotorPIDExec() {
         double angle = getShoulderJointAngle();
-        double speed = _shoulderMotorPID.calculate(angle);
-        setShoulderMotorSpeed(speed);
+        //double speed = _shoulderMotorPID.calculate(angle) + FeedForward.shoulder(getElbowJointAngle(), getShoulderJointAngle());
+        setShoulderMotorSpeed(FeedForward.elbow(getElbowJointAngle(), getShoulderJointAngle()));
     }
 
     /**
@@ -623,8 +612,8 @@ public class Arm extends SubsystemBase {
      */
     public void elbowMotorPIDExec() {
         double angle = getElbowJointAngle();
-        double speed = _elbowMotorPID.calculate(angle);
-        setElbowMotorSpeed(speed);
+        //double speed = _elbowMotorPID.calculate(angle) + FeedForward.elbow(getElbowJointAngle(), getShoulderJointAngle());
+        setElbowMotorSpeed(FeedForward.elbow(getElbowJointAngle(), getShoulderJointAngle()));
     }
 
     /**
@@ -663,7 +652,7 @@ public class Arm extends SubsystemBase {
             speed = 0;
         }
         SmartDashboard.putNumber("Shoulder speed", speed);
-        _shoulderMotor.set(speed);
+        //_shoulderMotor.set(speed);
     }
 
     public void setElbowMotorSpeed(double speed) {
@@ -673,7 +662,7 @@ public class Arm extends SubsystemBase {
             speed = 0;
         }
         SmartDashboard.putNumber("Elbow speed", speed);
-        _elbowMotor.set(speed);
+        //_elbowMotor.set(speed);
     }
 
     public int getShoulderPotPos() {
