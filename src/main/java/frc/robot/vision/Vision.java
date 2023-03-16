@@ -9,7 +9,9 @@ import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 
+import edu.wpi.first.apriltag.AprilTag;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
+import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation3d;
@@ -31,6 +33,15 @@ public abstract class Vision {
     private static final double CAMERA_PITCH = 0;
     private static final double CAMERA_YAW = 0;
 
+    private static AprilTagFieldLayout layout;
+    static{
+    try {
+      layout = AprilTagFields.k2023ChargedUp.loadAprilTagLayoutField();
+    } catch(IOException e) {
+        System.out.println("[ERROR]: Failed to load Apriltag map");
+    }};
+
+
     private static final Transform3d DIFFERENCE_BETWEEN_ROBOT_CAMERA = new Transform3d(
         new Translation3d(CAMERA_X_FROM_ROBOT_CENTER, CAMERA_Y_FROM_ROBOT_CENTER, CAMERA_Z_FROM_ROBOT_CENTER),
         new Rotation3d(CAMERA_ROLL, CAMERA_PITCH, CAMERA_YAW)
@@ -38,7 +49,7 @@ public abstract class Vision {
 
     private static final PhotonCamera camera = new PhotonCamera(CAMERA_NAME);
     private static final PhotonPoseEstimator poseEstimator = new PhotonPoseEstimator(
-    getApriltagFieldLayout(), 
+    layout, 
     PoseStrategy.AVERAGE_BEST_TARGETS, 
     camera, 
     DIFFERENCE_BETWEEN_ROBOT_CAMERA);
@@ -55,7 +66,7 @@ public abstract class Vision {
      */
     public static double getAngleToApriltag(int apriltagID, SwerveDrivePoseEstimator odometry) throws Exception, IOException {
         Pose2d robotPose = odometry.getEstimatedPosition();
-        Pose2d apriltagPose = getApriltagFieldLayout().getTagPose(apriltagID).isPresent() ? (getApriltagFieldLayout().getTagPose(apriltagID).get().toPose2d()) : null;
+        Pose2d apriltagPose = layout.getTagPose(apriltagID).isPresent() ? (layout.getTagPose(apriltagID).get().toPose2d()) : null;
 
         if(apriltagPose == null){
             System.out.println("Tag couldn't be found. Please ensure that ID for apriltag is correct.");
@@ -75,7 +86,7 @@ public abstract class Vision {
      */
     public static double getDistanceToApriltag(int apriltagID, SwerveDrivePoseEstimator odometry) throws Exception, IOException {
         Pose2d robotPose = odometry.getEstimatedPosition();
-        Pose2d apriltagPose = getApriltagFieldLayout().getTagPose(apriltagID).isPresent() ? (getApriltagFieldLayout().getTagPose(apriltagID).get().toPose2d()) : null;
+        Pose2d apriltagPose = layout.getTagPose(apriltagID).isPresent() ? (layout.getTagPose(apriltagID).get().toPose2d()) : null;
 
         // Null check to ensure that we aren't working with a null value. 
         if(apriltagPose == null){
@@ -109,15 +120,6 @@ public abstract class Vision {
      * @throws IOException
      * @return AprilTag Field Layout
      */
-    private static AprilTagFieldLayout getApriltagFieldLayout() {
-        try {
-        File apriltagFieldFile = new File(APRIL_TAG_MAP_FILE_NAME);
-        return new AprilTagFieldLayout(apriltagFieldFile.getAbsolutePath());
-        } catch (IOException ioe){
-            System.out.println("[ERROR] CANNOT FIND FILE NAME");
-            return null;
-        }
-    }
 
     private static Optional<EstimatedRobotPose> getEstimatedRobotGlobalPose(Pose2d previousEstimatedRobotPose){
         poseEstimator.setReferencePose(previousEstimatedRobotPose);

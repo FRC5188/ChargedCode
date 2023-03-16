@@ -123,7 +123,7 @@ public class Dashboard extends SubsystemBase {
   	public Command getSelectedAutonomousCommand() {
 		//return _autonomousChooser.getSelected();
 		//return new GrpAutoHighCubeAndBalance(_driveSubsystem, _armSubsystem);
-        return Autonomous.getPreloadedPathCommand("TEST_Short_Distance", 3, 1.5, _driveSubsystem, _driveSubsystem::drive);
+        return Autonomous.getPreloadedPathCommand("TEST_Straight_Line", 3, 2, _driveSubsystem, _driveSubsystem::drive);
   	}
 
 	public void setDefaultAuto(String name, Command command) {

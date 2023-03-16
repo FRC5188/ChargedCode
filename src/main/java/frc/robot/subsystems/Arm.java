@@ -286,6 +286,7 @@ public class Arm extends SubsystemBase {
     /** Arm Motor Controllers and Pnuematics. */
     private WPI_TalonFX _shoulderMotor;
     private WPI_TalonFX _elbowMotor;
+    private final double ELBOW_IS_HITTING_CURRENT = 9999.0; //TODO: Find actual value for this
     private final double MAX_MOTOR_VOLTAGE = 11.5; // May want to adjust -Garrett
 
     private CANSparkMax _intakeMotor;
@@ -293,7 +294,7 @@ public class Arm extends SubsystemBase {
 
     private Solenoid _wristSolenoid;
 
-    /** Arm elbow and wrist potentionmeters. Measurers arm angle */
+    /** Arm elbow and wrist potentionmeters. Measures arm angle **/
     private AnalogInput _elbowPotentiometer;
     private AnalogInput _shoulderPotentiometer;
 
@@ -703,6 +704,11 @@ public class Arm extends SubsystemBase {
         return _hasGamepiece;
     }
 
+    public boolean elbowIsHittingObject() {
+        return (_elbowMotor.getStatorCurrent() > ELBOW_IS_HITTING_CURRENT); 
+        //TODO: Check if .getStatorCurrent() is right
+
+    }
     public void setWristPosition(ArmPosition armPosition) {
         // Sets Wrist Position based off of arm position
         switch (armPosition) {
