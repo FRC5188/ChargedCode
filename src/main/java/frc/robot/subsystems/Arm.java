@@ -27,8 +27,8 @@ import frc.robot.arm.FeedForward;
 public class Arm extends SubsystemBase {
     private final double SHOULDER_0_DEGREE_POT_OFFSET = 2217;
     private final double SHOULDER_90_DEGREE_POT_OFFSET = 1868;
-    private final double ELBOW_0_DEGREE_POT_OFFSET = 1708;
-    private final double ELBOW_neg90_DEGREE_POT_OFFSET = 2060;
+    private final double ELBOW_90_DEGREE_POT_OFFSET = 1708;
+    private final double ELBOW_0_DEGREE_POT_OFFSET = 2060;
 
     // All in degrees
     private final double SHOULDER_UPPER_SOFT_STOP = 115;
@@ -307,9 +307,12 @@ public class Arm extends SubsystemBase {
     public boolean _hasGamepiece = true;
 
     // shoulder PID constants
+    // private final double SHOULDER_MOTOR_KP = 0.015;
+    // private final double SHOULDER_MOTOR_KI = 0.0005;
+    // private final double SHOULDER_MOTOR_KD = 0.0005;
     private final double SHOULDER_MOTOR_KP = 0.015;
-    private final double SHOULDER_MOTOR_KI = 0.0005;
-    private final double SHOULDER_MOTOR_KD = 0.0005;
+    private final double SHOULDER_MOTOR_KI = 0.000;
+    private final double SHOULDER_MOTOR_KD = 0.000;
     private final double SHOULDER_MOTOR_TOLERANCE = 5.0;
 
     // shoulder motion profile constraints
@@ -320,9 +323,12 @@ public class Arm extends SubsystemBase {
             SHOULDER_MAX_ACCELERATION);
 
     // Elbow constants
+    // private final double ELBOW_MOTOR_KP = 0.02;
+    // private final double ELBOW_MOTOR_KI = 0.0005;
+    // private final double ELBOW_MOTOR_KD = 0.0005;
     private final double ELBOW_MOTOR_KP = 0.02;
-    private final double ELBOW_MOTOR_KI = 0.0005;
-    private final double ELBOW_MOTOR_KD = 0.0005;
+    private final double ELBOW_MOTOR_KI = 0.000;
+    private final double ELBOW_MOTOR_KD = 0.000;
     private final double ELBOW_MOTOR_TOLERANCE = 5.0;
 
     // shoulder motion profile constraints
@@ -392,7 +398,8 @@ public class Arm extends SubsystemBase {
     }
 
     private void updateShuffleBoard() {
-        SmartDashboard.putNumber("Elbow Angle", this.getElbowJointAngleRelativeToGround());
+        SmartDashboard.putNumber("Elbow Angle Relative to Ground", this.getElbowJointAngleRelativeToGround());
+        SmartDashboard.putNumber("Elbow Angle Relative to Shoulder", this.getElbowJointAngleRelativeToShoulder());
         SmartDashboard.putNumber("Shoulder Angle", this.getShoulderJointAngle());
         SmartDashboard.putNumber("Sholder Angle Setpoint", this.getShoulderSetpoint());
         SmartDashboard.putNumber("Elbow Angle Setpoint", this.getElbowSetpoint());
@@ -549,9 +556,9 @@ public class Arm extends SubsystemBase {
      * @return Current elbow joint angle relative to the ground
      */
     public double getElbowJointAngleRelativeToGround() {
-        double diff = this.ELBOW_neg90_DEGREE_POT_OFFSET - this.ELBOW_0_DEGREE_POT_OFFSET;
+        double diff = this.ELBOW_0_DEGREE_POT_OFFSET - this.ELBOW_90_DEGREE_POT_OFFSET;
         double potValPerDegree = diff / 90;
-        double curAnglePot = this.getElbowPotPos() - this.ELBOW_0_DEGREE_POT_OFFSET;
+        double curAnglePot = this.getElbowPotPos() - this.ELBOW_90_DEGREE_POT_OFFSET;
         return -curAnglePot / potValPerDegree + this.getShoulderJointAngle() + 90; // returns degrees
     }
 
@@ -561,10 +568,10 @@ public class Arm extends SubsystemBase {
      * @return Current elbow joint angle relative to the ground
      */
     public double getElbowJointAngleRelativeToShoulder() {
-        double diff = this.ELBOW_neg90_DEGREE_POT_OFFSET - this.ELBOW_0_DEGREE_POT_OFFSET;
+        double diff = this.ELBOW_0_DEGREE_POT_OFFSET - this.ELBOW_90_DEGREE_POT_OFFSET;
         double potValPerDegree = diff / 90;
-        double curAnglePot = this.getElbowPotPos() - this.ELBOW_0_DEGREE_POT_OFFSET;
-        return -curAnglePot / potValPerDegree + 90; // returns degrees
+        double curAnglePot = this.getElbowPotPos() - this.ELBOW_90_DEGREE_POT_OFFSET;
+        return -curAnglePot / potValPerDegree + 180; // returns degrees
     }
 
     /**
@@ -615,8 +622,7 @@ public class Arm extends SubsystemBase {
      */
     public void shoulderMotorPIDExec() {
         double angle = getShoulderJointAngle();
-        //double speed = _shoulderMotorPID.calculate(angle) + FeedForward.shoulder(getElbowJointAngle(), getShoulderJointAngle());
-        setShoulderMotorSpeed(FeedForward.elbow(getElbowJointAngleRelativeToShoulder(), getShoulderJointAngle()));
+        setShoulderMotorSpeed(FeedForward.shoulder(getElbowJointAngleRelativeToShoulder() + 180, getShoulderJointAngle()));
     }
 
     /**
@@ -625,8 +631,7 @@ public class Arm extends SubsystemBase {
      */
     public void elbowMotorPIDExec() {
         double angle = getElbowJointAngleRelativeToGround();
-        //double speed = _elbowMotorPID.calculate(angle) + FeedForward.elbow(getElbowJointAngle(), getShoulderJointAngle());
-        setElbowMotorSpeed(FeedForward.elbow(getElbowJointAngleRelativeToShoulder(), getShoulderJointAngle()));
+        setElbowMotorSpeed(FeedForward.elbow(getElbowJointAngleRelativeToShoulder() + 180, getShoulderJointAngle()));
     }
 
     /**
