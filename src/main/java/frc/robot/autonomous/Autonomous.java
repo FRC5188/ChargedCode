@@ -180,8 +180,8 @@ public abstract class Autonomous {
             path,
             driveSubsystem::getPose,
             new PIDController(0, 0, 0),
-            new PIDController(0, 0, 0),
-            new PIDController(0, 0, 0),
+            new PIDController(1.3, 0, 0),
+            new PIDController(2, 0, 0),
             chassisSpeed,
             driveSubsystem
         )),path.getMarkers(), eventMap);
@@ -193,7 +193,7 @@ public abstract class Autonomous {
         SwerveAutoBuilder builder = new SwerveAutoBuilder(driveSubsystem::getPose, 
         driveSubsystem::resetPose, 
             new PIDConstants(0, 0, 0),
-            new PIDConstants(0, 0, 0), 
+            new PIDConstants(2, 0, 0), 
             driveSubsystem::drive, eventMap, false, driveSubsystem);
 
         return builder.fullAuto(pathGroup);
