@@ -392,7 +392,7 @@ public class Arm extends SubsystemBase {
     }
 
     private void updateShuffleBoard() {
-        SmartDashboard.putNumber("Elbow Angle", this.getElbowJointAngle());
+        SmartDashboard.putNumber("Elbow Angle", this.getElbowJointAngleRelativeToGround());
         SmartDashboard.putNumber("Shoulder Angle", this.getShoulderJointAngle());
         SmartDashboard.putNumber("Sholder Angle Setpoint", this.getShoulderSetpoint());
         SmartDashboard.putNumber("Elbow Angle Setpoint", this.getElbowSetpoint());
@@ -536,7 +536,7 @@ public class Arm extends SubsystemBase {
      */
     public Arm2DPosition getArm2DPosition() {
         double currentShoulder = this.getShoulderJointAngle();
-        double currentElbow = this.getElbowJointAngle();
+        double currentElbow = this.getElbowJointAngleRelativeToGround();
         WristPosition wristPos = this.getWristPosition();
         Arm2DPosition currentPos = this.arm2DPositionFromAngles(currentShoulder, currentElbow, wristPos);
 
@@ -546,13 +546,25 @@ public class Arm extends SubsystemBase {
     /**
      * Convert the current pot value of the eblow into an angle.
      * 
-     * @return Current elbow joint angle relative to the shoulder
+     * @return Current elbow joint angle relative to the ground
      */
-    public double getElbowJointAngle() {
+    public double getElbowJointAngleRelativeToGround() {
         double diff = this.ELBOW_neg90_DEGREE_POT_OFFSET - this.ELBOW_0_DEGREE_POT_OFFSET;
         double potValPerDegree = diff / 90;
         double curAnglePot = this.getElbowPotPos() - this.ELBOW_0_DEGREE_POT_OFFSET;
         return -curAnglePot / potValPerDegree + this.getShoulderJointAngle() + 90; // returns degrees
+    }
+
+    /**
+     * Convert the current pot value of the eblow into an angle.
+     * 
+     * @return Current elbow joint angle relative to the ground
+     */
+    public double getElbowJointAngleRelativeToShoulder() {
+        double diff = this.ELBOW_neg90_DEGREE_POT_OFFSET - this.ELBOW_0_DEGREE_POT_OFFSET;
+        double potValPerDegree = diff / 90;
+        double curAnglePot = this.getElbowPotPos() - this.ELBOW_0_DEGREE_POT_OFFSET;
+        return -curAnglePot / potValPerDegree + 90; // returns degrees
     }
 
     /**
@@ -604,7 +616,7 @@ public class Arm extends SubsystemBase {
     public void shoulderMotorPIDExec() {
         double angle = getShoulderJointAngle();
         //double speed = _shoulderMotorPID.calculate(angle) + FeedForward.shoulder(getElbowJointAngle(), getShoulderJointAngle());
-        setShoulderMotorSpeed(FeedForward.elbow(getElbowJointAngle(), getShoulderJointAngle()));
+        setShoulderMotorSpeed(FeedForward.elbow(getElbowJointAngleRelativeToShoulder(), getShoulderJointAngle()));
     }
 
     /**
@@ -612,9 +624,9 @@ public class Arm extends SubsystemBase {
      * ramping the PID output and setting any limits.
      */
     public void elbowMotorPIDExec() {
-        double angle = getElbowJointAngle();
+        double angle = getElbowJointAngleRelativeToGround();
         //double speed = _elbowMotorPID.calculate(angle) + FeedForward.elbow(getElbowJointAngle(), getShoulderJointAngle());
-        setElbowMotorSpeed(FeedForward.elbow(getElbowJointAngle(), getShoulderJointAngle()));
+        setElbowMotorSpeed(FeedForward.elbow(getElbowJointAngleRelativeToShoulder(), getShoulderJointAngle()));
     }
 
     /**
@@ -632,7 +644,7 @@ public class Arm extends SubsystemBase {
      * @return The error of the elbow
      */
     public double getElbowError() {
-        return Math.abs(_elbowMotorPID.getGoal().position - this.getElbowJointAngle());
+        return Math.abs(_elbowMotorPID.getGoal().position - this.getElbowJointAngleRelativeToGround());
     }
 
     /** Checks if the joint motors are at their setpoints **/
@@ -657,9 +669,9 @@ public class Arm extends SubsystemBase {
     }
 
     public void setElbowMotorSpeed(double speed) {
-        if (this.getElbowJointAngle() <= this.ELBOW_LOWER_SOFT_STOP && speed < 0) {
+        if (this.getElbowJointAngleRelativeToGround() <= this.ELBOW_LOWER_SOFT_STOP && speed < 0) {
             speed = 0;
-        } else if (this.getElbowJointAngle() >= this.ELBOW_UPPER_SOFT_STOP && speed > 0) {
+        } else if (this.getElbowJointAngleRelativeToGround() >= this.ELBOW_UPPER_SOFT_STOP && speed > 0) {
             speed = 0;
         }
         SmartDashboard.putNumber("Elbow speed", speed);
@@ -792,7 +804,7 @@ public class Arm extends SubsystemBase {
     }
 
     public void setElbowGoalFromAngle(double angle) {
-        _elbowMotorPID.reset(this.getElbowJointAngle());
+        _elbowMotorPID.reset(this.getElbowJointAngleRelativeToGround());
         _elbowMotorPID.setGoal(angle);
     }
 
@@ -800,13 +812,13 @@ public class Arm extends SubsystemBase {
         ArmJointAngles goalAngles = this.jointAnglesFrom2DPose(position);
         _shoulderMotorPID.reset(this.getShoulderJointAngle());
         _shoulderMotorPID.setGoal(goalAngles.getShoulderJointAngle());
-        _elbowMotorPID.reset(this.getElbowJointAngle());
+        _elbowMotorPID.reset(this.getElbowJointAngleRelativeToGround());
         _elbowMotorPID.setGoal(goalAngles.getElbowJointAngle());
     }
 
     public void setArmGoalsFromPosition(ArmPosition position) {
         double shoulderPos = this.getShoulderJointAngle();
-        double elbowPos = this.getElbowJointAngle();
+        double elbowPos = this.getElbowJointAngleRelativeToGround();
         _currentArmPos = position;
 
         switch (position) {
@@ -891,7 +903,7 @@ public class Arm extends SubsystemBase {
         // the PIDs the new angles we want to go to
         _shoulderMotorPID.reset(this.getShoulderJointAngle());
         _shoulderMotorPID.setGoal(shoulderPos);
-        _elbowMotorPID.reset(this.getElbowJointAngle());
+        _elbowMotorPID.reset(this.getElbowJointAngleRelativeToGround());
         _elbowMotorPID.setGoal(elbowPos);
     }
 
@@ -975,7 +987,7 @@ public class Arm extends SubsystemBase {
                 break;
             default:
                 shoulderPos = getShoulderJointAngle();
-                elbowPos = getElbowJointAngle();
+                elbowPos = getElbowJointAngleRelativeToGround();
                 wristPos = getWristPosition();
                 // If we hit default that means we don't know what position we are in
                 // So we just wanna stay put until we get a new position
@@ -1076,7 +1088,7 @@ public class Arm extends SubsystemBase {
     }
 
     public void setShoulderGoalFromAngle(double setpoint) {
-        _elbowMotorPID.reset(this.getElbowJointAngle());
+        _elbowMotorPID.reset(this.getElbowJointAngleRelativeToGround());
         _elbowMotorPID.setGoal(setpoint);
     }
 
