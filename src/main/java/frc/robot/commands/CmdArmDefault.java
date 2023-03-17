@@ -24,6 +24,9 @@ public class CmdArmDefault extends CommandBase {
         //  if(this._armSubsystem.isPIDEnabled()){
             _armSubsystem.shoulderMotorPIDExec();
             _armSubsystem.elbowMotorPIDExec();
+            if(_armSubsystem.shoulderAtSetpoint() && _armSubsystem.elbowAtSetpoint()){
+                _armSubsystem.setCurrentPosition(_armSubsystem.getTargetArmPosition());
+            }
             Arm2DPosition currentPos = _armSubsystem.getArm2DPosition();
         // }
         // else {
