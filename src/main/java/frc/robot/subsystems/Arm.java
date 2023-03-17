@@ -310,14 +310,14 @@ public class Arm extends SubsystemBase {
     // private final double SHOULDER_MOTOR_KP = 0.015;
     // private final double SHOULDER_MOTOR_KI = 0.0005;
     // private final double SHOULDER_MOTOR_KD = 0.0005;
-    private final double SHOULDER_MOTOR_KP = 0.015;
+    private final double SHOULDER_MOTOR_KP = 0.01;
     private final double SHOULDER_MOTOR_KI = 0.000;
-    private final double SHOULDER_MOTOR_KD = 0.000;
-    private final double SHOULDER_MOTOR_TOLERANCE = 5.0;
+    private final double SHOULDER_MOTOR_KD = 0.0005;
+    private final double SHOULDER_MOTOR_TOLERANCE = 8.0;
 
     // shoulder motion profile constraints
-    private final double SHOULDER_MAX_VELOCITY = 70; // max speed that this joint should move at
-    private final double SHOULDER_MAX_ACCELERATION = 60; // max acceleration this joint should move at
+    private final double SHOULDER_MAX_VELOCITY = 240; // max speed that this joint should move at
+    private final double SHOULDER_MAX_ACCELERATION = 220; // max acceleration this joint should move at
     private final TrapezoidProfile.Constraints SHOULDER_MOTION_PROFILE_CONSTRAINTS = new TrapezoidProfile.Constraints(
             SHOULDER_MAX_VELOCITY,
             SHOULDER_MAX_ACCELERATION);
@@ -326,14 +326,14 @@ public class Arm extends SubsystemBase {
     // private final double ELBOW_MOTOR_KP = 0.02;
     // private final double ELBOW_MOTOR_KI = 0.0005;
     // private final double ELBOW_MOTOR_KD = 0.0005;
-    private final double ELBOW_MOTOR_KP = 0.02;
+    private final double ELBOW_MOTOR_KP = 0.016;
     private final double ELBOW_MOTOR_KI = 0.000;
-    private final double ELBOW_MOTOR_KD = 0.000;
+    private final double ELBOW_MOTOR_KD = 0.002;
     private final double ELBOW_MOTOR_TOLERANCE = 5.0;
 
     // shoulder motion profile constraints
-    private final double ELBOW_MAX_VELOCITY = 70; // max speed that this joint should move at
-    private final double ELBOW_MAX_ACCELERATION = 60; // max acceleration this joint should move at
+    private final double ELBOW_MAX_VELOCITY = 240; // max speed that this joint should move at
+    private final double ELBOW_MAX_ACCELERATION = 220; // max acceleration this joint should move at
     private final TrapezoidProfile.Constraints ELBOW_MOTION_PROFILE_CONSTRAINTS = new TrapezoidProfile.Constraints(
             ELBOW_MAX_VELOCITY,
             ELBOW_MAX_ACCELERATION);
@@ -364,8 +364,8 @@ public class Arm extends SubsystemBase {
         // StatorCurrentLimitConfiguration())
 
         // set motor breaking
-        _shoulderMotor.setNeutralMode(NeutralMode.Brake);
-        _elbowMotor.setNeutralMode(NeutralMode.Brake);
+        _shoulderMotor.setNeutralMode(NeutralMode.Coast);
+        _elbowMotor.setNeutralMode(NeutralMode.Coast);
 
         // Set inversion
         _shoulderMotor.setInverted(InvertType.None);
@@ -622,6 +622,7 @@ public class Arm extends SubsystemBase {
      */
     public void shoulderMotorPIDExec() {
         double angle = getShoulderJointAngle();
+        //setShoulderMotorSpeed(_shoulderMotorPID.calculate(angle) + FeedForward.shoulder(getElbowJointAngleRelativeToShoulder() + 180, getShoulderJointAngle()));
         setShoulderMotorSpeed(FeedForward.shoulder(getElbowJointAngleRelativeToShoulder() + 180, getShoulderJointAngle()));
     }
 
@@ -631,6 +632,7 @@ public class Arm extends SubsystemBase {
      */
     public void elbowMotorPIDExec() {
         double angle = getElbowJointAngleRelativeToGround();
+        //setElbowMotorSpeed(_elbowMotorPID.calculate(angle) + FeedForward.elbow(getElbowJointAngleRelativeToShoulder() + 180, getShoulderJointAngle()));
         setElbowMotorSpeed(FeedForward.elbow(getElbowJointAngleRelativeToShoulder() + 180, getShoulderJointAngle()));
     }
 
