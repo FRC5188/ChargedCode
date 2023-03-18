@@ -19,8 +19,10 @@ import frc.robot.commands.*;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Dashboard;
 import frc.robot.subsystems.Drive;
+import frc.robot.subsystems.LEDs;
 import frc.robot.subsystems.Arm.ArmMode;
 import frc.robot.subsystems.Arm.ArmPosition;
+
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -36,8 +38,8 @@ public class RobotContainer {
     private final Drive _driveSubsystem = new Drive();
     private final Arm _armSubsystem = new Arm();
     private final Dashboard _dashboardSubsystem = new Dashboard(_armSubsystem, _driveSubsystem);
-
-
+    private final LEDs _leds = new LEDs();
+ 
     private final XboxController _driverController = new XboxController(0);
     private final JoystickButton _driverButtonRB = new JoystickButton(_driverController, Constants.ButtonMappings.RIGHT_BUMPER);
     private final JoystickButton _driverButtonY = new JoystickButton(_driverController, Constants.ButtonMappings.Y_BUTTON);
@@ -64,6 +66,8 @@ public class RobotContainer {
     // private JoystickButton _opToggle = new JoystickButton(_operatorController2, 10);
     private JoystickButton _op2ButtonOne = new JoystickButton(_operatorController2, 1);
     private JoystickButton _op2ButtonTwo = new JoystickButton(_operatorController2, 2);
+    private JoystickButton _op2ButtonThree = new JoystickButton(_operatorController2, 3);
+    private JoystickButton _op2ButtonFour = new JoystickButton(_operatorController2, 4);
 
     public final Joystick _sliderJoystick = new Joystick(2);
     private JoystickButton _opButtonThirteen = new JoystickButton(_operatorController1, 13);
@@ -165,8 +169,8 @@ public class RobotContainer {
         _op2ButtonTwo.onTrue(new CmdMoveElbowManual(_armSubsystem, elbowUpAmount));
 
         // Shoulder manual buttons
-        _op2ButtonOne.onTrue(new CmdMoveShoulderManual(_armSubsystem, shoulderDownAmount));
-        _op2ButtonTwo.onTrue(new CmdMoveShoulderManual(_armSubsystem, shoulderUpAmount));
+        _op2ButtonThree.onTrue(new CmdMoveShoulderManual(_armSubsystem, shoulderDownAmount));
+        _op2ButtonFour.onTrue(new CmdMoveShoulderManual(_armSubsystem, shoulderUpAmount));
         // _opButtonThirteen.whileTrue(new GrpMoveArmToPositionManual(_armSubsystem, 
         // () -> _sliderJoystick.getRawAxis(0), 
         // () -> _sliderJoystick.getRawAxis(0)));
@@ -198,6 +202,10 @@ public class RobotContainer {
         return new CmdArmDefault(_armSubsystem);
     }
 
+    public Command updateLEDs() {
+        return new CmdLEDDefault(_leds, _armSubsystem);
+    }
+
     private static double deadband(double value, double deadband) {
         if (Math.abs(value) > deadband) {
             if (value > 0.0) {
@@ -219,4 +227,6 @@ public class RobotContainer {
 
         return value;
     }
+
+    
 }

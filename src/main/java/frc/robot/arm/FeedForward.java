@@ -4,6 +4,7 @@ import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.numbers.N2;
 import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.arm.DoubleJointedArmFeedforward.JointConfig;
 
 public abstract class FeedForward {
@@ -25,11 +26,15 @@ public abstract class FeedForward {
     private static final DoubleJointedArmFeedforward doubleJointedArmFeedfoward = new DoubleJointedArmFeedforward(shoulderJoint, elbowJoint);
 
     public static double shoulder(double upperSetpoint, double lowerSetpoint){
-        return (calculate(upperSetpoint, lowerSetpoint).get(0, 0)) / 12.0;
+        double ff = (calculate(upperSetpoint, lowerSetpoint).get(0, 0)) / 12.0;
+        SmartDashboard.putNumber("Shoulder FF", ff);
+        return ff;
     }
 
     public static double elbow(double upperSetpoint, double lowerSetpoint){
-        return (calculate(upperSetpoint, lowerSetpoint).get(1, 0)) / 12.0;
+        double ff = (calculate(upperSetpoint, lowerSetpoint).get(1, 0)) / 12.0;
+        SmartDashboard.putNumber("Elbow FF", ff);
+        return ff;
     }
 
     private static Vector<N2> calculate(double upperSetpoint, double lowerSetpoint) {
