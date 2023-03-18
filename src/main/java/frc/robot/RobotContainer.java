@@ -66,6 +66,8 @@ public class RobotContainer {
     // private JoystickButton _opToggle = new JoystickButton(_operatorController2, 10);
     private JoystickButton _op2ButtonOne = new JoystickButton(_operatorController2, 1);
     private JoystickButton _op2ButtonTwo = new JoystickButton(_operatorController2, 2);
+    private JoystickButton _op2ButtonThree = new JoystickButton(_operatorController2, 3);
+    private JoystickButton _op2ButtonFour = new JoystickButton(_operatorController2, 4);
 
     public final Joystick _sliderJoystick = new Joystick(2);
     private JoystickButton _opButtonThirteen = new JoystickButton(_operatorController1, 13);
@@ -167,8 +169,8 @@ public class RobotContainer {
         _op2ButtonTwo.onTrue(new CmdMoveElbowManual(_armSubsystem, elbowUpAmount));
 
         // Shoulder manual buttons
-        _op2ButtonOne.onTrue(new CmdMoveShoulderManual(_armSubsystem, shoulderDownAmount));
-        _op2ButtonTwo.onTrue(new CmdMoveShoulderManual(_armSubsystem, shoulderUpAmount));
+        _op2ButtonThree.onTrue(new CmdMoveShoulderManual(_armSubsystem, shoulderDownAmount));
+        _op2ButtonFour.onTrue(new CmdMoveShoulderManual(_armSubsystem, shoulderUpAmount));
         // _opButtonThirteen.whileTrue(new GrpMoveArmToPositionManual(_armSubsystem, 
         // () -> _sliderJoystick.getRawAxis(0), 
         // () -> _sliderJoystick.getRawAxis(0)));
