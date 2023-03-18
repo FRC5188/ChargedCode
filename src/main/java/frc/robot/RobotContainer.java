@@ -19,8 +19,10 @@ import frc.robot.commands.*;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Dashboard;
 import frc.robot.subsystems.Drive;
+import frc.robot.subsystems.LEDs;
 import frc.robot.subsystems.Arm.ArmMode;
 import frc.robot.subsystems.Arm.ArmPosition;
+
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -36,8 +38,8 @@ public class RobotContainer {
     private final Drive _driveSubsystem = new Drive();
     private final Arm _armSubsystem = new Arm();
     private final Dashboard _dashboardSubsystem = new Dashboard(_armSubsystem, _driveSubsystem);
-
-
+    private final LEDs _leds = new LEDs();
+ 
     private final XboxController _driverController = new XboxController(0);
     private final JoystickButton _driverButtonRB = new JoystickButton(_driverController, Constants.ButtonMappings.RIGHT_BUMPER);
     private final JoystickButton _driverButtonY = new JoystickButton(_driverController, Constants.ButtonMappings.Y_BUTTON);
@@ -198,6 +200,10 @@ public class RobotContainer {
         return new CmdArmDefault(_armSubsystem);
     }
 
+    public Command updateLEDs() {
+        return new CmdLEDDefault(_leds, _armSubsystem);
+    }
+
     private static double deadband(double value, double deadband) {
         if (Math.abs(value) > deadband) {
             if (value > 0.0) {
@@ -219,4 +225,6 @@ public class RobotContainer {
 
         return value;
     }
+
+    
 }
