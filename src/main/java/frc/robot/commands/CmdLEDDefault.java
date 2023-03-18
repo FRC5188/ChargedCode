@@ -31,7 +31,8 @@ public class CmdLEDDefault extends CommandBase {
     @Override
     public void execute() {
         System.out.println("Running LEDs");
-        if (!DriverStation.isDSAttached() && !DriverStation.isFMSAttached()) {
+        if (!DriverStation.isDSAttached()) {
+            // Add this in for comp but not for home testing: || !DriverStation.isFMSAttached()
             this._leds.changeColor(LEDColors.Red);
         }
         else {
