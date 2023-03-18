@@ -8,8 +8,13 @@ import com.ctre.phoenix.led.CANdle;
 //import com.ctre.phoenix.led.CANdle.LEDStripType;
 //import com.ctre.phoenix.led.CANdle.VBatOutputMode;
 //import .ctre.phoenix.led.ColorFlowAnimation.Direction;
+import com.ctre.phoenix.led.CANdleConfiguration;
+import com.ctre.phoenix.led.CANdle.LEDStripType;
+import com.ctre.phoenix.led.CANdle.VBatOutputMode;
 
 public class LEDs extends SubsystemBase {
+
+
 
     // TODO: We're not using the enum yet. Keep it?
     public enum LEDColors {
@@ -34,6 +39,15 @@ public class LEDs extends SubsystemBase {
     
         //init: set to white
         candle.setLEDs(255, 255, 255);
+
+        CANdleConfiguration configAll = new CANdleConfiguration();
+        configAll.statusLedOffWhenActive = true;
+        configAll.disableWhenLOS = false; //dont turn off leds when we lose comms. let us decide
+        configAll.stripType = LEDStripType.RGB; //normal RBG strips
+        configAll.brightnessScalar = 1;  //
+        configAll.vBatOutputMode = VBatOutputMode.Modulated;
+        candle.configAllSettings(configAll, 100);
+
     }
 
     /**
