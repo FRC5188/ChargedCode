@@ -24,21 +24,21 @@ public class CmdArmRunIntake extends CommandBase {
     @Override
     public void execute() {
 
-        //If the gampiece is a cone, close the intake and run the motors.
-         if (_armSubsystem.getArmMode() == ArmMode.Cone) {
+        // If the gampiece is a cone, close the intake
+        if (_armSubsystem.getArmMode() == ArmMode.Cone) {
             _armSubsystem.setIntakeMode(IntakeMode.Closed);
-            this._armSubsystem.setIntakeMotorSpeed(this._intakeSpeed);
+        } else {
+            // Keep it open if it is a cube
+            _armSubsystem.setIntakeMode(IntakeMode.Open);
         }
-        
-        //If the gampiece is a cube, open the intake and run the motors.
-        if (_armSubsystem.getArmMode() == ArmMode.Cube) {
-            _armSubsystem.setIntakeMode(IntakeMode.Open);            
-            this._armSubsystem.setIntakeMotorSpeed(this._intakeSpeed);
-        }
+
+        _armSubsystem.setIntakeMotorSpeed(this._intakeSpeed);
+
     }
 
     @Override
     public void end(boolean interrupted) {
+        // Once the intake has a piece, stop the motors and close the intake
         _armSubsystem.setIntakeMotorSpeed(0);
         _armSubsystem.setIntakeMode(IntakeMode.Closed);
     }

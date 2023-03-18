@@ -25,19 +25,12 @@ public class CmdArmSpit extends CommandBase {
 
     @Override
     public void execute() {
-        /**
-         * IF the arm is holding a cone, it only opens the claw without running the wheels.
-         */
+        // If the arm is holding a cone, it only opens the claw without running the wheels
         if (_armSubsystem.getArmMode() == ArmMode.Cone) {
             _armSubsystem.setIntakeMode(IntakeMode.Open);
-        }
-
-        /**
-         * If the arm is holding a cube, it just spits out the cube by runnning the intake wheels.
-         */
-        if (_armSubsystem.getArmMode() == ArmMode.Cube) {
-            this._counter++;
-            this._armSubsystem.setIntakeMotorSpeed(this._intakeSpeed);
+        } else {
+            _counter++;
+            _armSubsystem.setIntakeMotorSpeed(_intakeSpeed);
         }
     }
 
@@ -48,10 +41,8 @@ public class CmdArmSpit extends CommandBase {
 
     @Override
     public boolean isFinished() {
-        if (_armSubsystem.getArmMode() == ArmMode.Cone) {
-            return true;
-        } else {
-            return this._counter >= 25;
-        }
+        // If we are dropping a cone, stop immediately
+        // If it is a cube, run the wheels for a bit
+        return (_armSubsystem.getArmMode() == ArmMode.Cone) || _counter >= 25;
     }
 }

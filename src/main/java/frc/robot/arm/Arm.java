@@ -211,6 +211,7 @@ public class Arm extends SubsystemBase {
     private final double INTAKE_HAS_PIECE_CURRENT = 40;
 
     private Solenoid _wristSolenoid;
+    private Solenoid _intakeSolenoid;
 
     private ArmPosition _targetPosition;
 
@@ -229,7 +230,7 @@ public class Arm extends SubsystemBase {
     public final IntakeMode INTAKE_MODE_DEFAULT = IntakeMode.Open;
 
     // Set this to true so that the arm is in coast and the motors don't run
-    private boolean _inSetpointTestingMode = false;
+    private boolean _inSetpointTestingMode = true;
 
     // shoulder PID constants
     // private final double SHOULDER_MOTOR_KP = 0.015;
@@ -271,6 +272,7 @@ public class Arm extends SubsystemBase {
         _elbowMotor = new WPI_TalonFX(Constants.CanIDs.ARM_ELBOW_MOTOR_ID);
 
         _wristSolenoid = new Solenoid(PneumaticsModuleType.REVPH, Constants.PHPorts.WRIST_SOLENOID_PORT);
+        _intakeSolenoid = new Solenoid(PneumaticsModuleType.REVPH, Constants.PHPorts.INTAKE_SOLENOID_PORT);
 
         _elbowPotentiometer = new AnalogInput(Constants.AIO.ELBOW_PORT_POT);
         _shoulderPotentiometer = new AnalogInput(Constants.AIO.SHOULDER_PORT_POT);
@@ -304,7 +306,7 @@ public class Arm extends SubsystemBase {
 
         _currentArmPos = ArmPosition.Stored;
         _armMode = ArmMode.Cube;
-        _intakeMode = INTAKE_MODE_DEFAULT;
+        _intakeMode = IntakeMode.Closed;
 
         // Create Shoulder PID controller
         _shoulderMotorPID = new ProfiledPIDController(this.SHOULDER_MOTOR_KP,
@@ -649,6 +651,7 @@ public class Arm extends SubsystemBase {
      */
     public void setIntakeMode(IntakeMode mode) {
         this._intakeMode = mode;
+        _intakeSolenoid.set(_intakeMode == IntakeMode.Open);
     }
 
     /**

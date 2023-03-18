@@ -42,10 +42,10 @@ public class Dashboard extends SubsystemBase {
 		
 	  	_autonomousChooser = new SendableChooser<Command>();
 
-	  	/*dashboard.add("Autonomous Selector", _autonomousChooser)
+	  	dashboard.add("Autonomous Selector", _autonomousChooser)
 	  	.withPosition(23, 0)
 	  	.withSize(8, 2)
-	  	.withWidget(BuiltInWidgets.kComboBoxChooser);*/
+	  	.withWidget(BuiltInWidgets.kComboBoxChooser);
 
 		/*dashboard.add("Camera Stream", new UsbCamera(getName(), 0))
 		.withPosition(0,0)
@@ -102,14 +102,12 @@ public class Dashboard extends SubsystemBase {
   	}
 
   	public void addAuto(String name, Command command) {
-	  	_autonomousChooser.addOption(name, command);
-  	}
+        _autonomousChooser.addOption(name, command);
+    }
 
-  	public Command getSelectedAutonomousCommand() {
-		//return _autonomousChooser.getSelected();
-		//return new GrpAutoHighCubeAndBalance(_driveSubsystem, _armSubsystem);
-        return Autonomous.getPreloadedPathCommand("TEST_Straight_Line", 3, 2, _driveSubsystem, _driveSubsystem::drive);
-  	}
+    public Command getSelectedAutonomousCommand() {
+        return _autonomousChooser.getSelected();
+    }
 
 	public void setDefaultAuto(String name, Command command) {
 		_autonomousChooser.setDefaultOption(name, command);

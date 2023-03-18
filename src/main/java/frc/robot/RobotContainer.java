@@ -6,6 +6,7 @@ package frc.robot;
 
 import java.util.HashMap;
 
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
@@ -29,6 +30,7 @@ import frc.robot.arm.commands.CmdArmMoveElbowManual;
 import frc.robot.arm.commands.CmdArmMoveShoulderManual;
 import frc.robot.dashboard.Dashboard;
 import frc.robot.drive.Drive;
+import frc.robot.drive.commands.CmdDriveChangeCoR;
 import frc.robot.drive.commands.CmdDriveChangeSpeedMult;
 import frc.robot.drive.commands.DefaultDriveCommand;
 
@@ -139,6 +141,8 @@ public class RobotContainer {
 
         // Reset Gyro
        // _driverButtonA.whileTrue(new CmdDriveResetGyro(_driveSubsystem));
+       _driverButtonA.whileTrue(new CmdDriveChangeCoR(_driveSubsystem, new Translation2d(1.07, 0)));
+       _driverButtonA.whileFalse(new CmdDriveChangeCoR(_driveSubsystem, new Translation2d(0, 0)));
 
         // -- Operator Controls --
 
