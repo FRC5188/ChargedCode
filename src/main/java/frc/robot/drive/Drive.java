@@ -16,6 +16,7 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.drive.sds.Mk4iSwerveModuleHelper;
@@ -103,6 +104,8 @@ public class Drive extends SubsystemBase {
     private SwerveModule _backLeftModule;
     private SwerveModule _backRightModule;
 
+    private Translation2d _centerOfRotation;
+
     /**
      * This represents the desired vector of the robot.
      * <p>
@@ -177,6 +180,8 @@ public class Drive extends SubsystemBase {
 
         _navx = new AHRS();
 
+        _centerOfRotation = new Translation2d();
+
         _chassisSpeeds = new ChassisSpeeds(0.0, 0.0, 0.0);
 
         _odometry = new SwerveDrivePoseEstimator(_kinematics, getGyroscopeRotation(), new SwerveModulePosition[] {
@@ -240,6 +245,11 @@ public class Drive extends SubsystemBase {
     public double getSpeedMultiplier(){
         return this._speedMultiplier;
     }
+
+    public void setCenterOfRotation(Translation2d centerOfRotation) {
+        _centerOfRotation = centerOfRotation;
+    }
+
     public double getRobotPitch(){
         return _navx.getPitch();
     }
@@ -262,8 +272,13 @@ public class Drive extends SubsystemBase {
 
     @Override
     public void periodic() {
+        try {
+            SmartDashboard.putNumber("Estimated Pose", getPose().getX());
+        } catch (Exception e) {
+            System.out.println("[ERROR] Couldn't Get Vision");
+        }
         // Convert the drive base vector into module vectors
-        SwerveModuleState[] states = _kinematics.toSwerveModuleStates(_chassisSpeeds);
+        SwerveModuleState[] states = _kinematics.toSwerveModuleStates(_chassisSpeeds, _centerOfRotation);
         // Normalize the wheel speeds so we aren't trying to set above the max
         SwerveDriveKinematics.desaturateWheelSpeeds(states, MAX_VELOCITY_METERS_PER_SECOND);
 
