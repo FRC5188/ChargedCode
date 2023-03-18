@@ -1,9 +1,9 @@
 package frc.robot.arm;
 
-import frc.robot.subsystems.Arm.WristPosition;
+import frc.robot.arm.Arm.WristPosition;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
-import frc.robot.subsystems.Arm.Arm2DPosition;
-import frc.robot.subsystems.Arm.IntakeMode;
+import frc.robot.arm.Arm.Arm2DPosition;
+import frc.robot.arm.Arm.IntakeMode;
 
 public class ArmConstants {
 
@@ -159,7 +159,7 @@ public class ArmConstants {
 
     public static double INTAKE_HAS_PIECE_CURRENT = 40;
 
-    public static IntakeMode INTAKE_MODE_DEFAULT = IntakeMode.OPEN;
+    public static IntakeMode INTAKE_MODE_DEFAULT = IntakeMode.Open;
 
     // shoulder PID constants
     // private final double SHOULDER_MOTOR_KP = 0.015;
