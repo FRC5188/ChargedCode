@@ -165,7 +165,7 @@ public class Arm extends SubsystemBase {
     public IntakeMode _intakeMode;
 
     // Set this to true so that the arm is in coast and the motors don't run
-    private boolean _inSetpointTestingMode = false;
+    private boolean _inSetpointTestingMode = true;
 
     private boolean PIDEnable;
 
