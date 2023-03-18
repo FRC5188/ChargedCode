@@ -3,6 +3,8 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Arm;
+import frc.robot.subsystems.Arm.ArmMode;
+import frc.robot.subsystems.Arm.IntakeMode;
 
 public class CmdArmSpit extends CommandBase {
     private Arm _armSubsystem;
@@ -24,8 +26,22 @@ public class CmdArmSpit extends CommandBase {
 
     @Override
     public void execute() {
-        this._counter++;
-        this._armSubsystem.setIntakeMotorSpeed(this._intakeSpeed);
+
+        /**
+         * IF the arm is holding a cone, it only opens the claw without running the wheels.
+         */
+        if (_armSubsystem.getArmMode() == ArmMode.Cone) {
+            _armSubsystem.setIntakeMode(IntakeMode.OPEN);
+        }
+
+        /**
+         * If the arm is holding a cube, it just spits out the cube by runnning the intake wheels.
+         */
+        if (_armSubsystem.getArmMode() == ArmMode.Cube) {
+            this._counter++;
+            this._armSubsystem.setIntakeMotorSpeed(this._intakeSpeed);
+        }
+        
     }
 
     @Override
@@ -35,6 +51,11 @@ public class CmdArmSpit extends CommandBase {
 
     @Override
     public boolean isFinished() {
-        return this._counter >= 25;
+
+        if (_armSubsystem.getArmMode() == ArmMode.Cone) {
+            return true;
+        } else {
+            return this._counter >= 25;
+        }
     }
 }
