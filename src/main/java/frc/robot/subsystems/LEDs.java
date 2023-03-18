@@ -36,7 +36,10 @@ public class LEDs extends SubsystemBase {
         candle.setLEDs(255, 255, 255);
     }
 
-
+    /**
+     * Changes the color of the LEDs. Called by LEDDefault command.
+     * @param color Input enumeration name from LEDColors (ex: White)
+     */
     public void changeColor(LEDColors color) {
         switch(color) {
             case Pink: 

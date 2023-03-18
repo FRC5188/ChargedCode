@@ -23,27 +23,27 @@ public class CmdLEDDefault extends CommandBase {
 
     @Override
     public void initialize() {
-        this.color = color.White;
-        this._leds.changeColor(this.color);
-        this._leds.brightness = 0.00;
+        // this.color = LEDColors.White;
+        // this._leds.changeColor(this.color);
+        // this._leds.brightness = 0.00;
     }
 
     @Override
     public void execute() {
         System.out.println("Running LEDs");
         if (!DriverStation.isDSAttached() && !DriverStation.isFMSAttached()) {
-            this._leds.changeColor(color.Red);
+            this._leds.changeColor(LEDColors.Red);
         }
         else {
             this.armMode = this._armSubsystem.getArmMode();
 
             switch (armMode) {
                 case Cone:
-                    this._leds.changeColor(color.Yellow);
+                    this._leds.changeColor(LEDColors.Yellow);
                     break;
 
                 case Cube:
-                    this._leds.changeColor(color.Purple);
+                    this._leds.changeColor(LEDColors.Purple);
                     break;
 
 

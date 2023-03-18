@@ -60,7 +60,9 @@ public class Robot extends TimedRobot {
   }
 
   @Override
-  public void disabledPeriodic() {}
+  public void disabledPeriodic() {
+    
+  }
 
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
   @Override
@@ -70,6 +72,7 @@ public class Robot extends TimedRobot {
     m_robotContainer.getInitialArmPosCommand().schedule();
     m_robotContainer.updateLEDs().schedule();
 
+
     if (m_autonomousCommand != null) {
       m_autonomousCommand.schedule();
     }
@@ -77,7 +80,9 @@ public class Robot extends TimedRobot {
 
   /** This function is called periodically during autonomous. */
   @Override
-  public void autonomousPeriodic() {}
+  public void autonomousPeriodic() {
+    
+  }
 
   @Override
   public void teleopInit() {
@@ -89,15 +94,17 @@ public class Robot extends TimedRobot {
       m_autonomousCommand.cancel();
     }
     
+    m_robotContainer.updateLEDs().schedule();
     m_robotContainer.getPIDCommand().schedule();
     m_robotContainer.getInitialArmPosCommand().schedule();
-    m_robotContainer.updateLEDs().schedule();
 
   }
 
   /** This function is called periodically during operator control. */
   @Override
-  public void teleopPeriodic() {}
+  public void teleopPeriodic() {
+
+  }
 
   @Override
   public void testInit() {
