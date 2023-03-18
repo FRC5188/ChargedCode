@@ -141,75 +141,12 @@ public class Arm extends SubsystemBase {
         Cube
     }
 
-    /**
-     * constants for the above defined in the ArmPosition Enum.
-     * This is the place to make edits to setpoints.
-     */
-    private final double STORED_Y_POS = 15.75;
-    private final double STORED_X_POS = -9;
-    private final WristPosition STORED_WRIST_POS = WristPosition.Perpendicular;
-    private final Arm2DPosition STORED_SETPOINT = new Arm2DPosition(STORED_Y_POS,
-            STORED_X_POS,
-            STORED_WRIST_POS);
-
-    private final double GROUND_PICKUP_Y_POS = 0.0;
-    private final double GROUND_PICKUP_X_POS = 0.0;
-    private final WristPosition GROUND_PICKUP_WRIST_POS = WristPosition.Perpendicular;
-    private final Arm2DPosition GROUND_PICKUP_SETPOINT = new Arm2DPosition(GROUND_PICKUP_Y_POS,
-            GROUND_PICKUP_X_POS,
-            GROUND_PICKUP_WRIST_POS);
-
-    private final double HIGH_CUBE_Y_POS = 0.0;
-    private final double HIGH_CUBE_X_POS = 0.0;
-    private final WristPosition HIGH_CUBE_WRIST_POS = WristPosition.Parallel;
-    private final Arm2DPosition HIGH_CUBE_SETPOINT = new Arm2DPosition(HIGH_CUBE_Y_POS,
-            HIGH_CUBE_X_POS,
-            HIGH_CUBE_WRIST_POS);
-
-    private final double HIGH_CONE_Y_POS = 0.0;
-    private final double HIGH_CONE_X_POS = 0.0;
-    private final WristPosition HIGH_CONE_WRIST_POS = WristPosition.Parallel;
-    private final Arm2DPosition HIGH_CONE_SETPOINT = new Arm2DPosition(HIGH_CONE_Y_POS,
-            HIGH_CONE_X_POS,
-            HIGH_CONE_WRIST_POS);
-
-    private final double LOAD_STATION_PICKUP_Y_POS = 0.0;
-    private final double LOAD_STATION_PICKUP_X_POS = 0.0;
-    private final WristPosition LOAD_STATION_PICKUP_WRIST_POS = WristPosition.Parallel;
-    private final Arm2DPosition LOAD_STATION_PICKUP_SETPOINT = new Arm2DPosition(LOAD_STATION_PICKUP_Y_POS,
-            LOAD_STATION_PICKUP_X_POS,
-            LOAD_STATION_PICKUP_WRIST_POS);
-
-    private final double LOW_SCORE_Y_POS = 0.0;
-    private final double LOW_SCORE_X_POS = 0.0;
-    private final WristPosition LOW_SCORE_WRIST_POS = WristPosition.Perpendicular;
-    private final Arm2DPosition LOW_SCORE_SETPOINT = new Arm2DPosition(LOW_SCORE_Y_POS,
-            LOW_SCORE_X_POS,
-            LOW_SCORE_WRIST_POS);
-
-    private final double MIDDLE_CONE_Y_POS = 0.0;
-    private final double MIDDLE_CONE_X_POS = 0.0;
-    private final WristPosition MIDDLE_CONE_WRIST_POS = WristPosition.Parallel;
-    private final Arm2DPosition MIDDLE_CONE_SETPOINT = new Arm2DPosition(MIDDLE_CONE_Y_POS,
-            MIDDLE_CONE_X_POS,
-            MIDDLE_CONE_WRIST_POS);
-
-    private final double MIDDLE_CUBE_Y_POS = 0.0;
-    private final double MIDDLE_CUBE_X_POS = 0.0;
-    private final WristPosition MIDDLE_CUBE_WRIST_POS = WristPosition.Parallel;
-    private final Arm2DPosition MIDDLE_CUBE_SETPOINT = new Arm2DPosition(MIDDLE_CUBE_Y_POS,
-            MIDDLE_CUBE_X_POS,
-            MIDDLE_CUBE_WRIST_POS);
-
-    /** Arm Motor Controllers and Pnuematics. */
+    /* Arm Motor Controllers and Pnuematics. */
     private WPI_TalonFX _shoulderMotor;
     private WPI_TalonFX _elbowMotor;
-    private final double ELBOW_IS_HITTING_CURRENT = 9999.0; //TODO: Find actual value for this
-    private final double MAX_MOTOR_VOLTAGE = 11.5; // May want to adjust -Garrett
 
     private CANSparkMax _intakeMotor;
-    private final double INTAKE_HAS_PIECE_CURRENT = 40;
-
+    
     private Solenoid _wristSolenoid;
 
     private ArmPosition _targetPosition;
@@ -226,42 +163,10 @@ public class Arm extends SubsystemBase {
     private ArmMode _armMode;
     public boolean _hasGamepiece = true;
     public IntakeMode _intakeMode;
-    public final IntakeMode INTAKE_MODE_DEFAULT = IntakeMode.Open;
 
     // Set this to true so that the arm is in coast and the motors don't run
     private boolean _inSetpointTestingMode = false;
 
-    // shoulder PID constants
-    // private final double SHOULDER_MOTOR_KP = 0.015;
-    // private final double SHOULDER_MOTOR_KI = 0.0005;
-    // private final double SHOULDER_MOTOR_KD = 0.0005;
-    private final double SHOULDER_MOTOR_KP = 0.012;
-    private final double SHOULDER_MOTOR_KI = 0.000;
-    private final double SHOULDER_MOTOR_KD = 0.0005;
-    private final double SHOULDER_MOTOR_TOLERANCE = 8.0;
-
-    // shoulder motion profile constraints
-    private final double SHOULDER_MAX_VELOCITY = 240; // max speed that this joint should move at
-    private final double SHOULDER_MAX_ACCELERATION = 220; // max acceleration this joint should move at
-    private final TrapezoidProfile.Constraints SHOULDER_MOTION_PROFILE_CONSTRAINTS = new TrapezoidProfile.Constraints(
-            SHOULDER_MAX_VELOCITY,
-            SHOULDER_MAX_ACCELERATION);
-
-    // Elbow constants
-    // private final double ELBOW_MOTOR_KP = 0.02;
-    // private final double ELBOW_MOTOR_KI = 0.0005;
-    // private final double ELBOW_MOTOR_KD = 0.0005;
-    private final double ELBOW_MOTOR_KP = 0.014;
-    private final double ELBOW_MOTOR_KI = 0.000;
-    private final double ELBOW_MOTOR_KD = 0.001;
-    private final double ELBOW_MOTOR_TOLERANCE = 5.0;
-
-    // shoulder motion profile constraints
-    private final double ELBOW_MAX_VELOCITY = 240; // max speed that this joint should move at
-    private final double ELBOW_MAX_ACCELERATION = 220; // max acceleration this joint should move at
-    private final TrapezoidProfile.Constraints ELBOW_MOTION_PROFILE_CONSTRAINTS = new TrapezoidProfile.Constraints(
-            ELBOW_MAX_VELOCITY,
-            ELBOW_MAX_ACCELERATION);
     private boolean PIDEnable;
 
     //constructor 
@@ -280,9 +185,9 @@ public class Arm extends SubsystemBase {
         _shoulderPotentiometer.setOversampleBits(0);
 
         // Set the motors to adjust their output based on battery voltage
-        _shoulderMotor.configVoltageCompSaturation(this.MAX_MOTOR_VOLTAGE);
+        _shoulderMotor.configVoltageCompSaturation(ArmConstants.MAX_MOTOR_VOLTAGE);
         _shoulderMotor.enableVoltageCompensation(true);
-        _elbowMotor.configVoltageCompSaturation(this.MAX_MOTOR_VOLTAGE);
+        _elbowMotor.configVoltageCompSaturation(ArmConstants.MAX_MOTOR_VOLTAGE);
         _elbowMotor.enableVoltageCompensation(true);
 
         // TODO: current limit is 0.83 amps
@@ -304,21 +209,21 @@ public class Arm extends SubsystemBase {
 
         _currentArmPos = ArmPosition.Stored;
         _armMode = ArmMode.Cube;
-        _intakeMode = INTAKE_MODE_DEFAULT;
+        _intakeMode = ArmConstants.INTAKE_MODE_DEFAULT;
 
         // Create Shoulder PID controller
-        _shoulderMotorPID = new ProfiledPIDController(this.SHOULDER_MOTOR_KP,
-                this.SHOULDER_MOTOR_KI,
-                this.SHOULDER_MOTOR_KD,
-                this.SHOULDER_MOTION_PROFILE_CONSTRAINTS);
-        _shoulderMotorPID.setTolerance(this.SHOULDER_MOTOR_TOLERANCE);
+        _shoulderMotorPID = new ProfiledPIDController(ArmConstants.SHOULDER_MOTOR_KP,
+            ArmConstants.SHOULDER_MOTOR_KI,
+            ArmConstants.SHOULDER_MOTOR_KD,
+            ArmConstants.SHOULDER_MOTION_PROFILE_CONSTRAINTS);
+        _shoulderMotorPID.setTolerance(ArmConstants.SHOULDER_MOTOR_TOLERANCE);
 
         // create elbow PID controller
-        _elbowMotorPID = new ProfiledPIDController(this.ELBOW_MOTOR_KP,
-                this.ELBOW_MOTOR_KI,
-                this.ELBOW_MOTOR_KD,
-                this.ELBOW_MOTION_PROFILE_CONSTRAINTS);
-        _elbowMotorPID.setTolerance(this.ELBOW_MOTOR_TOLERANCE);
+        _elbowMotorPID = new ProfiledPIDController(ArmConstants.ELBOW_MOTOR_KP,
+                ArmConstants.ELBOW_MOTOR_KI,
+                ArmConstants.ELBOW_MOTOR_KD,
+                ArmConstants.ELBOW_MOTION_PROFILE_CONSTRAINTS);
+        _elbowMotorPID.setTolerance(ArmConstants.ELBOW_MOTOR_TOLERANCE);
 
         this.enablePID();
         this.updateShuffleBoard();
@@ -442,10 +347,10 @@ public class Arm extends SubsystemBase {
         // https://github.com/FRC5188/ChargedCode/commit/a35d8567eb73343b4be02176031213db640c6627
 
         // grab the points
-        double z = arm2DPosition.getz() - ArmConstants.Arm.SHOULDER_JOINT_Z_POS;
-        double y = arm2DPosition.gety() - ArmConstants.Arm.SHOULDER_JOINT_Y_POS;
-        double elbowLen = ArmConstants.Arm.ELBOW_ARM_LENGTH;
-        double shoulderLen = ArmConstants.Arm.SHOULDER_ARM_LENGTH;
+        double y = arm2DPosition.gety() - ArmConstants.SHOULDER_JOINT_Y_POS;
+        double z = arm2DPosition.getz() - ArmConstants.SHOULDER_JOINT_Z_POS;
+        double elbowLen = ArmConstants.ELBOW_ARM_LENGTH;
+        double shoulderLen = ArmConstants.SHOULDER_ARM_LENGTH;
 
         // alpha = acos((x^2 + y^2 - a1^2 - a2^2) / (-2*a1*a2))
         double alpha = Math.acos((Math.pow(y, 2) + Math.pow(z, 2) -
@@ -487,9 +392,9 @@ public class Arm extends SubsystemBase {
      * @return Current elbow joint angle relative to the ground
      */
     public double getElbowJointAngleRelativeToGround() {
-        double diff = ArmConstants.Arm.ELBOW_0_DEGREE_POT_OFFSET - ArmConstants.Arm.ELBOW_90_DEGREE_POT_OFFSET;
+        double diff = ArmConstants.ELBOW_0_DEGREE_POT_OFFSET - ArmConstants.ELBOW_90_DEGREE_POT_OFFSET;
         double potValPerDegree = diff / 90;
-        double curAnglePot = this.getElbowPotPos() - ArmConstants.Arm.ELBOW_90_DEGREE_POT_OFFSET;
+        double curAnglePot = this.getElbowPotPos() - ArmConstants.ELBOW_90_DEGREE_POT_OFFSET;
         return -curAnglePot / potValPerDegree + this.getShoulderJointAngle() + 90; // returns degrees
     }
 
@@ -499,9 +404,9 @@ public class Arm extends SubsystemBase {
      * @return Current elbow joint angle relative to the ground
      */
     public double getElbowJointAngleRelativeToShoulder() {
-        double diff = ArmConstants.Arm.ELBOW_0_DEGREE_POT_OFFSET - ArmConstants.Arm.ELBOW_90_DEGREE_POT_OFFSET;
+        double diff = ArmConstants.ELBOW_0_DEGREE_POT_OFFSET - ArmConstants.ELBOW_90_DEGREE_POT_OFFSET;
         double potValPerDegree = diff / 90;
-        double curAnglePot = this.getElbowPotPos() - ArmConstants.Arm.ELBOW_90_DEGREE_POT_OFFSET;
+        double curAnglePot = this.getElbowPotPos() - ArmConstants.ELBOW_90_DEGREE_POT_OFFSET;
         return -curAnglePot / potValPerDegree + 180; // returns degrees
     }
 
@@ -511,9 +416,9 @@ public class Arm extends SubsystemBase {
      * @return Current shoulder joint angle where 90 is perpendicular to the ground
      */
     public double getShoulderJointAngle() {
-        double diff = ArmConstants.Arm.SHOULDER_90_DEGREE_POT_OFFSET - ArmConstants.Arm.SHOULDER_0_DEGREE_POT_OFFSET;
+        double diff = ArmConstants.SHOULDER_90_DEGREE_POT_OFFSET - ArmConstants.SHOULDER_0_DEGREE_POT_OFFSET;
         double potValPerDegree = diff / 90;
-        double curAnglePot = this.getShoulderPotPos() - ArmConstants.Arm.SHOULDER_0_DEGREE_POT_OFFSET;
+        double curAnglePot = this.getShoulderPotPos() - ArmConstants.SHOULDER_0_DEGREE_POT_OFFSET;
         return curAnglePot / potValPerDegree; // returns degrees
     }
 
@@ -536,13 +441,13 @@ public class Arm extends SubsystemBase {
     private Arm2DPosition arm2DPositionFromAngles(double currentShoulder, double currentElbow, WristPosition wristPos) {
         // TODO check this math
 
-        double y = ArmConstants.Arm.SHOULDER_JOINT_Y_POS;
-        y += ArmConstants.Arm.SHOULDER_ARM_LENGTH * Math.cos(currentShoulder);
-        y += ArmConstants.Arm.ELBOW_ARM_LENGTH * Math.cos(currentElbow);
+        double y = ArmConstants.SHOULDER_JOINT_Y_POS;
+        y += ArmConstants.SHOULDER_ARM_LENGTH * Math.cos(currentShoulder);
+        y += ArmConstants.ELBOW_ARM_LENGTH * Math.cos(currentElbow);
 
-        double z = ArmConstants.Arm.SHOULDER_JOINT_Z_POS;
-        z += ArmConstants.Arm.SHOULDER_ARM_LENGTH * Math.sin(currentShoulder);
-        z += ArmConstants.Arm.ELBOW_ARM_LENGTH * Math.sin(currentElbow);
+        double z = ArmConstants.SHOULDER_JOINT_Z_POS;
+        z += ArmConstants.SHOULDER_ARM_LENGTH * Math.sin(currentShoulder);
+        z += ArmConstants.ELBOW_ARM_LENGTH * Math.sin(currentElbow);
 
         return new Arm2DPosition(y, z, wristPos);
     }
@@ -585,19 +490,19 @@ public class Arm extends SubsystemBase {
 
     /** Checks if the joint motors are at their setpoints **/
     public boolean shoulderAtSetpoint() {
-        return getShoulderError() < SHOULDER_MOTOR_TOLERANCE;
+        return getShoulderError() < ArmConstants.SHOULDER_MOTOR_TOLERANCE;
     }
 
     /** Checks if the joint motors are at their setpoints **/
     public boolean elbowAtSetpoint() {
-        return getElbowError() < ELBOW_MOTOR_TOLERANCE;
+        return getElbowError() < ArmConstants.ELBOW_MOTOR_TOLERANCE;
     }
 
     public void setShoulderMotorSpeed(double speed) {
 
-        if (this.getShoulderJointAngle() <= ArmConstants.Arm.SHOULDER_LOWER_SOFT_STOP && speed < 0) {
+        if (this.getShoulderJointAngle() <= ArmConstants.SHOULDER_LOWER_SOFT_STOP && speed < 0) {
             speed = 0;
-        } else if (this.getShoulderJointAngle() >= ArmConstants.Arm.SHOULDER_UPPER_SOFT_STOP && speed > 0) {
+        } else if (this.getShoulderJointAngle() >= ArmConstants.SHOULDER_UPPER_SOFT_STOP && speed > 0) {
             speed = 0;
         }
         SmartDashboard.putNumber("Shoulder speed", speed);
@@ -606,9 +511,9 @@ public class Arm extends SubsystemBase {
     }
 
     public void setElbowMotorSpeed(double speed) {
-        if (this.getElbowJointAngleRelativeToGround() <= ArmConstants.Arm.ELBOW_LOWER_SOFT_STOP && speed < 0) {
+        if (this.getElbowJointAngleRelativeToGround() <= ArmConstants.ELBOW_LOWER_SOFT_STOP && speed < 0) {
             speed = 0;
-        } else if (this.getElbowJointAngleRelativeToGround() >= ArmConstants.Arm.ELBOW_UPPER_SOFT_STOP && speed > 0) {
+        } else if (this.getElbowJointAngleRelativeToGround() >= ArmConstants.ELBOW_UPPER_SOFT_STOP && speed > 0) {
             speed = 0;
         }
         SmartDashboard.putNumber("Elbow speed", speed);
@@ -669,7 +574,7 @@ public class Arm extends SubsystemBase {
      */
     public boolean intakeHasPiece() {
         _hasGamepiece = true;
-        return _intakeMotor.getOutputCurrent() >= INTAKE_HAS_PIECE_CURRENT;
+        return _intakeMotor.getOutputCurrent() >= ArmConstants.INTAKE_HAS_PIECE_CURRENT;
     }
 
     public boolean checkGamepiece() {
@@ -677,7 +582,7 @@ public class Arm extends SubsystemBase {
     }
 
     public boolean elbowIsHittingObject() {
-        return (_elbowMotor.getStatorCurrent() > ELBOW_IS_HITTING_CURRENT); 
+        return (_elbowMotor.getStatorCurrent() > ArmConstants.ELBOW_IS_HITTING_CURRENT); 
         //TODO: Check if .getStatorCurrent() is right
 
     }
@@ -685,28 +590,28 @@ public class Arm extends SubsystemBase {
         // Sets Wrist Position based off of arm position
         switch (armPosition) {
             case GroundPickUp:
-                setWristPosition(GROUND_PICKUP_WRIST_POS);
+                setWristPosition(ArmConstants.SetPoints2D.GROUND_PICKUP_WRIST_POS);
                 break;
             case HighCone:
-                setWristPosition(HIGH_CONE_WRIST_POS);
+                setWristPosition(ArmConstants.SetPoints2D.HIGH_CONE_WRIST_POS);
                 break;
             case HighCube:
-                setWristPosition(HIGH_CUBE_WRIST_POS);
+                setWristPosition(ArmConstants.SetPoints2D.HIGH_CUBE_WRIST_POS);
                 break;
             case LoadStationPickUp:
-                setWristPosition(LOAD_STATION_PICKUP_WRIST_POS);
+                setWristPosition(ArmConstants.SetPoints2D.LOAD_STATION_PICKUP_WRIST_POS);
                 break;
             case LowScore:
-                setWristPosition(LOW_SCORE_WRIST_POS);
+                setWristPosition(ArmConstants.SetPoints2D.LOW_SCORE_WRIST_POS);
                 break;
             case MiddleCone:
-                setWristPosition(MIDDLE_CONE_WRIST_POS);
+                setWristPosition(ArmConstants.SetPoints2D.MIDDLE_CONE_WRIST_POS);
                 break;
             case MiddleCube:
-                setWristPosition(MIDDLE_CUBE_WRIST_POS);
+                setWristPosition(ArmConstants.SetPoints2D.MIDDLE_CUBE_WRIST_POS);
                 break;
             case Stored:
-                setWristPosition(STORED_WRIST_POS);
+                setWristPosition(ArmConstants.SetPoints2D.STORED_WRIST_POS);
                 break;
             case IntermediateToPickup:
                 setWristPosition(WristPosition.Perpendicular);
@@ -719,16 +624,16 @@ public class Arm extends SubsystemBase {
                 break;
             case Middle:
                 if (_armMode == ArmMode.Cone) {
-                    setWristPosition(MIDDLE_CONE_WRIST_POS);
+                    setWristPosition(ArmConstants.SetPoints2D.MIDDLE_CONE_WRIST_POS);
                 } else {
-                    setWristPosition(MIDDLE_CUBE_WRIST_POS);
+                    setWristPosition(ArmConstants.SetPoints2D.MIDDLE_CUBE_WRIST_POS);
                 }
                 break;
             case High:
                 if (_armMode == ArmMode.Cone) {
-                    setWristPosition(HIGH_CONE_WRIST_POS);
+                    setWristPosition(ArmConstants.SetPoints2D.HIGH_CONE_WRIST_POS);
                 } else {
-                    setWristPosition(HIGH_CUBE_WRIST_POS);
+                    setWristPosition(ArmConstants.SetPoints2D.HIGH_CUBE_WRIST_POS);
                 }
                 break;
             default:
@@ -739,21 +644,21 @@ public class Arm extends SubsystemBase {
     public boolean checkWristPosition(ArmPosition positionOfArm) {
         switch (positionOfArm) {
             case GroundPickUp:
-                return getWristPosition() == GROUND_PICKUP_WRIST_POS;
+                return getWristPosition() == ArmConstants.SetPoints2D.GROUND_PICKUP_WRIST_POS;
             case HighCone:
-                return getWristPosition() == HIGH_CONE_WRIST_POS;
+                return getWristPosition() == ArmConstants.SetPoints2D.HIGH_CONE_WRIST_POS;
             case HighCube:
-                return getWristPosition() == HIGH_CUBE_WRIST_POS;
+                return getWristPosition() == ArmConstants.SetPoints2D.HIGH_CUBE_WRIST_POS;
             case LoadStationPickUp:
-                return getWristPosition() == LOAD_STATION_PICKUP_WRIST_POS;
+                return getWristPosition() == ArmConstants.SetPoints2D.LOAD_STATION_PICKUP_WRIST_POS;
             case LowScore:
-                return getWristPosition() == LOW_SCORE_WRIST_POS;
+                return getWristPosition() == ArmConstants.SetPoints2D.LOW_SCORE_WRIST_POS;
             case MiddleCone:
-                return getWristPosition() == MIDDLE_CONE_WRIST_POS;
+                return getWristPosition() == ArmConstants.SetPoints2D.MIDDLE_CONE_WRIST_POS;
             case MiddleCube:
-                return getWristPosition() == MIDDLE_CUBE_WRIST_POS;
+                return getWristPosition() == ArmConstants.SetPoints2D.MIDDLE_CUBE_WRIST_POS;
             case Stored:
-                return getWristPosition() == STORED_WRIST_POS;
+                return getWristPosition() == ArmConstants.SetPoints2D.STORED_WRIST_POS;
             default:
                 return false;
         }
@@ -783,74 +688,74 @@ public class Arm extends SubsystemBase {
 
         switch (position) {
             case GroundPickUp:
-                shoulderPos = ArmConstants.Arm.GROUND_PICKUP_SHOULDER_POS;
-                elbowPos = ArmConstants.Arm.GROUND_PICKUP_ELBOW_POS;
+                shoulderPos = ArmConstants.AngleSetpoints.GROUND_PICKUP_SHOULDER_POS;
+                elbowPos = ArmConstants.AngleSetpoints.GROUND_PICKUP_ELBOW_POS;
                 break;
             case HighCone:
-                shoulderPos = ArmConstants.Arm.HIGH_CONE_DROP_SHOULDER_POS;
-                elbowPos = ArmConstants.Arm.HIGH_CONE_DROP_ELBOW_POS;
+                shoulderPos = ArmConstants.AngleSetpoints.HIGH_CONE_DROP_SHOULDER_POS;
+                elbowPos = ArmConstants.AngleSetpoints.HIGH_CONE_DROP_ELBOW_POS;
                 break;
             case HighCube:
-                shoulderPos = ArmConstants.Arm.HIGH_CUBE_SHOULDER_POS;
-                elbowPos = ArmConstants.Arm.HIGH_CUBE_ELBOW_POS;
+                shoulderPos = ArmConstants.AngleSetpoints.HIGH_CUBE_SHOULDER_POS;
+                elbowPos = ArmConstants.AngleSetpoints.HIGH_CUBE_ELBOW_POS;
                 break;
             case LoadStationPickUp:
-                shoulderPos = ArmConstants.Arm.HUMAN_PLAYER_SHOULDER_POS;
-                elbowPos = ArmConstants.Arm.HUMAN_PLAYER_ELBOW_POS;
+                shoulderPos = ArmConstants.AngleSetpoints.HUMAN_PLAYER_SHOULDER_POS;
+                elbowPos = ArmConstants.AngleSetpoints.HUMAN_PLAYER_ELBOW_POS;
                 break;
             case LowScore:
-                shoulderPos = ArmConstants.Arm.GROUND_PICKUP_SHOULDER_POS;
-                elbowPos = ArmConstants.Arm.GROUND_PICKUP_ELBOW_POS;
+                shoulderPos = ArmConstants.AngleSetpoints.GROUND_PICKUP_SHOULDER_POS;
+                elbowPos = ArmConstants.AngleSetpoints.GROUND_PICKUP_ELBOW_POS;
                 break;
             case MiddleCone:
-                shoulderPos = ArmConstants.Arm.MID_CONE_SHOULDER_POS;
-                elbowPos = ArmConstants.Arm.MID_CONE_ELBOW_POS;
+                shoulderPos = ArmConstants.AngleSetpoints.MID_CONE_SHOULDER_POS;
+                elbowPos = ArmConstants.AngleSetpoints.MID_CONE_ELBOW_POS;
                 break;
             case MiddleCube:
-                shoulderPos = ArmConstants.Arm.MID_CUBE_SHOULDER_POS;
-                elbowPos = ArmConstants.Arm.MID_CUBE_ELBOW_POS;
+                shoulderPos = ArmConstants.AngleSetpoints.MID_CUBE_SHOULDER_POS;
+                elbowPos = ArmConstants.AngleSetpoints.MID_CUBE_ELBOW_POS;
                 break;
             case Stored:
-                shoulderPos = ArmConstants.Arm.STORED_SHOULDER_POS;
-                elbowPos = ArmConstants.Arm.STORED_ELBOW_POS;
+                shoulderPos = ArmConstants.AngleSetpoints.STORED_SHOULDER_POS;
+                elbowPos = ArmConstants.AngleSetpoints.STORED_ELBOW_POS;
                 break;
             case IntermediateScoring:
-                shoulderPos = ArmConstants.Arm.INTERMEDIATE_SCORING_SHOULDER_POS;
-                elbowPos = ArmConstants.Arm.INTERMEDIATE_SCORING_ELBOW_POS;
+                shoulderPos = ArmConstants.AngleSetpoints.INTERMEDIATE_SCORING_SHOULDER_POS;
+                elbowPos = ArmConstants.AngleSetpoints.INTERMEDIATE_SCORING_ELBOW_POS;
                 break;
             case IntermediateToPickup:
-                shoulderPos = ArmConstants.Arm.INTERMEDIATE_TO_PICKUP_SHOULDER_POS;
-                elbowPos = ArmConstants.Arm.INTERMEDIATE_TO_PICKUP_ELBOW_POS;
+                shoulderPos = ArmConstants.AngleSetpoints.INTERMEDIATE_TO_PICKUP_SHOULDER_POS;
+                elbowPos = ArmConstants.AngleSetpoints.INTERMEDIATE_TO_PICKUP_ELBOW_POS;
                 break;
             case IntermediateFromPickup:
-                shoulderPos = ArmConstants.Arm.INTERMEDIATE_FROM_PICKUP_SHOULDER_POS;
-                elbowPos = ArmConstants.Arm.INTERMEDIATE_FROM_PICKUP_ELBOW_POS;
+                shoulderPos = ArmConstants.AngleSetpoints.INTERMEDIATE_FROM_PICKUP_SHOULDER_POS;
+                elbowPos = ArmConstants.AngleSetpoints.INTERMEDIATE_FROM_PICKUP_ELBOW_POS;
                 break;
             case Middle:
                 if (_armMode == ArmMode.Cone) {
-                    shoulderPos = ArmConstants.Arm.MID_CONE_SHOULDER_POS;
-                    elbowPos = ArmConstants.Arm.MID_CONE_ELBOW_POS;
+                    shoulderPos = ArmConstants.AngleSetpoints.MID_CONE_SHOULDER_POS;
+                    elbowPos = ArmConstants.AngleSetpoints.MID_CONE_ELBOW_POS;
                 } else {
-                    shoulderPos = ArmConstants.Arm.MID_CUBE_SHOULDER_POS;
-                    elbowPos = ArmConstants.Arm.MID_CUBE_ELBOW_POS;
+                    shoulderPos = ArmConstants.AngleSetpoints.MID_CUBE_SHOULDER_POS;
+                    elbowPos = ArmConstants.AngleSetpoints.MID_CUBE_ELBOW_POS;
                 }
                 break;
             case High:
                 if (_armMode == ArmMode.Cone) {
-                    shoulderPos = ArmConstants.Arm.HIGH_CONE_DROP_SHOULDER_POS;
-                    elbowPos = ArmConstants.Arm.HIGH_CONE_DROP_ELBOW_POS;
+                    shoulderPos = ArmConstants.AngleSetpoints.HIGH_CONE_DROP_SHOULDER_POS;
+                    elbowPos = ArmConstants.AngleSetpoints.HIGH_CONE_DROP_ELBOW_POS;
                 } else {
-                    shoulderPos = ArmConstants.Arm.HIGH_CUBE_SHOULDER_POS;
-                    elbowPos = ArmConstants.Arm.HIGH_CUBE_ELBOW_POS;
+                    shoulderPos = ArmConstants.AngleSetpoints.HIGH_CUBE_SHOULDER_POS;
+                    elbowPos = ArmConstants.AngleSetpoints.HIGH_CUBE_ELBOW_POS;
                 }
                 break;
             case ScoringConeMiddle:
-                shoulderPos = ArmConstants.Arm.MID_CONE_SHOULDER_PLACE_POS;
-                elbowPos = ArmConstants.Arm.MID_CONE_ELBOW_PLACE_POS;
+                shoulderPos = ArmConstants.AngleSetpoints.MID_CONE_SHOULDER_PLACE_POS;
+                elbowPos = ArmConstants.AngleSetpoints.MID_CONE_ELBOW_PLACE_POS;
                 break;
             case ScoringConeHigh:
-                shoulderPos = ArmConstants.Arm.HIGH_CONE_SPIT_SHOULDER_POS;
-                elbowPos = ArmConstants.Arm.HIGH_CONE_SPIT_ELBOW_POS;
+                shoulderPos = ArmConstants.AngleSetpoints.HIGH_CONE_SPIT_SHOULDER_POS;
+                elbowPos = ArmConstants.AngleSetpoints.HIGH_CONE_SPIT_ELBOW_POS;
             default:
                 // If we hit default that means we don't know what position we are in
                 // So we just wanna stay put until we get a new position
@@ -876,75 +781,75 @@ public class Arm extends SubsystemBase {
         WristPosition wristPos;
         switch (position) {
             case GroundPickUp:
-                shoulderPos = ArmConstants.Arm.GROUND_PICKUP_SHOULDER_POS;
-                elbowPos = ArmConstants.Arm.GROUND_PICKUP_ELBOW_POS;
-                wristPos = GROUND_PICKUP_WRIST_POS;
+                shoulderPos = ArmConstants.AngleSetpoints.GROUND_PICKUP_SHOULDER_POS;
+                elbowPos = ArmConstants.AngleSetpoints.GROUND_PICKUP_ELBOW_POS;
+                wristPos = ArmConstants.SetPoints2D.GROUND_PICKUP_WRIST_POS;
                 break;
             case HighCone:
-                shoulderPos = ArmConstants.Arm.HIGH_CONE_DROP_SHOULDER_POS;
-                elbowPos = ArmConstants.Arm.HIGH_CONE_DROP_ELBOW_POS;
-                wristPos = HIGH_CONE_WRIST_POS;
+                shoulderPos = ArmConstants.AngleSetpoints.HIGH_CONE_DROP_SHOULDER_POS;
+                elbowPos = ArmConstants.AngleSetpoints.HIGH_CONE_DROP_ELBOW_POS;
+                wristPos = ArmConstants.SetPoints2D.HIGH_CONE_WRIST_POS;
                 break;
             case HighCube:
-                shoulderPos = ArmConstants.Arm.HIGH_CUBE_SHOULDER_POS;
-                elbowPos = ArmConstants.Arm.HIGH_CUBE_ELBOW_POS;
-                wristPos = HIGH_CUBE_WRIST_POS;
+                shoulderPos = ArmConstants.AngleSetpoints.HIGH_CUBE_SHOULDER_POS;
+                elbowPos = ArmConstants.AngleSetpoints.HIGH_CUBE_ELBOW_POS;
+                wristPos = ArmConstants.SetPoints2D.HIGH_CUBE_WRIST_POS;
                 break;
             case LoadStationPickUp:
-                shoulderPos = ArmConstants.Arm.HUMAN_PLAYER_SHOULDER_POS;
-                elbowPos = ArmConstants.Arm.HUMAN_PLAYER_ELBOW_POS;
-                wristPos = LOAD_STATION_PICKUP_WRIST_POS;
+                shoulderPos = ArmConstants.AngleSetpoints.HUMAN_PLAYER_SHOULDER_POS;
+                elbowPos = ArmConstants.AngleSetpoints.HUMAN_PLAYER_ELBOW_POS;
+                wristPos = ArmConstants.SetPoints2D.LOAD_STATION_PICKUP_WRIST_POS;
                 break;
             case LowScore:
-                shoulderPos = ArmConstants.Arm.GROUND_PICKUP_SHOULDER_POS;
-                elbowPos = ArmConstants.Arm.GROUND_PICKUP_ELBOW_POS;
-                wristPos = LOW_SCORE_WRIST_POS;
+                shoulderPos = ArmConstants.AngleSetpoints.GROUND_PICKUP_SHOULDER_POS;
+                elbowPos = ArmConstants.AngleSetpoints.GROUND_PICKUP_ELBOW_POS;
+                wristPos = ArmConstants.SetPoints2D.LOW_SCORE_WRIST_POS;
                 break;
             case MiddleCone:
-                shoulderPos = ArmConstants.Arm.MID_CONE_SHOULDER_POS;
-                elbowPos = ArmConstants.Arm.MID_CONE_ELBOW_POS;
-                wristPos = MIDDLE_CONE_WRIST_POS;
+                shoulderPos = ArmConstants.AngleSetpoints.MID_CONE_SHOULDER_POS;
+                elbowPos = ArmConstants.AngleSetpoints.MID_CONE_ELBOW_POS;
+                wristPos = ArmConstants.SetPoints2D.MIDDLE_CONE_WRIST_POS;
                 break;
             case MiddleCube:
-                shoulderPos = ArmConstants.Arm.MID_CUBE_SHOULDER_POS;
-                elbowPos = ArmConstants.Arm.MID_CUBE_ELBOW_POS;
-                wristPos = MIDDLE_CUBE_WRIST_POS;
+                shoulderPos = ArmConstants.AngleSetpoints.MID_CUBE_SHOULDER_POS;
+                elbowPos = ArmConstants.AngleSetpoints.MID_CUBE_ELBOW_POS;
+                wristPos = ArmConstants.SetPoints2D.MIDDLE_CUBE_WRIST_POS;
                 break;
             case Stored:
-                shoulderPos = ArmConstants.Arm.STORED_SHOULDER_POS;
-                elbowPos = ArmConstants.Arm.STORED_ELBOW_POS;
-                wristPos = STORED_WRIST_POS;
+                shoulderPos = ArmConstants.AngleSetpoints.STORED_SHOULDER_POS;
+                elbowPos = ArmConstants.AngleSetpoints.STORED_ELBOW_POS;
+                wristPos = ArmConstants.SetPoints2D.STORED_WRIST_POS;
                 break;
             case IntermediateScoring:
-                shoulderPos = ArmConstants.Arm.INTERMEDIATE_SCORING_SHOULDER_POS;
-                elbowPos = ArmConstants.Arm.INTERMEDIATE_SCORING_ELBOW_POS;
+                shoulderPos = ArmConstants.AngleSetpoints.INTERMEDIATE_SCORING_SHOULDER_POS;
+                elbowPos = ArmConstants.AngleSetpoints.INTERMEDIATE_SCORING_ELBOW_POS;
                 wristPos = getWristPosition();
                 break;
             case IntermediateToPickup:
-                shoulderPos = ArmConstants.Arm.INTERMEDIATE_TO_PICKUP_SHOULDER_POS;
-                elbowPos = ArmConstants.Arm.INTERMEDIATE_TO_PICKUP_ELBOW_POS;
+                shoulderPos = ArmConstants.AngleSetpoints.INTERMEDIATE_TO_PICKUP_SHOULDER_POS;
+                elbowPos = ArmConstants.AngleSetpoints.INTERMEDIATE_TO_PICKUP_ELBOW_POS;
                 wristPos = getWristPosition();
                 break;
             case Middle:
                 if (_armMode == ArmMode.Cone) {
-                    shoulderPos = ArmConstants.Arm.MID_CONE_SHOULDER_POS;
-                    elbowPos = ArmConstants.Arm.MID_CONE_ELBOW_POS;
-                    wristPos = MIDDLE_CONE_WRIST_POS;
+                    shoulderPos = ArmConstants.AngleSetpoints.MID_CONE_SHOULDER_POS;
+                    elbowPos = ArmConstants.AngleSetpoints.MID_CONE_ELBOW_POS;
+                    wristPos = ArmConstants.SetPoints2D.MIDDLE_CONE_WRIST_POS;
                 } else {
-                    shoulderPos = ArmConstants.Arm.MID_CUBE_SHOULDER_POS;
-                    elbowPos = ArmConstants.Arm.MID_CUBE_ELBOW_POS;
-                    wristPos = MIDDLE_CUBE_WRIST_POS;
+                    shoulderPos = ArmConstants.AngleSetpoints.MID_CUBE_SHOULDER_POS;
+                    elbowPos = ArmConstants.AngleSetpoints.MID_CUBE_ELBOW_POS;
+                    wristPos = ArmConstants.SetPoints2D.MIDDLE_CUBE_WRIST_POS;
                 }
                 break;
             case High:
                 if (_armMode == ArmMode.Cone) {
-                    shoulderPos = ArmConstants.Arm.HIGH_CONE_DROP_SHOULDER_POS;
-                    elbowPos = ArmConstants.Arm.HIGH_CONE_DROP_ELBOW_POS;
-                    wristPos = HIGH_CONE_WRIST_POS;
+                    shoulderPos = ArmConstants.AngleSetpoints.HIGH_CONE_DROP_SHOULDER_POS;
+                    elbowPos = ArmConstants.AngleSetpoints.HIGH_CONE_DROP_ELBOW_POS;
+                    wristPos = ArmConstants.SetPoints2D.HIGH_CONE_WRIST_POS;
                 } else {
-                    shoulderPos = ArmConstants.Arm.HIGH_CUBE_SHOULDER_POS;
-                    elbowPos = ArmConstants.Arm.HIGH_CUBE_ELBOW_POS;
-                    wristPos = HIGH_CUBE_WRIST_POS;
+                    shoulderPos = ArmConstants.AngleSetpoints.HIGH_CUBE_SHOULDER_POS;
+                    elbowPos = ArmConstants.AngleSetpoints.HIGH_CUBE_ELBOW_POS;
+                    wristPos = ArmConstants.SetPoints2D.HIGH_CUBE_WRIST_POS;
                 }
                 break;
             default:
