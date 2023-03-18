@@ -1,28 +1,33 @@
 package frc.robot.arm;
 
+import frc.robot.arm.Arm.WristPosition;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import frc.robot.arm.Arm.Arm2DPosition;
+import frc.robot.arm.Arm.IntakeMode;
+
 public class ArmConstants {
+
+    public static double SHOULDER_0_DEGREE_POT_OFFSET = 2217;
+    public static double SHOULDER_90_DEGREE_POT_OFFSET = 1868;
+    public static double ELBOW_90_DEGREE_POT_OFFSET = 1708;
+    public static double ELBOW_0_DEGREE_POT_OFFSET = 2060;
     
-    public static class Arm {
+    // All in degrees
+    public static double SHOULDER_UPPER_SOFT_STOP = 115;
+    public static double SHOULDER_LOWER_SOFT_STOP = 5;
+    public static double ELBOW_UPPER_SOFT_STOP = 130;
+    public static double ELBOW_LOWER_SOFT_STOP = -10;
 
-        
-        public static double SHOULDER_0_DEGREE_POT_OFFSET = 2217;
-        public static double SHOULDER_90_DEGREE_POT_OFFSET = 1868;
-        public static double ELBOW_90_DEGREE_POT_OFFSET = 1708;
-        public static double ELBOW_0_DEGREE_POT_OFFSET = 2060;
-    
-        // All in degrees
-        public static double SHOULDER_UPPER_SOFT_STOP = 115;
-        public static double SHOULDER_LOWER_SOFT_STOP = 5;
-        public static double ELBOW_UPPER_SOFT_STOP = 130;
-        public static double ELBOW_LOWER_SOFT_STOP = -10;
+    // The y,z position of the shoulder joint relative to the floor
+    public static double SHOULDER_JOINT_Z_POS = 17; // inches
+    public static double SHOULDER_JOINT_Y_POS = -15; // inches
 
-        // The y,z position of the shoulder joint relative to the floor
-        public static double SHOULDER_JOINT_Z_POS = 17; // inches
-        public static double SHOULDER_JOINT_Y_POS = -15; // inches
+    // arm segments lengths
+    public static double SHOULDER_ARM_LENGTH = 28; // inches
+    public static double ELBOW_ARM_LENGTH = 28.5; // inches
 
-        // arm segments lengths
-        public static double SHOULDER_ARM_LENGTH = 28; // inches
-        public static double ELBOW_ARM_LENGTH = 28.5; // inches
+
+    public static class AngleSetpoints {
 
             /*
         * How to update a setpoint:
@@ -84,5 +89,108 @@ public class ArmConstants {
         public static double INTERMEDIATE_ALL_SHOULDER_POS = 109.6;
         public static double INTERMEDIATE_ALL_ELBOW_POS = 25.7;
     }
+
+    public static class SetPoints2D {
+
+        /**
+         * constants for the above defined in the ArmPosition Enum.
+         * This is the place to make edits to setpoints.
+         */
+        private final double STORED_Y_POS = 15.75;
+        private final double STORED_X_POS = -9;
+        public static WristPosition STORED_WRIST_POS = WristPosition.Perpendicular;
+        public final Arm2DPosition STORED_SETPOINT = new Arm2DPosition(STORED_Y_POS,
+                STORED_X_POS,
+                STORED_WRIST_POS);
+
+        private final double GROUND_PICKUP_Y_POS = 0.0;
+        private final double GROUND_PICKUP_X_POS = 0.0;
+        public static WristPosition GROUND_PICKUP_WRIST_POS = WristPosition.Perpendicular;
+        public final Arm2DPosition GROUND_PICKUP_SETPOINT = new Arm2DPosition(GROUND_PICKUP_Y_POS,
+                GROUND_PICKUP_X_POS,
+                GROUND_PICKUP_WRIST_POS);
+
+        private final double HIGH_CUBE_Y_POS = 0.0;
+        private final double HIGH_CUBE_X_POS = 0.0;
+        public static WristPosition HIGH_CUBE_WRIST_POS = WristPosition.Parallel;
+        public final Arm2DPosition HIGH_CUBE_SETPOINT = new Arm2DPosition(HIGH_CUBE_Y_POS,
+                HIGH_CUBE_X_POS,
+                HIGH_CUBE_WRIST_POS);
+
+        private final double HIGH_CONE_Y_POS = 0.0;
+        private final double HIGH_CONE_X_POS = 0.0;
+        public static WristPosition HIGH_CONE_WRIST_POS = WristPosition.Parallel;
+        public final Arm2DPosition HIGH_CONE_SETPOINT = new Arm2DPosition(HIGH_CONE_Y_POS,
+                HIGH_CONE_X_POS,
+                HIGH_CONE_WRIST_POS);
+
+        private final double LOAD_STATION_PICKUP_Y_POS = 0.0;
+        private final double LOAD_STATION_PICKUP_X_POS = 0.0;
+        public static WristPosition LOAD_STATION_PICKUP_WRIST_POS = WristPosition.Parallel;
+        public final Arm2DPosition LOAD_STATION_PICKUP_SETPOINT = new Arm2DPosition(LOAD_STATION_PICKUP_Y_POS,
+                LOAD_STATION_PICKUP_X_POS,
+                LOAD_STATION_PICKUP_WRIST_POS);
+
+        private final double LOW_SCORE_Y_POS = 0.0;
+        private final double LOW_SCORE_X_POS = 0.0;
+        public static WristPosition LOW_SCORE_WRIST_POS = WristPosition.Perpendicular;
+        public final Arm2DPosition LOW_SCORE_SETPOINT = new Arm2DPosition(LOW_SCORE_Y_POS,
+                LOW_SCORE_X_POS,
+                LOW_SCORE_WRIST_POS);
+
+        private final double MIDDLE_CONE_Y_POS = 0.0;
+        private final double MIDDLE_CONE_X_POS = 0.0;
+        public static WristPosition MIDDLE_CONE_WRIST_POS = WristPosition.Parallel;
+        public final Arm2DPosition MIDDLE_CONE_SETPOINT = new Arm2DPosition(MIDDLE_CONE_Y_POS,
+                MIDDLE_CONE_X_POS,
+                MIDDLE_CONE_WRIST_POS);
+
+        private final double MIDDLE_CUBE_Y_POS = 0.0;
+        private final double MIDDLE_CUBE_X_POS = 0.0;
+        public static WristPosition MIDDLE_CUBE_WRIST_POS = WristPosition.Parallel;
+        public final Arm2DPosition MIDDLE_CUBE_SETPOINT = new Arm2DPosition(MIDDLE_CUBE_Y_POS,
+                MIDDLE_CUBE_X_POS,
+                MIDDLE_CUBE_WRIST_POS);
+    
+    }
+
+    public static double ELBOW_IS_HITTING_CURRENT = 9999.0; //TODO: Find actual value for this
+    public static double MAX_MOTOR_VOLTAGE = 11.5; // May want to adjust -Garrett
+
+    public static double INTAKE_HAS_PIECE_CURRENT = 40;
+
+    public static IntakeMode INTAKE_MODE_DEFAULT = IntakeMode.Open;
+
+    // shoulder PID constants
+    // private final double SHOULDER_MOTOR_KP = 0.015;
+    // private final double SHOULDER_MOTOR_KI = 0.0005;
+    // private final double SHOULDER_MOTOR_KD = 0.0005;
+    public static double SHOULDER_MOTOR_KP = 0.012;
+    public static double SHOULDER_MOTOR_KI = 0.000;
+    public static double SHOULDER_MOTOR_KD = 0.0005;
+    public static double SHOULDER_MOTOR_TOLERANCE = 8.0;
+
+    // shoulder motion profile constraints
+    private static double SHOULDER_MAX_VELOCITY = 240; // max speed that this joint should move at
+    private final static double SHOULDER_MAX_ACCELERATION = 220; // max acceleration this joint should move at
+    public static TrapezoidProfile.Constraints SHOULDER_MOTION_PROFILE_CONSTRAINTS = new TrapezoidProfile.Constraints(
+            SHOULDER_MAX_VELOCITY,
+            SHOULDER_MAX_ACCELERATION);
+
+    // Elbow constants
+    // private final double ELBOW_MOTOR_KP = 0.02;
+    // private final double ELBOW_MOTOR_KI = 0.0005;
+    // private final double ELBOW_MOTOR_KD = 0.0005;
+    public static double ELBOW_MOTOR_KP = 0.014;
+    public static double ELBOW_MOTOR_KI = 0.000;
+    public static double ELBOW_MOTOR_KD = 0.001;
+    public static double ELBOW_MOTOR_TOLERANCE = 5.0;
+
+    // shoulder motion profile constraints
+    public static double ELBOW_MAX_VELOCITY = 240; // max speed that this joint should move at
+    public static double ELBOW_MAX_ACCELERATION = 220; // max acceleration this joint should move at
+    public static TrapezoidProfile.Constraints ELBOW_MOTION_PROFILE_CONSTRAINTS = new TrapezoidProfile.Constraints(
+            ELBOW_MAX_VELOCITY,
+            ELBOW_MAX_ACCELERATION);
 
 }
