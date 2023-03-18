@@ -6,22 +6,31 @@ package frc.robot;
 
 import java.util.HashMap;
 
-import com.pathplanner.lib.PathPlanner;
-
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-import frc.robot.autonomous.Autonomous;
-import frc.robot.commands.*;
-import frc.robot.subsystems.Arm;
-import frc.robot.subsystems.Dashboard;
-import frc.robot.subsystems.Drive;
-import frc.robot.subsystems.LEDs;
-import frc.robot.subsystems.Arm.ArmMode;
-import frc.robot.subsystems.Arm.ArmPosition;
+import frc.robot.LEDs.LEDs;
+import frc.robot.LEDs.commands.CmdLEDDefault;
+import frc.robot.arm.Arm;
+import frc.robot.arm.Arm.ArmMode;
+import frc.robot.arm.Arm.ArmPosition;
+import frc.robot.arm.commandGroups.GrpMoveArmToPosition;
+import frc.robot.arm.commandGroups.GrpMoveArmToScore;
+import frc.robot.arm.commands.CmdArmDefault;
+import frc.robot.arm.commands.CmdArmRunIntake;
+import frc.robot.arm.commands.CmdArmSetMode;
+import frc.robot.arm.commands.CmdArmSpit;
+import frc.robot.arm.commands.CmdArmUpdateGoal;
+import frc.robot.arm.commands.CmdArmDisablePID;
+import frc.robot.arm.commands.CmdArmEnablePID;
+import frc.robot.arm.commands.CmdArmMoveElbowManual;
+import frc.robot.arm.commands.CmdArmMoveShoulderManual;
+import frc.robot.dashboard.Dashboard;
+import frc.robot.drive.Drive;
+import frc.robot.drive.commands.CmdDriveChangeSpeedMult;
+import frc.robot.drive.commands.DefaultDriveCommand;
 
 
 /**
@@ -155,8 +164,8 @@ public class RobotContainer {
         _opButtonTen.onTrue(new CmdArmSetMode(_armSubsystem, ArmMode.Cone));
         _opButtonTen.onFalse(new CmdArmSetMode(_armSubsystem, ArmMode.Cube));
 
-        _opButtonOne.whileTrue(new CmdEnablePID(_armSubsystem));
-        _opButtonOne.whileFalse(new CmdDisablePID(_armSubsystem));
+        _opButtonOne.whileTrue(new CmdArmEnablePID(_armSubsystem));
+        _opButtonOne.whileFalse(new CmdArmDisablePID(_armSubsystem));
         
         // Move arm to position manual
         double elbowUpAmount = 5.0;
@@ -165,12 +174,12 @@ public class RobotContainer {
         double shoulderDownAmount = -3.0;
 
         // Elbow manual buttons
-        _op2ButtonOne.onTrue(new CmdMoveElbowManual(_armSubsystem, elbowDownAmount));
-        _op2ButtonTwo.onTrue(new CmdMoveElbowManual(_armSubsystem, elbowUpAmount));
+        _op2ButtonOne.onTrue(new CmdArmMoveElbowManual(_armSubsystem, elbowDownAmount));
+        _op2ButtonTwo.onTrue(new CmdArmMoveElbowManual(_armSubsystem, elbowUpAmount));
 
         // Shoulder manual buttons
-        _op2ButtonThree.onTrue(new CmdMoveShoulderManual(_armSubsystem, shoulderDownAmount));
-        _op2ButtonFour.onTrue(new CmdMoveShoulderManual(_armSubsystem, shoulderUpAmount));
+        _op2ButtonThree.onTrue(new CmdArmMoveShoulderManual(_armSubsystem, shoulderDownAmount));
+        _op2ButtonFour.onTrue(new CmdArmMoveShoulderManual(_armSubsystem, shoulderUpAmount));
         // _opButtonThirteen.whileTrue(new GrpMoveArmToPositionManual(_armSubsystem, 
         // () -> _sliderJoystick.getRawAxis(0), 
         // () -> _sliderJoystick.getRawAxis(0)));
