@@ -71,16 +71,14 @@ public class Robot extends TimedRobot {
     public void disabledPeriodic() {
     }
 
-    /**
-     * This autonomous runs the autonomous command selected by your
-     * {@link RobotContainer} class.
-     */
-    @Override
-    public void autonomousInit() {
-        m_autonomousCommand = m_robotContainer.getAutonomousCommand();
-        m_robotContainer.getPIDCommand().schedule();
-        m_robotContainer.getInitialArmPosCommand().schedule();
-        m_robotContainer.updateLEDs().schedule();
+  /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
+  @Override
+  public void autonomousInit() {
+    m_autonomousCommand = m_robotContainer.getAutonomousCommand();
+    m_robotContainer.getPIDCommand().schedule();
+    m_robotContainer.getInitialArmPosCommand().schedule();
+    m_robotContainer.updateLEDs().schedule();
+
 
         if (m_autonomousCommand != null) {
             m_autonomousCommand.schedule();
@@ -92,19 +90,19 @@ public class Robot extends TimedRobot {
     public void autonomousPeriodic() {
     }
 
-    @Override
-    public void teleopInit() {
-        // This makes sure that the autonomous stops running when
-        // teleop starts running. If you want the autonomous to
-        // continue until interrupted by another command, remove
-        // this line or comment it out.
-        if (m_autonomousCommand != null) {
-            m_autonomousCommand.cancel();
-        }
-
-        m_robotContainer.getPIDCommand().schedule();
-        m_robotContainer.getInitialArmPosCommand().schedule();
-        m_robotContainer.updateLEDs().schedule();
+  @Override
+  public void teleopInit() {
+    // This makes sure that the autonomous stops running when
+    // teleop starts running. If you want the autonomous to
+    // continue until interrupted by another command, remove
+    // this line or comment it out.
+    if (m_autonomousCommand != null) {
+      m_autonomousCommand.cancel();
+    }
+    
+    m_robotContainer.updateLEDs().schedule();
+    m_robotContainer.getPIDCommand().schedule();
+    m_robotContainer.getInitialArmPosCommand().schedule();
 
     }
 

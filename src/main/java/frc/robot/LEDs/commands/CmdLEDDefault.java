@@ -20,9 +20,9 @@ public class CmdLEDDefault extends CommandBase {
 
     @Override
     public void initialize() {
-        this.color = LEDColors.White;
-        this._leds.changeColor(this.color);
-        this._leds.brightness = 0.00;
+        // this.color = LEDColors.White;
+        // this._leds.changeColor(this.color);
+        // this._leds.brightness = 0.00;
     }
 
     @Override
