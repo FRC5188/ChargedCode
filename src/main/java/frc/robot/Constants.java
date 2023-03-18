@@ -1,35 +1,14 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
-
 package frc.robot;
 
-import edu.wpi.first.math.geometry.Rotation3d;
-import edu.wpi.first.math.geometry.Transform3d;
-import edu.wpi.first.math.geometry.Translation3d;
-
-/**
- * The Constants class provides a convenient place for teams to hold robot-wide
- * numerical or boolean
- * constants. This class should not be used for any other purpose. All constants
- * should be declared
- * globally (i.e. public static). Do not put anything functional in this class.
- *
- * <p>
- * It is advised to statically import this class (or one of its inner classes)
- * wherever the
- * constants are needed, to reduce verbosity.
- */
 public final class Constants {
 
     public static class Arm {
 
-        
         public static double SHOULDER_0_DEGREE_POT_OFFSET = 2217;
         public static double SHOULDER_90_DEGREE_POT_OFFSET = 1868;
         public static double ELBOW_90_DEGREE_POT_OFFSET = 1708;
         public static double ELBOW_0_DEGREE_POT_OFFSET = 2060;
-    
+
         // All in degrees
         public static double SHOULDER_UPPER_SOFT_STOP = 115;
         public static double SHOULDER_LOWER_SOFT_STOP = 5;
@@ -44,24 +23,24 @@ public final class Constants {
         public static double SHOULDER_ARM_LENGTH = 28; // inches
         public static double ELBOW_ARM_LENGTH = 28.5; // inches
 
-            /*
-        * How to update a setpoint:
-        * 1) Get the robot ready. You MUST comment out the lines letting the
-        * shoulder and elbow move (_shoulderMotor.set for example).
-        * There should only be 2 spots this happens, but I suggest searching
-        * for .set( to make sure everything is commented out. You also need to change
-        * the idle mode to coast instead of brake so you can move the arm.
-        * That gets handled in the constructor. Do for both joints.
-        * 2) Open up shuffleboard. If you go to the smart dashboard tab, you should
-        * see a bunch of numbers. What you are looking for is the ones labeled
-        * elbow angle and shoulder angle. Those should update as you move the arm.
-        * 3) Move to your new position and take note of those angles. They will
-        * get displayed in the smart dashboard.
-        * 4) Change the values in code. Make sure you pick the correct position
-        * and update the numbers for the shoulder and elbow angles you just took
-        * 5) Uncomment the stuff you commented out and change the idle mode back
-        * to brake. Go ahead and test. MAKE SURE YOU'RE READY TO DISABLE!
-        */
+        /*
+         * How to update a setpoint:
+         * 1) Get the robot ready. You MUST comment out the lines letting the
+         * shoulder and elbow move (_shoulderMotor.set for example).
+         * There should only be 2 spots this happens, but I suggest searching
+         * for .set( to make sure everything is commented out. You also need to change
+         * the idle mode to coast instead of brake so you can move the arm.
+         * That gets handled in the constructor. Do for both joints.
+         * 2) Open up shuffleboard. If you go to the smart dashboard tab, you should
+         * see a bunch of numbers. What you are looking for is the ones labeled
+         * elbow angle and shoulder angle. Those should update as you move the arm.
+         * 3) Move to your new position and take note of those angles. They will
+         * get displayed in the smart dashboard.
+         * 4) Change the values in code. Make sure you pick the correct position
+         * and update the numbers for the shoulder and elbow angles you just took
+         * 5) Uncomment the stuff you commented out and change the idle mode back
+         * to brake. Go ahead and test. MAKE SURE YOU'RE READY TO DISABLE!
+         */
 
         public static double STORED_SHOULDER_POS = 81.7;
         public static double STORED_ELBOW_POS = 0;
@@ -151,11 +130,11 @@ public final class Constants {
 
         public static final int ARM_SHOULDER_MOTOR_ID = 13;
         public static final int ARM_ELBOW_MOTOR_ID = 14;
-        
+
         public static final int ARM_INTAKE_MOTOR_ID = 15; // Change this value
 
         public static final int CANDLE_ID = 20;
-    
+
     }
 
     public static class PHPorts {
@@ -163,10 +142,14 @@ public final class Constants {
     }
 
     /**
-     * Only put constants in this class if they are subsystem-specific but it would be hard to keep them in the subsystem
+     * Only put constants in this class if they are subsystem-specific but it would
+     * be hard to keep them in the subsystem
      */
     public static class AssortedConstants {
-        /** This value is the amount of time in seconds that we want the robot to take to get from 0 to max speed, this will help make the robot easier to drive */
+        /**
+         * This value is the amount of time in seconds that we want the robot to take to
+         * get from 0 to max speed, this will help make the robot easier to drive
+         */
         public static final double DRIVE_RAMP_SECONDS = 0;
     }
 
