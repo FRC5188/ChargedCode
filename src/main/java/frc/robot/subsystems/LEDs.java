@@ -9,17 +9,66 @@ import com.ctre.phoenix.led.CANdle;
 //import com.ctre.phoenix.led.CANdle.VBatOutputMode;
 //import .ctre.phoenix.led.ColorFlowAnimation.Direction;
 
-
-
 public class LEDs extends SubsystemBase {
-    private final CANdle _candle = new CANdle(Constants.CanIDs.CANdleID, "rio");
-    private final int LedCount = 300;
-    private XboxController joystick;
 
-
-    public enum Colors {
-        
+    // TODO: We're not using the enum yet. Keep it?
+    public enum LEDColors {
+        Pink,
+        Blue,
+        Yellow,
+        Purple,
+        White,
+        Red
     }
-    private Colors _currentAnimation;
-} 
-//    
+
+    public CANdle candle = new CANdle(Constants.CanIDs.CANDLE_ID, "rio");
+    public double brightness = 0.0;
+
+    //TODO: Find the number of LEDs.
+    //private final int LedCount = 300;
+    //private XboxController joystick;
+
+    public LEDs() {
+
+        candle.configBrightnessScalar(0.4);
+    
+        //init: set to white
+        candle.setLEDs(255, 255, 255);
+    }
+
+
+    public void changeColor(LEDColors color) {
+        switch(color) {
+            case Pink: 
+                candle.setLEDs(205, 55, 130); 
+                break;
+
+            case Blue: 
+                candle.setLEDs(0, 0, 255);
+                break;
+
+            case Yellow:
+                candle.setLEDs(235, 225, 0);
+                break;
+
+            case Purple:
+                candle.setLEDs(185, 0, 205);
+                break;
+            
+            case White:
+                candle.setLEDs(255, 255, 255);
+                break;
+
+            case Red:
+                candle.setLEDs(255, 0, 0);
+                break;
+
+            default:
+                candle.setLEDs(255, 255, 255);
+        }
+    }
+
+    //private Colors _currentAnimation;
+}
+
+// TODO: Revisit auto/teleop inits. Should LEDs start there?
