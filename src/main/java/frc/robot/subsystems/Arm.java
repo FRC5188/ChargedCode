@@ -307,6 +307,8 @@ public class Arm extends SubsystemBase {
     private ArmPosition _currentArmPos;
     private ArmMode _armMode;
     public boolean _hasGamepiece = true;
+    public IntakeMode _intakeMode;
+    public final IntakeMode INTAKE_MODE_DEFAULT = IntakeMode.OPEN;
 
     // shoulder PID constants
     // private final double SHOULDER_MOTOR_KP = 0.015;
@@ -380,6 +382,7 @@ public class Arm extends SubsystemBase {
 
         _currentArmPos = ArmPosition.Stored;
         _armMode = ArmMode.Cube;
+        _intakeMode = INTAKE_MODE_DEFAULT;
 
         // Create Shoulder PID controller
         _shoulderMotorPID = new ProfiledPIDController(this.SHOULDER_MOTOR_KP,
@@ -713,6 +716,28 @@ public class Arm extends SubsystemBase {
             _hasGamepiece = false;
         }
         _intakeMotor.set(speed);
+    }
+
+    /**
+     * Is an enum that represents whether or not the claw is opened or closed.
+     */
+    public enum IntakeMode {
+        OPEN,
+        CLOSED
+    }
+   
+    /**
+     * Sets the intake mode
+     */
+    public void setIntakeMode(IntakeMode mode) {
+        this._intakeMode = mode;
+    }
+
+    /**
+     * Returns the intake mode
+     */
+    public IntakeMode getIntakeMode() {
+        return _intakeMode;
     }
 
     /**
@@ -1056,6 +1081,10 @@ public class Arm extends SubsystemBase {
         return interPos;
     }
 
+    /**
+     * ArmMode returns what gamepiece is being held.
+     * It can be either a cube or a cone.
+     */
     public ArmMode getArmMode() {
         return _armMode;
     }
