@@ -19,6 +19,7 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
@@ -296,6 +297,11 @@ public class Drive extends SubsystemBase {
 
     @Override
     public void periodic() {
+        try {
+            SmartDashboard.putNumber("Estimated Pose", getPose().getX());
+        } catch (Exception e) {
+            System.out.println("[ERROR] Couldn't Get Vision");
+        }
         // Convert the drive base vector into module vectors
         SwerveModuleState[] states = _kinematics.toSwerveModuleStates(_chassisSpeeds);
         // Normalize the wheel speeds so we aren't trying to set above the max
