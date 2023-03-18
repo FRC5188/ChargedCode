@@ -308,11 +308,14 @@ public class Arm extends SubsystemBase {
     private ArmMode _armMode;
     public boolean _hasGamepiece = true;
 
+    // Set this to true so that the arm is in coast and the motors don't run
+    private boolean _inSetpointTestingMode = false;
+
     // shoulder PID constants
     // private final double SHOULDER_MOTOR_KP = 0.015;
     // private final double SHOULDER_MOTOR_KI = 0.0005;
     // private final double SHOULDER_MOTOR_KD = 0.0005;
-    private final double SHOULDER_MOTOR_KP = 0.01;
+    private final double SHOULDER_MOTOR_KP = 0.012;
     private final double SHOULDER_MOTOR_KI = 0.000;
     private final double SHOULDER_MOTOR_KD = 0.0005;
     private final double SHOULDER_MOTOR_TOLERANCE = 8.0;
@@ -328,9 +331,9 @@ public class Arm extends SubsystemBase {
     // private final double ELBOW_MOTOR_KP = 0.02;
     // private final double ELBOW_MOTOR_KI = 0.0005;
     // private final double ELBOW_MOTOR_KD = 0.0005;
-    private final double ELBOW_MOTOR_KP = 0.016;
+    private final double ELBOW_MOTOR_KP = 0.014;
     private final double ELBOW_MOTOR_KI = 0.000;
-    private final double ELBOW_MOTOR_KD = 0.002;
+    private final double ELBOW_MOTOR_KD = 0.001;
     private final double ELBOW_MOTOR_TOLERANCE = 5.0;
 
     // shoulder motion profile constraints
@@ -366,8 +369,8 @@ public class Arm extends SubsystemBase {
         // StatorCurrentLimitConfiguration())
 
         // set motor breaking
-        _shoulderMotor.setNeutralMode(NeutralMode.Coast);
-        _elbowMotor.setNeutralMode(NeutralMode.Coast);
+        _shoulderMotor.setNeutralMode((_inSetpointTestingMode) ? NeutralMode.Coast : NeutralMode.Brake);
+        _elbowMotor.setNeutralMode((_inSetpointTestingMode) ? NeutralMode.Coast : NeutralMode.Brake);
 
         // Set inversion
         _shoulderMotor.setInverted(InvertType.None);
@@ -632,8 +635,7 @@ public class Arm extends SubsystemBase {
      */
     public void shoulderMotorPIDExec() {
         double angle = getShoulderJointAngle();
-        //setShoulderMotorSpeed(_shoulderMotorPID.calculate(angle) + FeedForward.shoulder(getElbowJointAngleRelativeToShoulder() + 180, getShoulderJointAngle()));
-        setShoulderMotorSpeed(FeedForward.shoulder(getElbowJointAngleRelativeToShoulder() + 180, getShoulderJointAngle()));
+        setShoulderMotorSpeed(_shoulderMotorPID.calculate(angle) + FeedForward.shoulder(-getElbowJointAngleRelativeToShoulder() + 180, getShoulderJointAngle()));
     }
 
     /**
@@ -642,8 +644,7 @@ public class Arm extends SubsystemBase {
      */
     public void elbowMotorPIDExec() {
         double angle = getElbowJointAngleRelativeToGround();
-        //setElbowMotorSpeed(_elbowMotorPID.calculate(angle) + FeedForward.elbow(getElbowJointAngleRelativeToShoulder() + 180, getShoulderJointAngle()));
-        setElbowMotorSpeed(FeedForward.elbow(getElbowJointAngleRelativeToShoulder() + 180, getShoulderJointAngle()));
+        setElbowMotorSpeed(_elbowMotorPID.calculate(angle) + FeedForward.elbow(-getElbowJointAngleRelativeToShoulder() + 180, getShoulderJointAngle()));
     }
 
     /**
@@ -682,7 +683,8 @@ public class Arm extends SubsystemBase {
             speed = 0;
         }
         SmartDashboard.putNumber("Shoulder speed", speed);
-        //_shoulderMotor.set(speed);
+        if (!_inSetpointTestingMode)
+            _shoulderMotor.set(speed);
     }
 
     public void setElbowMotorSpeed(double speed) {
@@ -692,7 +694,8 @@ public class Arm extends SubsystemBase {
             speed = 0;
         }
         SmartDashboard.putNumber("Elbow speed", speed);
-        //_elbowMotor.set(speed);
+        if (!_inSetpointTestingMode)
+            _elbowMotor.set(speed);
     }
 
     public int getShoulderPotPos() {
@@ -922,6 +925,8 @@ public class Arm extends SubsystemBase {
         _shoulderMotorPID.setGoal(shoulderPos);
         _elbowMotorPID.reset(this.getElbowJointAngleRelativeToGround());
         _elbowMotorPID.setGoal(elbowPos);
+        System.out.println("Shoulder: " + _shoulderMotorPID.getGoal().position + " Elbow: " + _elbowMotorPID.getGoal().position);
+
     }
 
     //
@@ -1105,8 +1110,8 @@ public class Arm extends SubsystemBase {
     }
 
     public void setShoulderGoalFromAngle(double setpoint) {
-        _elbowMotorPID.reset(this.getElbowJointAngleRelativeToGround());
-        _elbowMotorPID.setGoal(setpoint);
+        _shoulderMotorPID.reset(this.getShoulderJointAngle());
+        _shoulderMotorPID.setGoal(setpoint);
     }
 
 }
