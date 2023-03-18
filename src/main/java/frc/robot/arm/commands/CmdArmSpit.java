@@ -29,7 +29,7 @@ public class CmdArmSpit extends CommandBase {
          * IF the arm is holding a cone, it only opens the claw without running the wheels.
          */
         if (_armSubsystem.getArmMode() == ArmMode.Cone) {
-            _armSubsystem.setIntakeMode(IntakeMode.OPEN);
+            _armSubsystem.setIntakeMode(IntakeMode.Open);
         }
 
         /**

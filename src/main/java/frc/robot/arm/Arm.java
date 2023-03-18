@@ -226,7 +226,7 @@ public class Arm extends SubsystemBase {
     private ArmMode _armMode;
     public boolean _hasGamepiece = true;
     public IntakeMode _intakeMode;
-    public final IntakeMode INTAKE_MODE_DEFAULT = IntakeMode.OPEN;
+    public final IntakeMode INTAKE_MODE_DEFAULT = IntakeMode.Open;
 
     // Set this to true so that the arm is in coast and the motors don't run
     private boolean _inSetpointTestingMode = false;
@@ -639,8 +639,8 @@ public class Arm extends SubsystemBase {
      * Is an enum that represents whether or not the claw is opened or closed.
      */
     public enum IntakeMode {
-        OPEN,
-        CLOSED
+        Open,
+        Closed
     }
    
     /**
