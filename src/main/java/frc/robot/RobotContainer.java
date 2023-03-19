@@ -6,10 +6,12 @@ package frc.robot;
 
 import java.util.HashMap;
 
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.LEDs.LEDs;
 import frc.robot.LEDs.commands.CmdLEDDefault;
@@ -29,6 +31,7 @@ import frc.robot.arm.commands.CmdArmMoveElbowManual;
 import frc.robot.arm.commands.CmdArmMoveShoulderManual;
 import frc.robot.dashboard.Dashboard;
 import frc.robot.drive.Drive;
+import frc.robot.drive.commands.CmdDriveChangeCoR;
 import frc.robot.drive.commands.CmdDriveChangeSpeedMult;
 import frc.robot.drive.commands.DefaultDriveCommand;
 
@@ -56,8 +59,10 @@ public class RobotContainer {
 
     //Top row of buttons
     private final Joystick _operatorController1 = new Joystick(1);
-    //Bottomrow of buttons
+    //Bottom row of buttons
     private final Joystick _operatorController2 = new Joystick(2);
+    //manual sliders
+    
     
     private JoystickButton _opButtonOne = new JoystickButton(_operatorController1, 1);
     private JoystickButton _opButtonTwo = new JoystickButton(_operatorController1, 2);
@@ -90,7 +95,6 @@ public class RobotContainer {
      * The container for the robot. Contains subsystems, OI devices, and commands.
      */
     public RobotContainer() {
-        _sliderJoystick.getRawAxis(0);
 
         // Driver Configuration
         _driveSubsystem.setDefaultCommand(new DefaultDriveCommand(
@@ -139,6 +143,8 @@ public class RobotContainer {
 
         // Reset Gyro
        // _driverButtonA.whileTrue(new CmdDriveResetGyro(_driveSubsystem));
+       _driverButtonA.whileTrue(new CmdDriveChangeCoR(_driveSubsystem, new Translation2d(1.07, 0)));
+       _driverButtonA.whileFalse(new CmdDriveChangeCoR(_driveSubsystem, new Translation2d(0, 0)));
 
         // -- Operator Controls --
 
@@ -174,15 +180,20 @@ public class RobotContainer {
         double shoulderDownAmount = -3.0;
 
         // Elbow manual buttons
-        _op2ButtonOne.onTrue(new CmdArmMoveElbowManual(_armSubsystem, elbowDownAmount));
-        _op2ButtonTwo.onTrue(new CmdArmMoveElbowManual(_armSubsystem, elbowUpAmount));
+        // _op2ButtonOne.onTrue(new CmdArmMoveElbowManual(_armSubsystem, elbowDownAmount));
+        // _op2ButtonTwo.onTrue(new CmdArmMoveElbowManual(_armSubsystem, elbowUpAmount));
 
         // Shoulder manual buttons
-        _op2ButtonThree.onTrue(new CmdArmMoveShoulderManual(_armSubsystem, shoulderDownAmount));
-        _op2ButtonFour.onTrue(new CmdArmMoveShoulderManual(_armSubsystem, shoulderUpAmount));
-        // _opButtonThirteen.whileTrue(new GrpMoveArmToPositionManual(_armSubsystem, 
-        // () -> _sliderJoystick.getRawAxis(0), 
-        // () -> _sliderJoystick.getRawAxis(0)));
+        // _op2ButtonThree.onTrue(new CmdArmMoveShoulderManual(_armSubsystem, shoulderDownAmount));
+        // _op2ButtonFour.onTrue(new CmdArmMoveShoulderManual(_armSubsystem, shoulderUpAmount));
+       // this currently infinitely adds to the current setpoint while button is held
+        _opButtonOne.whileTrue(Commands.parallel(
+            new CmdArmMoveElbowManual(
+                _armSubsystem, 
+                () -> (_sliderJoystick.getRawAxis(0))),  
+            new CmdArmMoveShoulderManual(
+                _armSubsystem, 
+                () -> (_sliderJoystick.getRawAxis(1)))).repeatedly());
 
     }
 

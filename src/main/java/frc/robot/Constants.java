@@ -139,6 +139,7 @@ public final class Constants {
 
     public static class PHPorts {
         public static int WRIST_SOLENOID_PORT = 0;
+        public static int INTAKE_SOLENOID_PORT = 1;
     }
 
     /**
