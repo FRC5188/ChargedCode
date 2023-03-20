@@ -13,7 +13,7 @@ public class ArmConstants {
     public static double ELBOW_0_DEGREE_POT_OFFSET = 2060;
     
     // All in degrees
-    public static double SHOULDER_UPPER_SOFT_STOP = 115;
+    public static double SHOULDER_UPPER_SOFT_STOP = 150;
     public static double SHOULDER_LOWER_SOFT_STOP = 5;
     public static double ELBOW_UPPER_SOFT_STOP = 130;
     public static double ELBOW_LOWER_SOFT_STOP = -10;
@@ -77,8 +77,11 @@ public class ArmConstants {
         public static double GROUND_PICKUP_SHOULDER_POS = 46.2;
         public static double GROUND_PICKUP_ELBOW_POS = 1;
 
-        public static double INTERMEDIATE_SCORING_SHOULDER_POS = 95;
-        public static double INTERMEDIATE_SCORING_ELBOW_POS = 31;
+        public static double INTERMEDIATE_SCORING_SHOULDER_POS = 136;
+        public static double INTERMEDIATE_SCORING_ELBOW_POS = 83;
+
+        public static double EN_GARDE_SHOULDER_POS = 136;
+        public static double EN_GARDE_ELBOW_POS = 83;
 
         public static double INTERMEDIATE_TO_PICKUP_SHOULDER_POS = 50;
         public static double INTERMEDIATE_TO_PICKUP_ELBOW_POS = 25;
@@ -151,6 +154,8 @@ public class ArmConstants {
         public final Arm2DPosition MIDDLE_CUBE_SETPOINT = new Arm2DPosition(MIDDLE_CUBE_Y_POS,
                 MIDDLE_CUBE_X_POS,
                 MIDDLE_CUBE_WRIST_POS);
+
+        public static WristPosition EN_GARDE_WRIST_POS = WristPosition.Perpendicular;
     
     }
 
@@ -165,14 +170,14 @@ public class ArmConstants {
     // private final double SHOULDER_MOTOR_KP = 0.015;
     // private final double SHOULDER_MOTOR_KI = 0.0005;
     // private final double SHOULDER_MOTOR_KD = 0.0005;
-    public static double SHOULDER_MOTOR_KP = 0.012;
-    public static double SHOULDER_MOTOR_KI = 0.000;
+    public static double SHOULDER_MOTOR_KP = 0.02;
+    public static double SHOULDER_MOTOR_KI = 0.002;
     public static double SHOULDER_MOTOR_KD = 0.0005;
     public static double SHOULDER_MOTOR_TOLERANCE = 8.0;
 
     // shoulder motion profile constraints
-    private static double SHOULDER_MAX_VELOCITY = 240; // max speed that this joint should move at
-    private final static double SHOULDER_MAX_ACCELERATION = 220; // max acceleration this joint should move at
+    private static double SHOULDER_MAX_VELOCITY = 250; // max speed that this joint should move at
+    private final static double SHOULDER_MAX_ACCELERATION = 230; // max acceleration this joint should move at
     public static TrapezoidProfile.Constraints SHOULDER_MOTION_PROFILE_CONSTRAINTS = new TrapezoidProfile.Constraints(
             SHOULDER_MAX_VELOCITY,
             SHOULDER_MAX_ACCELERATION);
@@ -181,14 +186,14 @@ public class ArmConstants {
     // private final double ELBOW_MOTOR_KP = 0.02;
     // private final double ELBOW_MOTOR_KI = 0.0005;
     // private final double ELBOW_MOTOR_KD = 0.0005;
-    public static double ELBOW_MOTOR_KP = 0.014;
-    public static double ELBOW_MOTOR_KI = 0.000;
-    public static double ELBOW_MOTOR_KD = 0.001;
+    public static double ELBOW_MOTOR_KP = 0.02;
+    public static double ELBOW_MOTOR_KI = 0.0005;
+    public static double ELBOW_MOTOR_KD = 0.0005;
     public static double ELBOW_MOTOR_TOLERANCE = 5.0;
 
     // shoulder motion profile constraints
-    public static double ELBOW_MAX_VELOCITY = 240; // max speed that this joint should move at
-    public static double ELBOW_MAX_ACCELERATION = 220; // max acceleration this joint should move at
+    public static double ELBOW_MAX_VELOCITY = 250; // max speed that this joint should move at
+    public static double ELBOW_MAX_ACCELERATION = 230; // max acceleration this joint should move at
     public static TrapezoidProfile.Constraints ELBOW_MOTION_PROFILE_CONSTRAINTS = new TrapezoidProfile.Constraints(
             ELBOW_MAX_VELOCITY,
             ELBOW_MAX_ACCELERATION);

@@ -128,6 +128,7 @@ public class Arm extends SubsystemBase {
         MiddleCone,
         MiddleCube,
         IntermediateScoring,
+        EnGarde,
         IntermediateToPickup,
         IntermediateFromPickup,
         Middle,
@@ -146,7 +147,7 @@ public class Arm extends SubsystemBase {
     private WPI_TalonFX _elbowMotor;
 
     private CANSparkMax _intakeMotor;
-    
+
     private Solenoid _wristSolenoid;
     private Solenoid _intakeSolenoid;
 
@@ -166,11 +167,11 @@ public class Arm extends SubsystemBase {
     public IntakeMode _intakeMode;
 
     // Set this to true so that the arm is in coast and the motors don't run
-    private boolean _inSetpointTestingMode = true;
+    private boolean _inSetpointTestingMode = false;
 
     private boolean PIDEnable;
 
-    //constructor 
+    // constructor
     public Arm() {
         // Motor Controllers and pnuematics
         _shoulderMotor = new WPI_TalonFX(Constants.CanIDs.ARM_SHOULDER_MOTOR_ID);
@@ -215,9 +216,9 @@ public class Arm extends SubsystemBase {
 
         // Create Shoulder PID controller
         _shoulderMotorPID = new ProfiledPIDController(ArmConstants.SHOULDER_MOTOR_KP,
-            ArmConstants.SHOULDER_MOTOR_KI,
-            ArmConstants.SHOULDER_MOTOR_KD,
-            ArmConstants.SHOULDER_MOTION_PROFILE_CONSTRAINTS);
+                ArmConstants.SHOULDER_MOTOR_KI,
+                ArmConstants.SHOULDER_MOTOR_KD,
+                ArmConstants.SHOULDER_MOTION_PROFILE_CONSTRAINTS);
         _shoulderMotorPID.setTolerance(ArmConstants.SHOULDER_MOTOR_TOLERANCE);
 
         // create elbow PID controller
@@ -231,11 +232,11 @@ public class Arm extends SubsystemBase {
         this.updateShuffleBoard();
     }
 
-    public ArmPosition getTargetArmPosition(){
+    public ArmPosition getTargetArmPosition() {
         return this._targetPosition;
     }
 
-    public void setCurrentPosition(ArmPosition inputArmPosition){
+    public void setCurrentPosition(ArmPosition inputArmPosition) {
         this._currentArmPos = inputArmPosition;
     }
 
@@ -460,7 +461,8 @@ public class Arm extends SubsystemBase {
      */
     public void shoulderMotorPIDExec() {
         double angle = getShoulderJointAngle();
-        setShoulderMotorSpeed(_shoulderMotorPID.calculate(angle) + FeedForward.shoulder(-getElbowJointAngleRelativeToShoulder() + 180, getShoulderJointAngle()));
+        setShoulderMotorSpeed(_shoulderMotorPID.calculate(angle)
+                + FeedForward.shoulder(-getElbowJointAngleRelativeToShoulder() + 180, getShoulderJointAngle()));
     }
 
     /**
@@ -469,7 +471,8 @@ public class Arm extends SubsystemBase {
      */
     public void elbowMotorPIDExec() {
         double angle = getElbowJointAngleRelativeToGround();
-        setElbowMotorSpeed(_elbowMotorPID.calculate(angle) + FeedForward.elbow(-getElbowJointAngleRelativeToShoulder() + 180, getShoulderJointAngle()));
+        setElbowMotorSpeed(_elbowMotorPID.calculate(angle)
+                + FeedForward.elbow(-getElbowJointAngleRelativeToShoulder() + 180, getShoulderJointAngle()));
     }
 
     /**
@@ -550,7 +553,7 @@ public class Arm extends SubsystemBase {
         Open,
         Closed
     }
-   
+
     /**
      * Sets the intake mode
      */
@@ -585,10 +588,11 @@ public class Arm extends SubsystemBase {
     }
 
     public boolean elbowIsHittingObject() {
-        return (_elbowMotor.getStatorCurrent() > ArmConstants.ELBOW_IS_HITTING_CURRENT); 
-        //TODO: Check if .getStatorCurrent() is right
+        return (_elbowMotor.getStatorCurrent() > ArmConstants.ELBOW_IS_HITTING_CURRENT);
+        // TODO: Check if .getStatorCurrent() is right
 
     }
+
     public void setWristPosition(ArmPosition armPosition) {
         // Sets Wrist Position based off of arm position
         switch (armPosition) {
@@ -624,6 +628,9 @@ public class Arm extends SubsystemBase {
                 break;
             case IntermediateScoring:
                 setWristPosition(WristPosition.Perpendicular);
+                break;
+            case EnGarde:
+                setWristPosition(ArmConstants.SetPoints2D.EN_GARDE_WRIST_POS);
                 break;
             case Middle:
                 if (_armMode == ArmMode.Cone) {
@@ -726,6 +733,10 @@ public class Arm extends SubsystemBase {
                 shoulderPos = ArmConstants.AngleSetpoints.INTERMEDIATE_SCORING_SHOULDER_POS;
                 elbowPos = ArmConstants.AngleSetpoints.INTERMEDIATE_SCORING_ELBOW_POS;
                 break;
+            case EnGarde:
+                shoulderPos = ArmConstants.AngleSetpoints.EN_GARDE_SHOULDER_POS;
+                elbowPos = ArmConstants.AngleSetpoints.EN_GARDE_ELBOW_POS;
+                break;
             case IntermediateToPickup:
                 shoulderPos = ArmConstants.AngleSetpoints.INTERMEDIATE_TO_PICKUP_SHOULDER_POS;
                 elbowPos = ArmConstants.AngleSetpoints.INTERMEDIATE_TO_PICKUP_ELBOW_POS;
@@ -773,7 +784,8 @@ public class Arm extends SubsystemBase {
         _shoulderMotorPID.setGoal(shoulderPos);
         _elbowMotorPID.reset(this.getElbowJointAngleRelativeToGround());
         _elbowMotorPID.setGoal(elbowPos);
-        System.out.println("Shoulder: " + _shoulderMotorPID.getGoal().position + " Elbow: " + _elbowMotorPID.getGoal().position);
+        System.out.println(
+                "Shoulder: " + _shoulderMotorPID.getGoal().position + " Elbow: " + _elbowMotorPID.getGoal().position);
 
     }
 
@@ -826,6 +838,11 @@ public class Arm extends SubsystemBase {
             case IntermediateScoring:
                 shoulderPos = ArmConstants.AngleSetpoints.INTERMEDIATE_SCORING_SHOULDER_POS;
                 elbowPos = ArmConstants.AngleSetpoints.INTERMEDIATE_SCORING_ELBOW_POS;
+                wristPos = getWristPosition();
+                break;
+            case EnGarde:
+                shoulderPos = ArmConstants.AngleSetpoints.EN_GARDE_SHOULDER_POS;
+                elbowPos = ArmConstants.AngleSetpoints.EN_GARDE_ELBOW_POS;
                 wristPos = getWristPosition();
                 break;
             case IntermediateToPickup:
@@ -888,7 +905,7 @@ public class Arm extends SubsystemBase {
                 case Stored:
                     break;
                 default:
-                    interPos = ArmPosition.IntermediateScoring;
+                    interPos = ArmPosition.EnGarde;
                     break;
             }
         }

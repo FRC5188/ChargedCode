@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.LEDs.LEDs;
 import frc.robot.LEDs.commands.CmdLEDDefault;
@@ -147,10 +148,10 @@ public class RobotContainer {
         // -- Operator Controls --
 
         // Run Intake
-        _opButtonTwo.onTrue(new CmdArmRunIntake(_armSubsystem, -0.4));
+        _opButtonTwo.onTrue(new CmdArmRunIntake(_armSubsystem, 0.6));
 
         // Spit game piece
-        _opButtonThree.onTrue(new CmdArmSpit(_armSubsystem, 0.4));
+        _opButtonThree.onTrue(new CmdArmSpit(_armSubsystem, -0.6));
 
         // Loading Station
         _opButtonFour.onTrue(new GrpMoveArmToPosition(_armSubsystem, ArmPosition.LoadStationPickUp));
