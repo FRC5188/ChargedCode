@@ -77,8 +77,8 @@ public class ArmConstants {
         public static double GROUND_PICKUP_SHOULDER_POS = 46.2;
         public static double GROUND_PICKUP_ELBOW_POS = 1;
 
-        public static double INTERMEDIATE_SCORING_SHOULDER_POS = 136;
-        public static double INTERMEDIATE_SCORING_ELBOW_POS = 83;
+        public static double INTERMEDIATE_SCORING_SHOULDER_POS = 95;
+        public static double INTERMEDIATE_SCORING_ELBOW_POS = 31;
 
         public static double EN_GARDE_SHOULDER_POS = 136;
         public static double EN_GARDE_ELBOW_POS = 83;
@@ -197,5 +197,7 @@ public class ArmConstants {
     public static TrapezoidProfile.Constraints ELBOW_MOTION_PROFILE_CONSTRAINTS = new TrapezoidProfile.Constraints(
             ELBOW_MAX_VELOCITY,
             ELBOW_MAX_ACCELERATION);
+
+    public static double MAX_TRAJECTORY_SPEED = 15;
 
 }

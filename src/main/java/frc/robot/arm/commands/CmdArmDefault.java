@@ -18,8 +18,7 @@ public class CmdArmDefault extends CommandBase {
     @Override
     public void execute() {
         //  if(this._armSubsystem.isPIDEnabled()){
-            _armSubsystem.shoulderMotorPIDExec();
-            _armSubsystem.elbowMotorPIDExec();
+            _armSubsystem.execPIDs();
         // }
         // else {
         //     System.out.println("[WARNING]: PID has been disabled.");
