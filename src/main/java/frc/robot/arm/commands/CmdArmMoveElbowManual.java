@@ -1,13 +1,15 @@
 package frc.robot.arm.commands;
 
+import java.util.function.DoubleSupplier;
+
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.arm.Arm;
 
 public class CmdArmMoveElbowManual extends CommandBase {
     private Arm _armSubsystem;
-    private double _changeAmount;
+    private DoubleSupplier _changeAmount;
 
-    public CmdArmMoveElbowManual(Arm armSubsystem, double changeAmount) {
+    public CmdArmMoveElbowManual(Arm armSubsystem, DoubleSupplier changeAmount) {
         _changeAmount = changeAmount;
         _armSubsystem = armSubsystem;
 
@@ -16,7 +18,7 @@ public class CmdArmMoveElbowManual extends CommandBase {
 
     @Override
     public void initialize() {
-        _armSubsystem.setElbowGoalFromAngle(_armSubsystem.getElbowSetpoint() + _changeAmount);
+        _armSubsystem.setElbowGoalFromAngle(_armSubsystem.getElbowSetpoint() + _changeAmount.getAsDouble());
     }
 
     @Override

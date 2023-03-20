@@ -3,14 +3,13 @@ package frc.robot.LEDs.commands;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.LEDs.LEDs;
-import frc.robot.LEDs.LEDs.LEDColors;
+import frc.robot.LEDs.LEDs.LEDMode;
 import frc.robot.arm.Arm;
 import frc.robot.arm.Arm.ArmMode;
 
 public class CmdLEDDefault extends CommandBase {
     private Arm _armSubsystem;
     private LEDs _leds;
-    private LEDColors color;
     private ArmMode armMode;
 
     public CmdLEDDefault(LEDs leds, Arm armSubsystem) {
@@ -27,19 +26,21 @@ public class CmdLEDDefault extends CommandBase {
 
     @Override
     public void execute() {
-        if (!DriverStation.isDSAttached() && !DriverStation.isFMSAttached()) {
-            this._leds.changeColor(LEDColors.Red);
+        System.out.println("Running LEDs");
+        if (!DriverStation.isDSAttached()) {
+            // Add this in for comp but not for home testing: || !DriverStation.isFMSAttached()
+            this._leds.setLEDMode(LEDMode.LostComms);
         }
         else {
             this.armMode = this._armSubsystem.getArmMode();
 
             switch (armMode) {
                 case Cone:
-                    this._leds.changeColor(LEDColors.Yellow);
+                    this._leds.setLEDMode(LEDMode.Cone);
                     break;
 
                 case Cube:
-                    this._leds.changeColor(LEDColors.Purple);
+                    this._leds.setLEDMode(LEDMode.Cube);
                     break;
 
 

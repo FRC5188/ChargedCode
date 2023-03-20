@@ -1,13 +1,16 @@
 package frc.robot.arm.commands;
 
+import java.util.function.DoubleSupplier;
+
+import edu.wpi.first.networktables.DoubleSubscriber;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.arm.Arm;
 
 public class CmdArmMoveShoulderManual extends CommandBase {
     private Arm _armSubsystem;
-    private double _changeAmount;
+    private DoubleSupplier _changeAmount;
 
-    public CmdArmMoveShoulderManual(Arm armSubsystem, double changeAmount) {
+    public CmdArmMoveShoulderManual(Arm armSubsystem, DoubleSupplier changeAmount) {
         _armSubsystem = armSubsystem;
         _changeAmount = changeAmount;
 
@@ -16,7 +19,7 @@ public class CmdArmMoveShoulderManual extends CommandBase {
 
     @Override
     public void initialize() {
-        _armSubsystem.setShoulderGoalFromAngle(_armSubsystem.getShoulderSetpoint() + _changeAmount);
+        _armSubsystem.setShoulderGoalFromAngle(_armSubsystem.getShoulderSetpoint() + _changeAmount.getAsDouble());
     }
     
     @Override
