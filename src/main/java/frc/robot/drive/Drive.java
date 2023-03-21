@@ -73,7 +73,6 @@ public class Drive extends SubsystemBase {
 
     private Vision _visionSubsystem;
 
-    
     /**
      * This object does the math to convert a motion vector into individual module
      * vectors
@@ -109,8 +108,10 @@ public class Drive extends SubsystemBase {
     /**
      * This represents the desired vector of the robot.
      * <p>
-     * The first part is the forwards velocity, which is how fast we want to go forward/backward.
-     * Second is the sideways velocity, which is how fast we want to strafe left/right.
+     * The first part is the forwards velocity, which is how fast we want to go
+     * forward/backward.
+     * Second is the sideways velocity, which is how fast we want to strafe
+     * left/right.
      * Last is the angular velocity, which is how fast we want to rotate cw/ccw.
      * <p>
      */
@@ -171,7 +172,7 @@ public class Drive extends SubsystemBase {
         _kinematics = new SwerveDriveKinematics(
                 // Front left
                 new Translation2d(CHASSIS_WIDTH_METERS / 2.0, CHASSIS_HEIGHT_METERS / 2.0),
-                // Front right 
+                // Front right
                 new Translation2d(CHASSIS_WIDTH_METERS / 2.0, -CHASSIS_HEIGHT_METERS / 2.0),
                 // Back left
                 new Translation2d(-CHASSIS_WIDTH_METERS / 2.0, CHASSIS_HEIGHT_METERS / 2.0),
@@ -186,9 +187,9 @@ public class Drive extends SubsystemBase {
 
         _odometry = new SwerveDrivePoseEstimator(_kinematics, getGyroscopeRotation(), new SwerveModulePosition[] {
                 _frontLeftModule.getModulePosition(), _frontRightModule.getModulePosition(),
-                _backLeftModule.getModulePosition(), _backRightModule.getModulePosition() }, new Pose2d(),
-                VecBuilder.fill(0.05, 0.05, Units.degreesToRadians(5)),
-                VecBuilder.fill(0.5, 0.5, Units.degreesToRadians(30)));
+                _backLeftModule.getModulePosition(), _backRightModule.getModulePosition() }, new Pose2d(2, 1, new Rotation2d(0)),
+                VecBuilder.fill(0.01, 0.01, Units.degreesToRadians(0.1)),
+                VecBuilder.fill(0.1, 0.1, Units.degreesToRadians(0.1)));
 
         _navx.reset();
     }
@@ -238,11 +239,12 @@ public class Drive extends SubsystemBase {
         // counter-clockwise makes the angle increase.
         return Rotation2d.fromDegrees(360.0 - _navx.getYaw());
     }
-    public void setSpeedMultiplier(double multiplier){
+
+    public void setSpeedMultiplier(double multiplier) {
         _speedMultiplier = multiplier;
     }
 
-    public double getSpeedMultiplier(){
+    public double getSpeedMultiplier() {
         return this._speedMultiplier;
     }
 
@@ -250,11 +252,11 @@ public class Drive extends SubsystemBase {
         _centerOfRotation = centerOfRotation;
     }
 
-    public double getRobotPitch(){
+    public double getRobotPitch() {
         return _navx.getPitch();
     }
 
-    public AHRS getGyroInstance(){
+    public AHRS getGyroInstance() {
         return _navx;
     }
 
@@ -262,7 +264,7 @@ public class Drive extends SubsystemBase {
         _chassisSpeeds = chassisSpeeds;
     }
 
-    public ChassisSpeeds getChassisSpeeds(){
+    public ChassisSpeeds getChassisSpeeds() {
         return this._chassisSpeeds;
     }
 
@@ -272,11 +274,6 @@ public class Drive extends SubsystemBase {
 
     @Override
     public void periodic() {
-        try {
-            SmartDashboard.putNumber("Estimated Pose", getPose().getX());
-        } catch (Exception e) {
-            System.out.println("[ERROR] Couldn't Get Vision");
-        }
         // Convert the drive base vector into module vectors
         SwerveModuleState[] states = _kinematics.toSwerveModuleStates(_chassisSpeeds, _centerOfRotation);
         // Normalize the wheel speeds so we aren't trying to set above the max
@@ -284,10 +281,13 @@ public class Drive extends SubsystemBase {
 
         // Update odometry if applicable
         Vision.getVisionEstimatedRobotPose(_odometry);
-        _odometry.updateWithTime(Timer.getFPGATimestamp(), getGyroscopeRotation(), new SwerveModulePosition[] {
+        _odometry.update(getGyroscopeRotation(), new SwerveModulePosition[] {
                 _frontLeftModule.getModulePosition(), _frontRightModule.getModulePosition(),
                 _backLeftModule.getModulePosition(), _backRightModule.getModulePosition()
         });
+
+        //System.out.println("Odometry: " + _odometry.getEstimatedPosition());
+        SmartDashboard.putString("Odometry", _odometry.getEstimatedPosition().toString());
 
         // Set each module's speed and angle
         _frontLeftModule.set(states[0].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE,

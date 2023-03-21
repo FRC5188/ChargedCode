@@ -149,10 +149,10 @@ public class RobotContainer {
         // -- Operator Controls --
 
         // Run Intake
-        _opButtonTwo.onTrue(new CmdArmRunIntake(_armSubsystem, -0.4));
+        _opButtonTwo.onTrue(new CmdArmRunIntake(_armSubsystem, 0.6));
 
         // Spit game piece
-        _opButtonThree.onTrue(new CmdArmSpit(_armSubsystem, 0.4));
+        _opButtonThree.onTrue(new CmdArmSpit(_armSubsystem, -0.6));
 
         // Loading Station
         _opButtonFour.onTrue(new GrpMoveArmToPosition(_armSubsystem, ArmPosition.LoadStationPickUp));
