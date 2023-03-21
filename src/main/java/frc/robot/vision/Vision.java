@@ -125,10 +125,15 @@ public class Vision {
         PhotonTrackedTarget target = camera.getLatestResult().getBestTarget();
 
         if (target != null) {
-            Pose3d robotPose = PhotonUtils.estimateFieldToRobotAprilTag(target.getBestCameraToTarget(),
-                    layout.getTagPose(target.getFiducialId()).get(), cameraPos);
-            poseEstimator.addVisionMeasurement(robotPose.toPose2d(), Timer.getFPGATimestamp());
-            // System.out.println("AprilTag: " + robotPose);
+            try {
+                Pose3d robotPose = PhotonUtils.estimateFieldToRobotAprilTag(target.getBestCameraToTarget(),
+                        layout.getTagPose(target.getFiducialId()).get(), cameraPos);
+                poseEstimator.addVisionMeasurement(robotPose.toPose2d(), Timer.getFPGATimestamp());
+                // System.out.println("AprilTag: " + robotPose);
+            } catch (Exception e) {
+
+            }
+
         }
     }
 

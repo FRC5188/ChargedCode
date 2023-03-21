@@ -29,6 +29,7 @@ public class ArmTrajectory {
         // Calculate characteristics of the trajectory
         m_maxTranslationalSpeed = ArmConstants.MAX_TRAJECTORY_SPEED;
         m_totalLength = calcTotalDistance(m_waypoints);
+        System.out.println("LENGTH: " + m_totalLength);
         m_totalTime = m_totalLength / m_maxTranslationalSpeed;
 
         // Calculate the cumulative distance and time for each of the waypoints
@@ -49,6 +50,7 @@ public class ArmTrajectory {
         SmartDashboard.putString("WaypointDistances", m_waypointDists.toString());
         SmartDashboard.putString("WaypointTimes", m_waypointTimes.toString());
         SmartDashboard.putNumber("TotalTime", m_totalTime);
+        SmartDashboard.putNumber("TotalLength", m_totalLength);
     }
 
     /**
@@ -94,7 +96,7 @@ public class ArmTrajectory {
 
         ArmJointAngles targetPose = new ArmJointAngles(
                 m_waypoints.get(waypoint0).getShoulderJointAngle() + deltaShoulder,
-                m_waypoints.get(waypoint0).getShoulderJointAngle() + deltaElbow);
+                m_waypoints.get(waypoint0).getElbowJointAngle() + deltaElbow);
 
         return targetPose;
     }
@@ -102,7 +104,9 @@ public class ArmTrajectory {
     private double calcTotalDistance(ArrayList<ArmJointAngles> waypoints) {
         double totalLength = 0.0;
         for (int i = 0; i < waypoints.size() - 1; i++) {
-            totalLength += dist(waypoints.get(i), waypoints.get(i + 1));
+            double dist = dist(waypoints.get(i), waypoints.get(i + 1));
+            System.out.println("Distance " + i + ": " + dist);
+            totalLength += dist;
         }
         return totalLength;
     }
@@ -110,6 +114,7 @@ public class ArmTrajectory {
     private double dist(ArmJointAngles angles0, ArmJointAngles angles1) {
         Pose2d pose0 = arm2DPositionFromAngles(angles0.getShoulderJointAngle(), angles0.getElbowJointAngle());
         Pose2d pose1 = arm2DPositionFromAngles(angles1.getShoulderJointAngle(), angles1.getElbowJointAngle());
+        System.out.println("1: " + pose0 + " 2: " + pose1);
 
         return Math.sqrt(Math.pow((pose1.getX() - pose0.getX()), 2.0) +
                 Math.pow((pose1.getY() - pose0.getY()), 2.0));
@@ -137,16 +142,18 @@ public class ArmTrajectory {
      * @return A Arm2DPosition that represents the current point in 2D space of the
      *         wrist of the arm, including the wrist state.
      */
-    private Pose2d arm2DPositionFromAngles(double currentShoulder, double currentElbow) {
+    public static Pose2d arm2DPositionFromAngles(double currentShoulder, double currentElbow) {
         // TODO check this math
-
+        //elbow 0 is perp with ground. shoulder is || with ground
         double y = ArmConstants.SHOULDER_JOINT_Y_POS;
-        y += ArmConstants.SHOULDER_ARM_LENGTH * Math.cos(currentShoulder);
-        y += ArmConstants.ELBOW_ARM_LENGTH * Math.cos(currentElbow);
+        y += ArmConstants.SHOULDER_ARM_LENGTH * Math.cos(Math.toRadians(currentShoulder));
+        y += ArmConstants.ELBOW_ARM_LENGTH * Math.sin(Math.toRadians(currentElbow));
 
         double z = ArmConstants.SHOULDER_JOINT_Z_POS;
-        z += ArmConstants.SHOULDER_ARM_LENGTH * Math.sin(currentShoulder);
-        z += ArmConstants.ELBOW_ARM_LENGTH * Math.sin(currentElbow);
+        z += ArmConstants.SHOULDER_ARM_LENGTH * Math.sin(Math.toRadians(currentShoulder));
+        z -= ArmConstants.ELBOW_ARM_LENGTH * Math.cos(Math.toRadians(currentElbow));
+
+        System.out.println("y: " + y + " z: " + z);
 
         return new Pose2d(y, z, null);
     }

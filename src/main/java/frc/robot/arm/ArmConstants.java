@@ -20,11 +20,11 @@ public class ArmConstants {
 
     // The y,z position of the shoulder joint relative to the floor
     public static double SHOULDER_JOINT_Z_POS = 17; // inches
-    public static double SHOULDER_JOINT_Y_POS = -15; // inches
+    public static double SHOULDER_JOINT_Y_POS = 0; // inches
 
     // arm segments lengths
-    public static double SHOULDER_ARM_LENGTH = 28; // inches
-    public static double ELBOW_ARM_LENGTH = 28.5; // inches
+    public static double SHOULDER_ARM_LENGTH = 27.83; // inches
+    public static double ELBOW_ARM_LENGTH = 30.748; // inches
 
 
     public static class AngleSetpoints {
@@ -170,8 +170,8 @@ public class ArmConstants {
     // private final double SHOULDER_MOTOR_KP = 0.015;
     // private final double SHOULDER_MOTOR_KI = 0.0005;
     // private final double SHOULDER_MOTOR_KD = 0.0005;
-    public static double SHOULDER_MOTOR_KP = 0.02;
-    public static double SHOULDER_MOTOR_KI = 0.002;
+    public static double SHOULDER_MOTOR_KP = 0.015;
+    public static double SHOULDER_MOTOR_KI = 0.0005;
     public static double SHOULDER_MOTOR_KD = 0.0005;
     public static double SHOULDER_MOTOR_TOLERANCE = 8.0;
 
@@ -186,7 +186,7 @@ public class ArmConstants {
     // private final double ELBOW_MOTOR_KP = 0.02;
     // private final double ELBOW_MOTOR_KI = 0.0005;
     // private final double ELBOW_MOTOR_KD = 0.0005;
-    public static double ELBOW_MOTOR_KP = 0.02;
+    public static double ELBOW_MOTOR_KP = 0.015;
     public static double ELBOW_MOTOR_KI = 0.0005;
     public static double ELBOW_MOTOR_KD = 0.0005;
     public static double ELBOW_MOTOR_TOLERANCE = 5.0;
@@ -198,6 +198,6 @@ public class ArmConstants {
             ELBOW_MAX_VELOCITY,
             ELBOW_MAX_ACCELERATION);
 
-    public static double MAX_TRAJECTORY_SPEED = 15;
+    public static double MAX_TRAJECTORY_SPEED = 50;
 
 }
