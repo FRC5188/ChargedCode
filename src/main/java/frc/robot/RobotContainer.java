@@ -187,13 +187,13 @@ public class RobotContainer {
         // _op2ButtonThree.onTrue(new CmdArmMoveShoulderManual(_armSubsystem, shoulderDownAmount));
         // _op2ButtonFour.onTrue(new CmdArmMoveShoulderManual(_armSubsystem, shoulderUpAmount));
        // this currently infinitely adds to the current setpoint while button is held
-        _opButtonOne.whileTrue(Commands.parallel(
-            new CmdArmMoveElbowManual(
-                _armSubsystem, 
-                () -> (_sliderJoystick.getRawAxis(0))),  
-            new CmdArmMoveShoulderManual(
-                _armSubsystem, 
-                () -> (_sliderJoystick.getRawAxis(1)))).repeatedly());
+        // _opButtonOne.whileTrue(Commands.parallel(
+        //     new CmdArmMoveElbowManual(
+        //         _armSubsystem, 
+        //         () -> (_sliderJoystick.getRawAxis(0))),  
+        //     new CmdArmMoveShoulderManual(
+        //         _armSubsystem, 
+        //         () -> (_sliderJoystick.getRawAxis(1)))).repeatedly());
 
     }
 

@@ -6,11 +6,13 @@ import frc.robot.LEDs.LEDs;
 import frc.robot.LEDs.LEDs.LEDMode;
 import frc.robot.arm.Arm;
 import frc.robot.arm.Arm.ArmMode;
+import frc.robot.arm.Arm.ArmPosition;
 
 public class CmdLEDDefault extends CommandBase {
     private Arm _armSubsystem;
     private LEDs _leds;
     private ArmMode armMode;
+    private ArmPosition armPosition;
 
     public CmdLEDDefault(LEDs leds, Arm armSubsystem) {
         _armSubsystem = armSubsystem;
@@ -27,13 +29,11 @@ public class CmdLEDDefault extends CommandBase {
     @Override
     public void execute() {
         System.out.println("Running LEDs");
-        if (!DriverStation.isDSAttached()) {
-            // Add this in for comp but not for home testing: || !DriverStation.isFMSAttached()
-            this._leds.setLEDMode(LEDMode.LostComms);
-        }
-        else {
-            this.armMode = this._armSubsystem.getArmMode();
-
+        
+        this.armMode = this._armSubsystem.getArmMode();
+        this.armPosition = this._armSubsystem.getCurrentArmPosition();
+        
+        if (armPosition == ArmPosition.Stored || armPosition == ArmPosition.LoadStationPickUp || armPosition == ArmPosition.GroundPickUp) {
             switch (armMode) {
                 case Cone:
                     this._leds.setLEDMode(LEDMode.Cone);
@@ -43,10 +43,10 @@ public class CmdLEDDefault extends CommandBase {
                     this._leds.setLEDMode(LEDMode.Cube);
                     break;
 
-
             }
         }
     }
+    
 
     @Override
     public void end(boolean interrupted) {
