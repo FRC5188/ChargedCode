@@ -72,7 +72,7 @@ public class LEDs extends SubsystemBase {
                 break;
 
             case Cone:
-                //setColor(LEDColors.Yellow);
+                setColor(LEDColors.Yellow);
                 this.currentMode = LEDMode.Cone;
                 break;
 
