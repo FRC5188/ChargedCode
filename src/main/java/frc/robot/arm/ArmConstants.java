@@ -1,6 +1,7 @@
 package frc.robot.arm;
 
 import frc.robot.arm.Arm.WristPosition;
+import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import frc.robot.arm.Arm.Arm2DPosition;
 import frc.robot.arm.Arm.IntakeMode;
@@ -22,9 +23,18 @@ public class ArmConstants {
     public static double SHOULDER_JOINT_Z_POS = 17; // inches
     public static double SHOULDER_JOINT_Y_POS = 0; // inches
 
-    // arm segments lengths
-    public static double SHOULDER_ARM_LENGTH = 27.83; // inches
-    public static double ELBOW_ARM_LENGTH = 30.748; // inches
+    // Physical arm constants (used for feedforward and trajectory following)
+    public static final double ELBOW_LENGTH = 0.781;
+    public static final double ELBOW_MOI = 1.68;
+    public static final double ELBOW_CGRADIUS = 0.679;
+    public static final double ELBOW_MASS = 3.243;
+    public static final DCMotor ELBOW_MOTOR = DCMotor.getFalcon500(1).withReduction(200);
+
+    public static final double SHOULDER_LENGTH = 0.707;
+    public static final double SHOULDER_MOI = 0.406;
+    public static final double SHOULDER_CGRADIUS = 0.274;
+    public static final double SHOULDER_MASS = 3.856;
+    public static final DCMotor SHOULDER_MOTOR = DCMotor.getFalcon500(1).withReduction(200);
 
 
     public static class AngleSetpoints {

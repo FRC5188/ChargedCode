@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.arm.Arm.Arm2DPosition;
 import frc.robot.arm.Arm.ArmJointAngles;
@@ -20,8 +21,8 @@ public class ArmTrajectory {
     private ArrayList<Double> m_waypointTimes; // Cumulative time from the beginning to each waypoint
 
     /**
-     * 
-     * @param waypoints ArrayList of ArmPose waypoints
+     * Create a new trajectory from the given waypoints
+     * @param waypoints ArrayList of joint angle waypoints
      */
     public ArmTrajectory(ArrayList<ArmJointAngles> waypoints) {
         m_waypoints = new ArrayList<ArmJointAngles>(waypoints);
@@ -29,7 +30,6 @@ public class ArmTrajectory {
         // Calculate characteristics of the trajectory
         m_maxTranslationalSpeed = ArmConstants.MAX_TRAJECTORY_SPEED;
         m_totalLength = calcTotalDistance(m_waypoints);
-        System.out.println("LENGTH: " + m_totalLength);
         m_totalTime = m_totalLength / m_maxTranslationalSpeed;
 
         // Calculate the cumulative distance and time for each of the waypoints
@@ -54,10 +54,11 @@ public class ArmTrajectory {
     }
 
     /**
-     * By intepolating between the given waypoints
+     * Generate new setpoint for the PID controllers based on how long
+     * the trajectory has been running
      * 
      * @param time Time in seconds since the beginning of the trajectory
-     * @return ArmPose (x inches, y inches, wrist rotation degrees)
+     * @return The new setpoints for the PIDs, in angles
      */
     public ArmJointAngles sample(double time) {
         if (time < 0.0) {
@@ -80,7 +81,7 @@ public class ArmTrajectory {
             }
         }
 
-        // Calculate the total x and y translation between the two waypoints, and how
+        // Calculate the total degree difference between the two waypoints, and how
         // long it should take
         double changeShoulder = m_waypoints.get(waypoint1).getShoulderJointAngle()
                 - m_waypoints.get(waypoint0).getShoulderJointAngle();
@@ -101,6 +102,13 @@ public class ArmTrajectory {
         return targetPose;
     }
 
+    /**
+     * Calculate the total distance, in inches, that the arm needs to move.
+     * This helps the trajectory generator figure out how far apart the sampled poses
+     * should be spaced. 
+     * @param waypoints
+     * @return
+     */
     private double calcTotalDistance(ArrayList<ArmJointAngles> waypoints) {
         double totalLength = 0.0;
         for (int i = 0; i < waypoints.size() - 1; i++) {
@@ -111,6 +119,12 @@ public class ArmTrajectory {
         return totalLength;
     }
 
+    /**
+     * calculates the distance between two waypoints
+     * @param angles0 the first waypoint in shoulder and elbow angles
+     * @param angles1 the next waypoint in shoulder and elbow angles
+     * @return the distance in inches between the waypoints
+     */
     private double dist(ArmJointAngles angles0, ArmJointAngles angles1) {
         Pose2d pose0 = arm2DPositionFromAngles(angles0.getShoulderJointAngle(), angles0.getElbowJointAngle());
         Pose2d pose1 = arm2DPositionFromAngles(angles1.getShoulderJointAngle(), angles1.getElbowJointAngle());
@@ -129,11 +143,9 @@ public class ArmTrajectory {
     }
 
     /**
-     * This method will do the math to calculate the wrist position in 2D space from
+     * This method will do the math to calculate the end of the elbow's position in 2D space from
      * a given shoulder and
-     * elbow joint angle. This method still needs a current wristposition passed
-     * into it so a proper Arm2DPosition
-     * can be returned.
+     * elbow joint angle.
      * 
      * @param currentShoulder The current shoulder angle. Use
      *                        {@link getShoulderJointAngle} and not the pot value.
@@ -143,15 +155,14 @@ public class ArmTrajectory {
      *         wrist of the arm, including the wrist state.
      */
     public static Pose2d arm2DPositionFromAngles(double currentShoulder, double currentElbow) {
-        // TODO check this math
         //elbow 0 is perp with ground. shoulder is || with ground
         double y = ArmConstants.SHOULDER_JOINT_Y_POS;
-        y += ArmConstants.SHOULDER_ARM_LENGTH * Math.cos(Math.toRadians(currentShoulder));
-        y += ArmConstants.ELBOW_ARM_LENGTH * Math.sin(Math.toRadians(currentElbow));
+        y += Units.metersToInches(ArmConstants.SHOULDER_LENGTH) * Math.cos(Math.toRadians(currentShoulder));
+        y += Units.metersToInches(ArmConstants.ELBOW_LENGTH) * Math.sin(Math.toRadians(currentElbow));
 
         double z = ArmConstants.SHOULDER_JOINT_Z_POS;
-        z += ArmConstants.SHOULDER_ARM_LENGTH * Math.sin(Math.toRadians(currentShoulder));
-        z -= ArmConstants.ELBOW_ARM_LENGTH * Math.cos(Math.toRadians(currentElbow));
+        z += Units.metersToInches(ArmConstants.SHOULDER_LENGTH) * Math.sin(Math.toRadians(currentShoulder));
+        z -= Units.metersToInches(ArmConstants.ELBOW_LENGTH) * Math.cos(Math.toRadians(currentElbow));
 
         System.out.println("y: " + y + " z: " + z);
 

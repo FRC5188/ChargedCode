@@ -370,8 +370,8 @@ public class Arm extends SubsystemBase {
         // grab the points
         double y = arm2DPosition.gety() - ArmConstants.SHOULDER_JOINT_Y_POS;
         double z = arm2DPosition.getz() - ArmConstants.SHOULDER_JOINT_Z_POS;
-        double elbowLen = ArmConstants.ELBOW_ARM_LENGTH;
-        double shoulderLen = ArmConstants.SHOULDER_ARM_LENGTH;
+        double elbowLen = ArmConstants.ELBOW_LENGTH;
+        double shoulderLen = ArmConstants.SHOULDER_LENGTH;
 
         // alpha = acos((x^2 + y^2 - a1^2 - a2^2) / (-2*a1*a2))
         double alpha = Math.acos((Math.pow(y, 2) + Math.pow(z, 2) -
