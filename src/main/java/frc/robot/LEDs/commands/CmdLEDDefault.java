@@ -41,7 +41,7 @@ public class CmdLEDDefault extends CommandBase {
         }
         
         else {
-            if (armPosition == ArmPosition.Stored || armPosition == ArmPosition.LoadStationPickUp || armPosition == ArmPosition.GroundPickUp) {
+            if (armPosition == ArmPosition.Stored || armPosition == ArmPosition.LoadStationPickUp || armPosition == ArmPosition.GroundPickUp || armPosition == ArmPosition.EnGarde) {
                 switch (armMode) {
                     case Cone:
                         this._leds.setLEDMode(LEDMode.Cone);
