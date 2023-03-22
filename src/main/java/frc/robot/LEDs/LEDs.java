@@ -18,7 +18,8 @@ public class LEDs extends SubsystemBase {
         Purple,
         White,
         Red,
-        Green
+        Green, 
+        Off
     }
 
     public enum LEDMode {
@@ -30,7 +31,8 @@ public class LEDs extends SubsystemBase {
         ScoreHigh,
         ScoreMid,
         ScoreLow,
-        LostComms
+        LostComms,
+        Off
     }
 
     // TODO: Change to length of LED strips.
@@ -41,7 +43,7 @@ public class LEDs extends SubsystemBase {
     public LEDs() {
 
         //TODO: Test brightness and update this to preferred look.
-        candle.configBrightnessScalar(0.4);
+        candle.configBrightnessScalar(0.5);
         
     
         // init: set to white
@@ -51,7 +53,7 @@ public class LEDs extends SubsystemBase {
         configAll.statusLedOffWhenActive = true;
         configAll.disableWhenLOS = false; //don't turn off leds when we lose comms. let us decide
         configAll.stripType = LEDStripType.RGB; //normal RBG strips.
-        configAll.brightnessScalar = 1;
+        configAll.brightnessScalar = 0.5;
         configAll.vBatOutputMode = VBatOutputMode.Modulated;
         candle.configAllSettings(configAll, 100);
 
@@ -110,6 +112,10 @@ public class LEDs extends SubsystemBase {
                 this.currentMode = LEDMode.ScoreLow;
                 break;
 
+            case Off:
+                setColor(LEDColors.Off);
+                this.currentMode = LEDMode.Off;
+                break;
             default:
                 setColor(LEDColors.Pink);
                 this.currentMode = LEDMode.Default;
@@ -124,6 +130,7 @@ public class LEDs extends SubsystemBase {
      */
 
     public void setColor(LEDColors color) {
+
         switch(color) {
             case Pink: 
                 candle.setLEDs(205, 55, 130); 
@@ -151,6 +158,11 @@ public class LEDs extends SubsystemBase {
 
             case Green:
                 candle.setLEDs(0, 255, 0);
+                break;
+
+            case Off:
+                candle.setLEDs(0, 0, 0);
+                candle.configBrightnessScalar(0.0, 100);
                 break;
 
             default:

@@ -11,12 +11,14 @@ import frc.robot.arm.Arm.ArmPosition;
 public class CmdLEDDefault extends CommandBase {
     private Arm _armSubsystem;
     private LEDs _leds;
+    private DriverStation _driverStation;
     private ArmMode armMode;
     private ArmPosition armPosition;
 
     public CmdLEDDefault(LEDs leds, Arm armSubsystem) {
         _armSubsystem = armSubsystem;
         _leds = leds;
+        
     }
 
     @Override
@@ -33,17 +35,23 @@ public class CmdLEDDefault extends CommandBase {
         
         this.armMode = this._armSubsystem.getArmMode();
         this.armPosition = this._armSubsystem.getCurrentArmPosition();
+        // this.isRobotDisabled = this._driverStation.isDisabled();
+        if (DriverStation.isDisabled()) {
+            this._leds.setLEDMode(LEDMode.Off);
+        }
         
-        if (armPosition == ArmPosition.Stored || armPosition == ArmPosition.LoadStationPickUp || armPosition == ArmPosition.GroundPickUp) {
-            switch (armMode) {
-                case Cone:
-                    this._leds.setLEDMode(LEDMode.Cone);
-                    break;
+        else {
+            if (armPosition == ArmPosition.Stored || armPosition == ArmPosition.LoadStationPickUp || armPosition == ArmPosition.GroundPickUp) {
+                switch (armMode) {
+                    case Cone:
+                        this._leds.setLEDMode(LEDMode.Cone);
+                        break;
 
-                case Cube:
-                    this._leds.setLEDMode(LEDMode.Cube);
-                    break;
+                    case Cube:
+                        this._leds.setLEDMode(LEDMode.Cube);
+                        break;
 
+                }
             }
         }
     }
