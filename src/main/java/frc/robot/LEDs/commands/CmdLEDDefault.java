@@ -24,11 +24,12 @@ public class CmdLEDDefault extends CommandBase {
         // this.color = LEDColors.White;
         // this._leds.changeColor(this.color);
         // this._leds.brightness = 0.00;
+        
     }
 
     @Override
     public void execute() {
-        System.out.println("Running LEDs");
+        //System.out.println("Running LEDs");
         
         this.armMode = this._armSubsystem.getArmMode();
         this.armPosition = this._armSubsystem.getCurrentArmPosition();

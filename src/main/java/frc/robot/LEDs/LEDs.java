@@ -42,6 +42,7 @@ public class LEDs extends SubsystemBase {
 
         //TODO: Test brightness and update this to preferred look.
         candle.configBrightnessScalar(0.4);
+        
     
         // init: set to white
         candle.setLEDs(255, 255, 255);

@@ -51,6 +51,10 @@ public class ArmTrajectory {
         SmartDashboard.putString("WaypointTimes", m_waypointTimes.toString());
         SmartDashboard.putNumber("TotalTime", m_totalTime);
         SmartDashboard.putNumber("TotalLength", m_totalLength);
+        System.out.println("WAYPOINTS");
+        for(ArmJointAngles w : m_waypoints) {
+            System.out.println("Shoulder: " + w.getShoulderJointAngle() + " Elbow: " + w.getElbowJointAngle());
+        }
     }
 
     /**
@@ -128,7 +132,6 @@ public class ArmTrajectory {
     private double dist(ArmJointAngles angles0, ArmJointAngles angles1) {
         Pose2d pose0 = arm2DPositionFromAngles(angles0.getShoulderJointAngle(), angles0.getElbowJointAngle());
         Pose2d pose1 = arm2DPositionFromAngles(angles1.getShoulderJointAngle(), angles1.getElbowJointAngle());
-        System.out.println("1: " + pose0 + " 2: " + pose1);
 
         return Math.sqrt(Math.pow((pose1.getX() - pose0.getX()), 2.0) +
                 Math.pow((pose1.getY() - pose0.getY()), 2.0));
@@ -164,7 +167,7 @@ public class ArmTrajectory {
         z += Units.metersToInches(ArmConstants.SHOULDER_LENGTH) * Math.sin(Math.toRadians(currentShoulder));
         z -= Units.metersToInches(ArmConstants.ELBOW_LENGTH) * Math.cos(Math.toRadians(currentElbow));
 
-        System.out.println("y: " + y + " z: " + z);
+        //System.out.println("y: " + y + " z: " + z);
 
         return new Pose2d(y, z, null);
     }

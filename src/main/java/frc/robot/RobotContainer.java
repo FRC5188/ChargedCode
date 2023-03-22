@@ -147,6 +147,7 @@ public class RobotContainer {
        _driverButtonA.whileFalse(new CmdDriveChangeCoR(_driveSubsystem, new Translation2d(0, 0)));
 
         // -- Operator Controls --
+        _opButtonOne.onTrue(new GrpMoveArmToPosition(_armSubsystem, ArmPosition.EnGarde));
 
         // Run Intake
         _opButtonTwo.onTrue(new CmdArmRunIntake(_armSubsystem, 0.6));

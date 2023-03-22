@@ -17,11 +17,11 @@ public class CmdArmUpdateToItermediate extends CommandBase {
 
     @Override
     public void initialize() {
-        ArmPosition pos = _armSubsystem.getIntermediatePositions(_position).get(0);
-        _armSubsystem.setArmGoalsFromPosition(pos);
-        _armSubsystem.setWristPosition(pos);
+        // ArmPosition pos = _armSubsystem.getIntermediatePositions(_position).get(0);
+        // _armSubsystem.setArmGoalsFromPosition(pos);
+        // _armSubsystem.setWristPosition(pos);
         
-        System.out.println("Updated arm position to " + pos);
+        //System.out.println("Updated arm position to " + pos);
     }
 
     @Override

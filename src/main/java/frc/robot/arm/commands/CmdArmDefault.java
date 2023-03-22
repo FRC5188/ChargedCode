@@ -19,6 +19,8 @@ public class CmdArmDefault extends CommandBase {
     public void execute() {
         //  if(this._armSubsystem.isPIDEnabled()){
             _armSubsystem.execPIDs();
+            if (_armSubsystem.atFinalPosition())
+                _armSubsystem.setCurrentPosition(_armSubsystem.getTargetArmPosition());
         // }
         // else {
         //     System.out.println("[WARNING]: PID has been disabled.");
