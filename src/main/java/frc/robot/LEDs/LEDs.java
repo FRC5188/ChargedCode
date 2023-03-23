@@ -36,7 +36,7 @@ public class LEDs extends SubsystemBase {
     }
 
     // TODO: Change to length of LED strips.
-    private final int LEDCount = 8;
+    // private final int LEDCount = 9;
     public CANdle candle = new CANdle(Constants.CanIDs.CANDLE_ID, "rio");
     private LEDMode currentMode = LEDMode.Default;
 
@@ -44,10 +44,6 @@ public class LEDs extends SubsystemBase {
 
         //TODO: Test brightness and update this to preferred look.
         candle.configBrightnessScalar(0.5);
-        
-    
-        // init: set to white
-        candle.setLEDs(255, 255, 255);
 
         CANdleConfiguration configAll = new CANdleConfiguration();
         configAll.statusLedOffWhenActive = true;
@@ -116,6 +112,7 @@ public class LEDs extends SubsystemBase {
                 setColor(LEDColors.Off);
                 this.currentMode = LEDMode.Off;
                 break;
+
             default:
                 setColor(LEDColors.Pink);
                 this.currentMode = LEDMode.Default;

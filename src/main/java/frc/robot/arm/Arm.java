@@ -125,6 +125,7 @@ public class Arm extends SubsystemBase {
     public enum ArmPosition {
         Stored, // used while driving across the field or starting a match
         GroundPickUp,
+        TippedConePickUp,
         HighCube,
         HighCone,
         LoadStationPickUp,
@@ -593,6 +594,9 @@ public class Arm extends SubsystemBase {
             case GroundPickUp:
                 setWristPosition(ArmConstants.SetPoints2D.GROUND_PICKUP_WRIST_POS);
                 break;
+            case TippedConePickUp:
+                setWristPosition(ArmConstants.SetPoints2D.TIPPED_CONE_WRIST_POS);
+                break;
             case HighCone:
                 setWristPosition(ArmConstants.SetPoints2D.HIGH_CONE_WRIST_POS);
                 break;
@@ -648,6 +652,8 @@ public class Arm extends SubsystemBase {
     public boolean checkWristPosition(ArmPosition positionOfArm) {
         switch (positionOfArm) {
             case GroundPickUp:
+                return getWristPosition() == ArmConstants.SetPoints2D.GROUND_PICKUP_WRIST_POS;
+            case TippedConePickUp:
                 return getWristPosition() == ArmConstants.SetPoints2D.GROUND_PICKUP_WRIST_POS;
             case HighCone:
                 return getWristPosition() == ArmConstants.SetPoints2D.HIGH_CONE_WRIST_POS;
@@ -1001,6 +1007,9 @@ public class Arm extends SubsystemBase {
                 shoulderPos = ArmConstants.AngleSetpoints.GROUND_PICKUP_SHOULDER_POS;
                 elbowPos = ArmConstants.AngleSetpoints.GROUND_PICKUP_ELBOW_POS;
                 break;
+            case TippedConePickUp:
+                shoulderPos = ArmConstants.AngleSetpoints.TIPPED_CONE_SHOULDER_POS;
+                elbowPos = ArmConstants.AngleSetpoints.TIPPED_CONE_ELBOW_POS;
             case HighCone:
                 shoulderPos = ArmConstants.AngleSetpoints.HIGH_CONE_DROP_SHOULDER_POS;
                 elbowPos = ArmConstants.AngleSetpoints.HIGH_CONE_DROP_ELBOW_POS;

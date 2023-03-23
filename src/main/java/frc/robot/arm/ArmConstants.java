@@ -86,6 +86,9 @@ public class ArmConstants {
                 public static double GROUND_PICKUP_SHOULDER_POS = 46.2;
                 public static double GROUND_PICKUP_ELBOW_POS = 1;
 
+                public static double TIPPED_CONE_SHOULDER_POS = 0; // TODO
+                public static double TIPPED_CONE_ELBOW_POS = 0; // TODO
+
                 public static double INTERMEDIATE_SCORING_SHOULDER_POS = 95;
                 public static double INTERMEDIATE_SCORING_ELBOW_POS = 31;
 
@@ -133,6 +136,13 @@ public class ArmConstants {
                 public final Arm2DPosition GROUND_PICKUP_SETPOINT = new Arm2DPosition(GROUND_PICKUP_Y_POS,
                                 GROUND_PICKUP_X_POS,
                                 GROUND_PICKUP_WRIST_POS);
+
+                private final double TIPPED_CONE_Y_POS = 0.0;
+                private final double TIPPED_CONE_X_POS = 0.0;
+                public static WristPosition TIPPED_CONE_WRIST_POS = WristPosition.Perpendicular;
+                public final Arm2DPosition TIPPED_CONE_SETPOINT = new Arm2DPosition(TIPPED_CONE_Y_POS,
+                                TIPPED_CONE_X_POS,
+                                TIPPED_CONE_WRIST_POS);
 
                 private final double HIGH_CUBE_Y_POS = 0.0;
                 private final double HIGH_CUBE_X_POS = 0.0;
