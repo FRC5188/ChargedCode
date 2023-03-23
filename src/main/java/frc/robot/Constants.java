@@ -38,7 +38,8 @@ public final class Constants {
         public static final int BACK_RIGHT_TURNING_ID = 11;
         public static final int BACK_RIGHT_ENCODER_ID = 12;
 
-        public static final int CANdleID = 16; 
+        public static final int CANdleID = 16;
+        public static final int CANDLE_ID = 0; 
     }
 
     /**
