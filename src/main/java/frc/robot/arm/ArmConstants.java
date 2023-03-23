@@ -110,10 +110,10 @@ public class ArmConstants {
                 public static double[][] STORED_TO_ENGARDE = { { 97, 18 }, { 113.2, 34 }, { 126.6, 46 },
                                 { 136.2, 59.2 } };
                 public static double[][] ENGARDE_TO_STORED = { { 131, 63.7 }, { 113.5, 39.3 }, { 97.7, 20.7 },
-                                { 87.1, 22 }, { 84.1, 18 }, { 81.7, 10 }};
-                public static double[][] STORED_TO_GROUND_PICKUP = { { 95, 31 } };
+                                { 87.1, 22 }, { 84.1, 18 }, { 81.7, 10 } };
+                public static double[][] STORED_TO_GROUND_PICKUP = { { 114, 30 }, { 103.2, 40.3 }, { 92.3, 55.5 }, { 47.5, 45 } };
+                public static double[][] GROUND_PICKUP_TO_STORED = {{46.2, 7}, {69.6, 30}, {80, 3.5}};
         }
-
         public static class SetPoints2D {
 
                 /**
@@ -220,5 +220,5 @@ public class ArmConstants {
                         ELBOW_MAX_ACCELERATION);
 
         // public static double MAX_TRAJECTORY_SPEED = 50;
-        public static double MAX_TRAJECTORY_SPEED = 40;
+        public static double MAX_TRAJECTORY_SPEED = 3;
 }

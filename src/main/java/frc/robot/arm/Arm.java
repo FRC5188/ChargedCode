@@ -173,7 +173,9 @@ public class Arm extends SubsystemBase {
     public IntakeMode _intakeMode;
 
     // Set this to true so that the arm is in coast and the motors don't run
-    private boolean _inSetpointTestingMode = false;
+    //WARNING: DOESN'T UPDATE THE POTS, WILL ALWAYS ASSUME THAT THE ROBOT IS IN ONE POSITION
+    // setCurrentPosition isn't updated
+    private boolean _inSetpointTestingMode = true;
 
     private boolean _pidEnable;
 
@@ -259,6 +261,7 @@ public class Arm extends SubsystemBase {
     }
 
     public void setCurrentPosition(ArmPosition inputArmPosition) {
+        System.out.println("Goofy AAA Robot Code");
         this._currentArmPos = inputArmPosition;
     }
 
@@ -828,14 +831,15 @@ public class Arm extends SubsystemBase {
      */
     public ArrayList<ArmJointAngles> getIntermediatePositions(ArmPosition position) {
         ArrayList<ArmJointAngles> intermediatePositions = new ArrayList<>();
-
         // We only want to run these intermediate positions if we are going somewhere
         // from stow
+        System.out.println("Current Position: " + _currentArmPos + "\nNext Position: " + position);
         if (_currentArmPos == ArmPosition.Stored) {
             switch (position) {
                 case LowScore:
                 case GroundPickUp:
-
+                    addWaypointsFrom2DArray(intermediatePositions, 
+                        ArmConstants.IntermediateWaypoints.STORED_TO_GROUND_PICKUP);
                     break;
                 case Stored:
                     break;
@@ -851,10 +855,13 @@ public class Arm extends SubsystemBase {
         } else if (_currentArmPos == ArmPosition.GroundPickUp || _currentArmPos == ArmPosition.LowScore) {
             // We only want to run these intermediate positions if we are going somewhere
             // from ground pickup
+            System.out.println("Goofy Ground Position");
             switch (position) {
                 case LowScore:
                 case GroundPickUp:
                     break;
+                case Stored:
+                    addWaypointsFrom2DArray(intermediatePositions, ArmConstants.IntermediateWaypoints.GROUND_PICKUP_TO_STORED);
                 default:
 
                     break;
