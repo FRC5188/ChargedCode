@@ -19,7 +19,7 @@ public class CmdDriveAutoBalance extends CommandBase {
 		BALANCING_MAX_ACCELERATION = BALANCING_MAX_SPEED; //TODO: Find the actual max acceleration
 		BALANCING_CONSTRAINTS = new TrapezoidProfile.Constraints(BALANCING_MAX_SPEED, BALANCING_MAX_ACCELERATION);
 		addRequirements(_driveSubsystem);
-		pidController = new ProfiledPIDController(0.02, 0, 0, BALANCING_CONSTRAINTS);
+		pidController = new ProfiledPIDController(0.02, 0, 0, BALANCING_CONSTRAINTS); //TODO: Tune PID values
 
 
 	}
