@@ -176,7 +176,7 @@ public class Arm extends SubsystemBase {
     // Set this to true so that the arm is in coast and the motors don't run
     //WARNING: DOESN'T UPDATE THE POTS, WILL ALWAYS ASSUME THAT THE ROBOT IS IN ONE POSITION
     // setCurrentPosition isn't updated
-    private boolean _inSetpointTestingMode = true;
+    private boolean _inSetpointTestingMode = false;
 
     private boolean _pidEnable;
 
@@ -262,7 +262,7 @@ public class Arm extends SubsystemBase {
     }
 
     public void setCurrentPosition(ArmPosition inputArmPosition) {
-        System.out.println("Goofy AAA Robot Code");
+        //System.out.println("Goofy AAA Robot Code");
         this._currentArmPos = inputArmPosition;
     }
 
@@ -861,7 +861,7 @@ public class Arm extends SubsystemBase {
         } else if (_currentArmPos == ArmPosition.GroundPickUp || _currentArmPos == ArmPosition.LowScore) {
             // We only want to run these intermediate positions if we are going somewhere
             // from ground pickup
-            System.out.println("Goofy Ground Position");
+            //System.out.println("Goofy Ground Position");
             switch (position) {
                 case LowScore:
                 case GroundPickUp:
