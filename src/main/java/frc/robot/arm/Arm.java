@@ -125,6 +125,7 @@ public class Arm extends SubsystemBase {
     public enum ArmPosition {
         Stored, // used while driving across the field or starting a match
         GroundPickUp,
+        TippedConePickUp,
         HighCube,
         HighCone,
         LoadStationPickUp,
@@ -173,6 +174,8 @@ public class Arm extends SubsystemBase {
     public IntakeMode _intakeMode;
 
     // Set this to true so that the arm is in coast and the motors don't run
+    //WARNING: DOESN'T UPDATE THE POTS, WILL ALWAYS ASSUME THAT THE ROBOT IS IN ONE POSITION
+    // setCurrentPosition isn't updated
     private boolean _inSetpointTestingMode = false;
 
     private boolean _pidEnable;
@@ -259,6 +262,7 @@ public class Arm extends SubsystemBase {
     }
 
     public void setCurrentPosition(ArmPosition inputArmPosition) {
+        //System.out.println("Goofy AAA Robot Code");
         this._currentArmPos = inputArmPosition;
     }
 
@@ -590,6 +594,9 @@ public class Arm extends SubsystemBase {
             case GroundPickUp:
                 setWristPosition(ArmConstants.SetPoints2D.GROUND_PICKUP_WRIST_POS);
                 break;
+            case TippedConePickUp:
+                setWristPosition(ArmConstants.SetPoints2D.TIPPED_CONE_WRIST_POS);
+                break;
             case HighCone:
                 setWristPosition(ArmConstants.SetPoints2D.HIGH_CONE_WRIST_POS);
                 break;
@@ -645,6 +652,8 @@ public class Arm extends SubsystemBase {
     public boolean checkWristPosition(ArmPosition positionOfArm) {
         switch (positionOfArm) {
             case GroundPickUp:
+                return getWristPosition() == ArmConstants.SetPoints2D.GROUND_PICKUP_WRIST_POS;
+            case TippedConePickUp:
                 return getWristPosition() == ArmConstants.SetPoints2D.GROUND_PICKUP_WRIST_POS;
             case HighCone:
                 return getWristPosition() == ArmConstants.SetPoints2D.HIGH_CONE_WRIST_POS;
@@ -828,14 +837,15 @@ public class Arm extends SubsystemBase {
      */
     public ArrayList<ArmJointAngles> getIntermediatePositions(ArmPosition position) {
         ArrayList<ArmJointAngles> intermediatePositions = new ArrayList<>();
-
         // We only want to run these intermediate positions if we are going somewhere
         // from stow
+        System.out.println("Current Position: " + _currentArmPos + "\nNext Position: " + position);
         if (_currentArmPos == ArmPosition.Stored) {
             switch (position) {
                 case LowScore:
                 case GroundPickUp:
-
+                    addWaypointsFrom2DArray(intermediatePositions, 
+                        ArmConstants.IntermediateWaypoints.STORED_TO_GROUND_PICKUP);
                     break;
                 case Stored:
                     break;
@@ -851,10 +861,13 @@ public class Arm extends SubsystemBase {
         } else if (_currentArmPos == ArmPosition.GroundPickUp || _currentArmPos == ArmPosition.LowScore) {
             // We only want to run these intermediate positions if we are going somewhere
             // from ground pickup
+            //System.out.println("Goofy Ground Position");
             switch (position) {
                 case LowScore:
                 case GroundPickUp:
                     break;
+                case Stored:
+                    addWaypointsFrom2DArray(intermediatePositions, ArmConstants.IntermediateWaypoints.GROUND_PICKUP_TO_STORED);
                 default:
 
                     break;
@@ -994,6 +1007,9 @@ public class Arm extends SubsystemBase {
                 shoulderPos = ArmConstants.AngleSetpoints.GROUND_PICKUP_SHOULDER_POS;
                 elbowPos = ArmConstants.AngleSetpoints.GROUND_PICKUP_ELBOW_POS;
                 break;
+            case TippedConePickUp:
+                shoulderPos = ArmConstants.AngleSetpoints.TIPPED_CONE_SHOULDER_POS;
+                elbowPos = ArmConstants.AngleSetpoints.TIPPED_CONE_ELBOW_POS;
             case HighCone:
                 shoulderPos = ArmConstants.AngleSetpoints.HIGH_CONE_DROP_SHOULDER_POS;
                 elbowPos = ArmConstants.AngleSetpoints.HIGH_CONE_DROP_ELBOW_POS;

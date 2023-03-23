@@ -86,6 +86,9 @@ public class ArmConstants {
                 public static double GROUND_PICKUP_SHOULDER_POS = 46.2;
                 public static double GROUND_PICKUP_ELBOW_POS = 1;
 
+                public static double TIPPED_CONE_SHOULDER_POS = 0; // TODO
+                public static double TIPPED_CONE_ELBOW_POS = 0; // TODO
+
                 public static double INTERMEDIATE_SCORING_SHOULDER_POS = 95;
                 public static double INTERMEDIATE_SCORING_ELBOW_POS = 31;
 
@@ -110,10 +113,10 @@ public class ArmConstants {
                 public static double[][] STORED_TO_ENGARDE = { { 97, 18 }, { 113.2, 34 }, { 126.6, 46 },
                                 { 136.2, 59.2 } };
                 public static double[][] ENGARDE_TO_STORED = { { 131, 63.7 }, { 113.5, 39.3 }, { 97.7, 20.7 },
-                                { 87.1, 22 }, { 84.1, 18 }, { 81.7, 10 }};
-                public static double[][] STORED_TO_GROUND_PICKUP = { { 95, 31 } };
+                                { 87.1, 22 }, { 84.1, 18 }, { 81.7, 10 } };
+                public static double[][] STORED_TO_GROUND_PICKUP = { { 114, 30 }, { 103.2, 40.3 }, { 92.3, 55.5 }, { 47.5, 45 } };
+                public static double[][] GROUND_PICKUP_TO_STORED = {{46.2, 7}, {69.6, 30}, {80, 3.5}};
         }
-
         public static class SetPoints2D {
 
                 /**
@@ -133,6 +136,13 @@ public class ArmConstants {
                 public final Arm2DPosition GROUND_PICKUP_SETPOINT = new Arm2DPosition(GROUND_PICKUP_Y_POS,
                                 GROUND_PICKUP_X_POS,
                                 GROUND_PICKUP_WRIST_POS);
+
+                private final double TIPPED_CONE_Y_POS = 0.0;
+                private final double TIPPED_CONE_X_POS = 0.0;
+                public static WristPosition TIPPED_CONE_WRIST_POS = WristPosition.Perpendicular;
+                public final Arm2DPosition TIPPED_CONE_SETPOINT = new Arm2DPosition(TIPPED_CONE_Y_POS,
+                                TIPPED_CONE_X_POS,
+                                TIPPED_CONE_WRIST_POS);
 
                 private final double HIGH_CUBE_Y_POS = 0.0;
                 private final double HIGH_CUBE_X_POS = 0.0;
@@ -180,7 +190,7 @@ public class ArmConstants {
 
         }
 
-        public static double ELBOW_IS_HITTING_CURRENT = 9999.0; // TODO: Find actual value for this
+        public static double ELBOW_IS_HITTING_CURRENT = 9999.0; // TODO: Find actual value for this (Probably around 10-15 - Mike)
         public static double MAX_MOTOR_VOLTAGE = 11.5; // May want to adjust -Garrett
 
         public static double INTAKE_HAS_PIECE_CURRENT = 40;
