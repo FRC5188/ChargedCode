@@ -1,0 +1,80 @@
+package frc.robot.LEDs.commands;
+
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.LEDs.LEDs;
+import frc.robot.LEDs.LEDs.LEDMode;
+import frc.robot.arm.Arm;
+import frc.robot.arm.Arm.ArmMode;
+import frc.robot.arm.Arm.ArmPosition;
+
+public class CmdLEDPieceCollected extends CommandBase {
+    private Arm _armSubsystem;
+    private LEDs _leds;
+    private DriverStation _driverStation;
+    private ArmMode armMode;
+    private ArmPosition armPosition;
+
+    public CmdLEDPieceCollected(LEDs leds, Arm armSubsystem) {
+        _armSubsystem = armSubsystem;
+        _leds = leds;
+        
+    }
+
+    @Override
+    public void initialize() {
+        // this.color = LEDColors.White;
+        // this._leds.changeColor(this.color);
+        // this._leds.brightness = 0.00;
+        
+    }
+
+    @Override
+    public void execute() {
+        //System.out.println("Running LEDs");
+        
+        this.armMode = this._armSubsystem.getArmMode();
+        this.armPosition = this._armSubsystem.getCurrentArmPosition();
+        // this.isRobotDisabled = this._driverStation.isDisabled();
+        if (DriverStation.isDisabled()) {
+            this._leds.setLEDMode(LEDMode.Off);
+        }
+        
+        else {
+            // TODO: test to see if leds blink green when piece collected 
+            if (armPosition == ArmPosition.Stored || armPosition == ArmPosition.LoadStationPickUp || armPosition == ArmPosition.GroundPickUp || armPosition == ArmPosition.EnGarde) {
+                if (armPosition == ArmPosition.LoadStationPickUp || armPosition == ArmPosition.GroundPickUp){
+                    if (Arm.checkGamepiece()) {
+                        Timer.start();
+                        this._leds.setLEDMode(LEDMode.HasGamepiece);
+                        Timer.delay(0.005);
+                        Timer.stop();
+                        break;
+                    }
+                }
+                switch (armMode) {
+                    case Cone:
+                        this._leds.setLEDMode(LEDMode.Cone);
+                        break;
+
+                    case Cube:
+                        this._leds.setLEDMode(LEDMode.Cube);
+                        break;
+
+                }
+            }
+        }
+    }
+    
+
+    @Override
+    public void end(boolean interrupted) {
+        
+    }
+ 
+    @Override
+    public boolean isFinished() {
+        // This is a default command, so there is no end
+        return false;
+    }
+}
