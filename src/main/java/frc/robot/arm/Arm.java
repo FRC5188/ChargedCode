@@ -125,6 +125,7 @@ public class Arm extends SubsystemBase {
     public enum ArmPosition {
         Stored, // used while driving across the field or starting a match
         GroundPickUp,
+        TippedConePickUp,
         HighCube,
         HighCone,
         LoadStationPickUp,
@@ -590,6 +591,9 @@ public class Arm extends SubsystemBase {
             case GroundPickUp:
                 setWristPosition(ArmConstants.SetPoints2D.GROUND_PICKUP_WRIST_POS);
                 break;
+            case TippedConePickUp:
+            //todo
+            break;
             case HighCone:
                 setWristPosition(ArmConstants.SetPoints2D.HIGH_CONE_WRIST_POS);
                 break;
