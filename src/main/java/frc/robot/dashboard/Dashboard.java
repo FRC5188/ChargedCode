@@ -47,7 +47,7 @@ public class Dashboard extends SubsystemBase {
 	  	.withSize(8, 2)
 	  	.withWidget(BuiltInWidgets.kComboBoxChooser);
 
-		/*dashboard.add("Camera Stream", new UsbCamera(getName(), 0))
+		/*dashboard.add("Camera Stream", new UsbCamera(getName(), 0)) //TODO: Check how to actually implement camerastream
 		.withPosition(0,0)
 		.withSize(23,14)
 		.withWidget(BuiltInWidgets.kCameraStream);*/
@@ -56,6 +56,11 @@ public class Dashboard extends SubsystemBase {
 	  	.withPosition(23, 8)
 	  	.withSize(5, 5)
 	  	.withWidget(BuiltInWidgets.kGyro);
+
+		dashboard.add("Field Layout", _driveSubsystem.getField())
+	  	.withPosition(0, 0)
+	  	.withSize(5, 5)
+	  	.withWidget(BuiltInWidgets.kField);  //TODO: Get right size & position for this in layout, may need to resize & position some other elements.
 
 		dashboard.add("Has Gamepiece", _hasGamepiece)
 		.withPosition(23, 2)
