@@ -309,6 +309,6 @@ public class Drive extends SubsystemBase {
                 states[3].angle.getRadians());
 
         _field.setRobotPose(_odometry.getEstimatedPosition());
-        SmartDashboard.putData("Field", _fields);
+        SmartDashboard.putData("Field", _field);
     }
 }
