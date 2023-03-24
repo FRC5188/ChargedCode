@@ -39,7 +39,7 @@ public class Vision {
 
     private static final double CAMERA_ROLL = 0;
     private static final double CAMERA_PITCH = 0;
-    private static final double CAMERA_YAW = Math.toRadians(-10);
+    private static final double CAMERA_YAW = Math.toRadians(-10.5);
 
     private static Transform3d cameraPos = new Transform3d(
             new Translation3d(CAMERA_X_FROM_ROBOT_CENTER, CAMERA_Y_FROM_ROBOT_CENTER, CAMERA_Z_FROM_ROBOT_CENTER),
@@ -83,7 +83,7 @@ public class Vision {
             System.out.println("Tag couldn't be found. Please ensure that ID for apriltag is correct.");
             throw new Exception("Tag couldn't be found. Please ensure that ID for apriltag is correct.");
         }
-
+        System.out.println("Current Robot Angle:" + robotPose.relativeTo(apriltagPose).getRotation().getDegrees());
         return robotPose.relativeTo(apriltagPose).getRotation().getDegrees();
     }
 

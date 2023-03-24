@@ -8,14 +8,14 @@ import frc.robot.arm.Arm;
 import frc.robot.arm.Arm.ArmMode;
 import frc.robot.arm.Arm.ArmPosition;
 
-public class CmdLEDDefault extends CommandBase {
+public class CmdLEDPieceCollected extends CommandBase {
     private Arm _armSubsystem;
     private LEDs _leds;
     private DriverStation _driverStation;
     private ArmMode armMode;
     private ArmPosition armPosition;
 
-    public CmdLEDDefault(LEDs leds, Arm armSubsystem) {
+    public CmdLEDPieceCollected(LEDs leds, Arm armSubsystem) {
         _armSubsystem = armSubsystem;
         _leds = leds;
         
@@ -41,7 +41,17 @@ public class CmdLEDDefault extends CommandBase {
         }
         
         else {
+            // TODO: test to see if leds blink green when piece collected 
             if (armPosition == ArmPosition.Stored || armPosition == ArmPosition.LoadStationPickUp || armPosition == ArmPosition.GroundPickUp || armPosition == ArmPosition.EnGarde) {
+                if (armPosition == ArmPosition.LoadStationPickUp || armPosition == ArmPosition.GroundPickUp){
+                    if (Arm.checkGamepiece()) {
+                        Timer.start();
+                        this._leds.setLEDMode(LEDMode.HasGamepiece);
+                        Timer.delay(0.005);
+                        Timer.stop();
+                        break;
+                    }
+                }
                 switch (armMode) {
                     case Cone:
                         this._leds.setLEDMode(LEDMode.Cone);
@@ -58,7 +68,9 @@ public class CmdLEDDefault extends CommandBase {
     
 
     @Override
-    public void end(boolean interrupted) {}
+    public void end(boolean interrupted) {
+        
+    }
  
     @Override
     public boolean isFinished() {
