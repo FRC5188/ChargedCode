@@ -69,14 +69,14 @@ public class ArmConstants {
                 public static double MID_CUBE_SHOULDER_POS = 107.8;
                 public static double MID_CUBE_ELBOW_POS = 80.7;
                 //shoul 40.2, elbow 110
-                public static double HIGH_CONE_SPIT_SHOULDER_POS = 35;
-                public static double HIGH_CONE_SPIT_ELBOW_POS = 125;
+                public static double HIGH_CONE_SPIT_SHOULDER_POS = 44; //WAS: 35
+                public static double HIGH_CONE_SPIT_ELBOW_POS = 118; //WAS: 125
 
                 // this is set to be the height prior to dropping. ignore the name.
                 // needs refactored
                 // shol 44.7, elbow 121.5
-                public static double HIGH_CONE_DROP_SHOULDER_POS = 35;
-                public static double HIGH_CONE_DROP_ELBOW_POS = 125;
+                public static double HIGH_CONE_DROP_SHOULDER_POS = 44; //WAS: 35
+                public static double HIGH_CONE_DROP_ELBOW_POS = 118; //WAS: 125
 
                 public static double HIGH_CUBE_SHOULDER_POS = 77.3;
                 public static double HIGH_CUBE_ELBOW_POS = 95.0;
@@ -110,24 +110,18 @@ public class ArmConstants {
                 // Add waypoints for trajectories here
                 // Each inner array is a waypoint with 2 numbers; First is the shoulder angle,
                 // and second is the elbow angle
-                //public static double[][] STORED_TO_SCORING = { { 95, 31 } };
-                //public static double[][] STORED_TO_ENGARDE = { { 97, 18 }, { 113.2, 34 }, { 126.6, 46 },
-                //                { 136.2, 59.2 } };
-                //public static double[][] ENGARDE_TO_STORED = { { 131, 63.7 }, { 113.5, 39.3 }, { 97.7, 20.7 },
-                //                { 87.1, 22 }, { 84.1, 18 }, { 81.7, 10 }};
-                //public static double[][] STORED_TO_GROUND_PICKUP = { { 95, 31 } };
-                //public static double [][] ENGARDE_TO_HIGH_CONE = { { 130, 100 }, { 128, 106 }, { 105, 111 }, { 75, 120 }, { 58.7, 126 } };
-
                 public static double[][] STORED_TO_SCORING = { { 95, 31 } };
                 public static double[][] STORED_TO_ENGARDE = { { 97, 18 }, { 113.2, 34 }, { 126.6, 46 },
                                 { 136.2, 59.2 } };
                 public static double[][] ENGARDE_TO_STORED = { { 131, 63.7 }, { 113.5, 39.3 }, { 97.7, 20.7 },
-                                { 87.1, 22 }, { 84.1, 18 }, { 81.7, 10 } };
-                public static double[][] STORED_TO_GROUND_PICKUP = { { 114, 30 }, { 103.2, 40.3 }, { 92.3, 55.5 }, { 47.5, 45 } };
-                public static double [][] ENGARDE_TO_HIGH_CONE = { {148,100}, {147,113}, {137,118}, {129,124}, 
-                {117,123}, {101,120}, {86,120}, {74,121}, {65,124}, {57,127}, {50,135}, {43,135}, {36,127}
+                                { 87.1, 22 }, { 84.1, 18 }, { 81.7, 10 }};
+                public static double[][] STORED_TO_GROUND_PICKUP = { { 95, 31 } };
+                public static double [][] ENGARDE_TO_HIGH_CONE = { { 130, 100 }, { 128, 106 }, { 105, 135 }, { 85, 150 }, { 75, 150 } };
+                // static double [][] ENGARDE_TO_HIGH_CONE = { { 104, 89 }, { 80, 95}, {45, 120}};
+                
+                
+                //{ {148,100}, {147,113}, {137,118}, {129,124}, {117,123}, {101,120}, {86,120}, {74,121}, {65,124}, {57,127}, {50,135}, {43,135}, {36,127}
 
-                 };
                 // {148,100}, {147,113}, {137,118}, {129,124}, {117,123}, {101,120}, {86,120}, {74,121}, {65,124}, {57,127}, {50,135}, {43,135}, {36,127}
                 //{135,90},{134,100},{134,112},{134,120},{134,126},{134,130},{131,127},{127,127},{119,128},{107,134},{92,136},{82,134},{75,140},{70,146},{63,151},{55,143},{52,139},{45,142},{41,138},{35,136}
                 public static double[][] GROUND_PICKUP_TO_STORED = {{46.2, 7}, {69.6, 30}, {80, 3.5}};
@@ -245,5 +239,5 @@ public class ArmConstants {
                         ELBOW_MAX_ACCELERATION);
 
         // public static double MAX_TRAJECTORY_SPEED = 50;
-        public static double MAX_TRAJECTORY_SPEED = 3;
+        public static double MAX_TRAJECTORY_SPEED = 40;
 }
