@@ -262,7 +262,7 @@ public class Arm extends SubsystemBase {
     }
 
     public void setCurrentPosition(ArmPosition inputArmPosition) {
-        //System.out.println("Goofy AAA Robot Code");
+        System.out.println("SETTING POSITION __________" + inputArmPosition);
         this._currentArmPos = inputArmPosition;
     }
 
@@ -873,6 +873,7 @@ public class Arm extends SubsystemBase {
                     break;
             }
         } else if (_currentArmPos == ArmPosition.EnGarde) {
+            System.out.println("ENGARDE ENGARDE ____________________");
             // We only want to run these intermediate positions if we are going somewhere
             // from ground pickup
             switch (position) {
@@ -881,6 +882,15 @@ public class Arm extends SubsystemBase {
                     addWaypointsFrom2DArray(intermediatePositions,
                             ArmConstants.IntermediateWaypoints.ENGARDE_TO_STORED);
                     break;
+                case High:
+                if (this.getArmMode() == ArmMode.Cone) {
+                    addWaypointsFrom2DArray(intermediatePositions, 
+                    ArmConstants.IntermediateWaypoints.ENGARDE_TO_HIGH_CONE);
+                } else {
+                    
+                }
+                    break;
+
                 default:
 
                     break;
