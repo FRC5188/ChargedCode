@@ -60,11 +60,11 @@ public class ArmConstants {
                 public static double STORED_SHOULDER_POS = 81.7;
                 public static double STORED_ELBOW_POS = 1;
 
-                public static double MID_CONE_SHOULDER_POS = 78.1;
-                public static double MID_CONE_ELBOW_POS = 91.6;
+                public static double MID_CONE_SHOULDER_POS = 83; //WAS: 78.1 Should be at 80, moving back for ??? - Mike
+                public static double MID_CONE_ELBOW_POS = 83; //WAS: 91.6
 
-                public static double MID_CONE_SHOULDER_PLACE_POS = 78.1;
-                public static double MID_CONE_ELBOW_PLACE_POS = 67.1;
+                public static double MID_CONE_SHOULDER_PLACE_POS = 83; //WAS: 78.1 Should be at 80, moving back for ??? - Mike
+                public static double MID_CONE_ELBOW_PLACE_POS = 83; //WAS 67.1 
 
                 public static double MID_CUBE_SHOULDER_POS = 107.8;
                 public static double MID_CUBE_ELBOW_POS = 80.7;
@@ -116,7 +116,8 @@ public class ArmConstants {
                 public static double[][] ENGARDE_TO_STORED = { { 131, 63.7 }, { 113.5, 39.3 }, { 97.7, 20.7 },
                                 { 87.1, 22 }, { 84.1, 18 }, { 81.7, 10 }};
                 public static double[][] STORED_TO_GROUND_PICKUP = { { 95, 31 } };
-                public static double [][] ENGARDE_TO_HIGH_CONE = { { 130, 100 }, { 128, 106 }, { 105, 135 }, { 85, 150 }, { 75, 150 } };
+                public static double[][] ENGARDE_TO_HIGH_CONE = { { 130, 100 }, { 128, 106 }, { 105, 135 }, { 85, 150 }, { 75, 150 } };
+                public static double[][] ENGUARD_TO_MID_CONE = { {115, 90 }, {100, 85 }, {84, 85 } };
                 // static double [][] ENGARDE_TO_HIGH_CONE = { { 104, 89 }, { 80, 95}, {45, 120}};
                 
                 
@@ -239,5 +240,5 @@ public class ArmConstants {
                         ELBOW_MAX_ACCELERATION);
 
         // public static double MAX_TRAJECTORY_SPEED = 50;
-        public static double MAX_TRAJECTORY_SPEED = 40;
+        public static double MAX_TRAJECTORY_SPEED = 10;
 }
