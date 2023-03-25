@@ -220,10 +220,9 @@ public class RobotContainer {
         eventMap.put("Spit", new CmdArmSpit(_armSubsystem, 0.4));
         eventMap.put("StoreArm", new GrpMoveArmToPosition(_armSubsystem, ArmPosition.Stored));
         eventMap.put("Auto_Balance", new CmdDriveAutoBalance(_driveSubsystem));
-        return Autonomous.generateFullAuto("DriveBackwardsToPlatform", eventMap, 3, 0.5, _driveSubsystem);
-        //return Autonomous.generateFullAuto("HighScoreAndMobility", eventMap, 3, 0.5, _driveSubsystem);
+        return Autonomous.generateFullAuto("AutoDriveOntoPlatform", eventMap, 3, 0.5, _driveSubsystem);
 
-        //return _dashboardSubsystem.getSelectedAutonomousCommand();
+        //return Autonomous.generateFullAuto("HighScoreAndMobility", eventMap, 3, 0.5, _driveSubsystem);
     }
 
     public Command getInitialArmPosCommand() {
