@@ -188,11 +188,14 @@ public class Drive extends SubsystemBase {
 
         _chassisSpeeds = new ChassisSpeeds(0.0, 0.0, 0.0);
 
-        _odometry = new SwerveDrivePoseEstimator(_kinematics, getGyroscopeRotation(), new SwerveModulePosition[] {
+        _odometry = new SwerveDrivePoseEstimator(
+            _kinematics, 
+            getGyroscopeRotation(), 
+            new SwerveModulePosition[] {
                 _frontLeftModule.getModulePosition(), _frontRightModule.getModulePosition(),
-                _backLeftModule.getModulePosition(), _backRightModule.getModulePosition() }, new Pose2d(2, 1, new Rotation2d(0)),
-                VecBuilder.fill(0.01, 0.01, Units.degreesToRadians(0.1)),
-                VecBuilder.fill(0.1, 0.1, Units.degreesToRadians(0.1)));  //TODO: Get real starting position, may need to use apriltag pose or read starting pose from autonomous trajectory
+                _backLeftModule.getModulePosition(), _backRightModule.getModulePosition() }, 
+            Vision.getRobotInitialPose().toPose2d());
+            //TODO: Get real starting position, may need to use apriltag pose or read starting pose from autonomous trajectory
 
         _navx.reset();
 
