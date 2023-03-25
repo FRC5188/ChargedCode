@@ -574,7 +574,8 @@ public class Arm extends SubsystemBase {
      *         otherwise
      */
     public boolean intakeHasPiece() {
-        _hasGamepiece = true;
+        // _hasGamepiece = true; old logic -gh 3/24/23
+        _hasGamepiece = _intakeMotor.getOutputCurrent() >= ArmConstants.INTAKE_HAS_PIECE_CURRENT;
         return _intakeMotor.getOutputCurrent() >= ArmConstants.INTAKE_HAS_PIECE_CURRENT;
     }
 
