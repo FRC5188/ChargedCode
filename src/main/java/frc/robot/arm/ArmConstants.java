@@ -200,7 +200,7 @@ public class ArmConstants {
 
         }
 
-        public static double ELBOW_IS_HITTING_CURRENT = 9999.0; // TODO: Find actual value for this (Probably around 10-15 - Mike)
+        public static double ELBOW_IS_HITTING_CURRENT = 15.0; // TODO: Find actual value for this (Probably around 10-15 - Mike)
         public static double MAX_MOTOR_VOLTAGE = 11.5; // May want to adjust -Garrett
 
         public static double INTAKE_HAS_PIECE_CURRENT = 40;
