@@ -129,7 +129,7 @@ public class Vision {
                 Pose3d robotPose = PhotonUtils.estimateFieldToRobotAprilTag(target.getBestCameraToTarget(),
                         layout.getTagPose(target.getFiducialId()).get(), cameraPos);
                 poseEstimator.addVisionMeasurement(robotPose.toPose2d(), Timer.getFPGATimestamp());
-                // System.out.println("AprilTag: " + robotPose);
+                System.out.println("AprilTag: " + robotPose);
             } catch (Exception e) {
 
             }
