@@ -262,7 +262,7 @@ public class Arm extends SubsystemBase {
     }
 
     public void setCurrentPosition(ArmPosition inputArmPosition) {
-        System.out.println("SETTING POSITION __________" + inputArmPosition);
+        //System.out.println("SETTING POSITION __________" + inputArmPosition);
         this._currentArmPos = inputArmPosition;
     }
 
