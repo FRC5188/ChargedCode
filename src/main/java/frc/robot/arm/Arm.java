@@ -891,7 +891,13 @@ public class Arm extends SubsystemBase {
                     
                 }
                     break;
+                case Middle:
+                if (this.getArmMode() == ArmMode.Cone) {
+                    addWaypointsFrom2DArray(intermediatePositions, ArmConstants.IntermediateWaypoints.ENGUARD_TO_MID_CONE);
+                } else {
 
+                }
+                    break;
                 default:
 
                     break;

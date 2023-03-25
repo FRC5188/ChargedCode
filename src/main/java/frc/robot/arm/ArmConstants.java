@@ -60,11 +60,11 @@ public class ArmConstants {
                 public static double STORED_SHOULDER_POS = 81.7;
                 public static double STORED_ELBOW_POS = 1;
 
-                public static double MID_CONE_SHOULDER_POS = 83; //WAS: 78.1 Should be at 80, moving back for ??? - Mike
-                public static double MID_CONE_ELBOW_POS = 83; //WAS: 91.6
+                public static double MID_CONE_SHOULDER_POS = 84; //WAS: 78.1 Should be at 80, moving back for ??? - Mike
+                public static double MID_CONE_ELBOW_POS = 90; //WAS: 91.6
 
-                public static double MID_CONE_SHOULDER_PLACE_POS = 83; //WAS: 78.1 Should be at 80, moving back for ??? - Mike
-                public static double MID_CONE_ELBOW_PLACE_POS = 83; //WAS 67.1 
+                public static double MID_CONE_SHOULDER_PLACE_POS = 84; //WAS: 78.1 Should be at 80, moving back for ??? - Mike
+                public static double MID_CONE_ELBOW_PLACE_POS = 90; //WAS 67.1 
 
                 public static double MID_CUBE_SHOULDER_POS = 107.8;
                 public static double MID_CUBE_ELBOW_POS = 80.7;
@@ -118,7 +118,7 @@ public class ArmConstants {
                                 { 87.1, 30 }, { 84.1, 29 }, { 81.7, 29 }};
                 public static double[][] STORED_TO_GROUND_PICKUP = { { 114, 30 }, { 103.2, 40.3 }, { 92.3, 55.5 }, { 49, 50 } };
                 public static double[][] ENGARDE_TO_HIGH_CONE = { { 130, 100 }, { 128, 120 }, { 105, 160 }, { 85, 173 }, { 75, 178 } };
-                public static double[][] ENGUARD_TO_MID_CONE = { {115, 90 }, {100, 85 }, {84, 85 } };
+                public static double[][] ENGUARD_TO_MID_CONE = { {115, 130 }, {100, 135 }, {94, 135 } };
                 // static double [][] ENGARDE_TO_HIGH_CONE = { { 104, 89 }, { 80, 95}, {45, 120}};
                 
                 
