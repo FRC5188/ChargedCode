@@ -27,6 +27,7 @@ import frc.robot.arm.commands.CmdArmRunIntake;
 import frc.robot.arm.commands.CmdArmSetMode;
 import frc.robot.arm.commands.CmdArmSpit;
 import frc.robot.arm.commands.CmdArmUpdateGoal;
+import frc.robot.autonomous.Autonomous;
 import frc.robot.arm.commands.CmdArmDisablePID;
 import frc.robot.arm.commands.CmdArmEnablePID;
 import frc.robot.arm.commands.CmdArmMoveElbowManual;
@@ -218,7 +219,6 @@ public class RobotContainer {
         eventMap.put("Spit", new CmdArmSpit(_armSubsystem, 0.4));
         eventMap.put("StoreArm", new GrpMoveArmToPosition(_armSubsystem, ArmPosition.Stored));
         //return Autonomous.generateFullAuto("DriveBackwardsToPlatform", eventMap, 3, 0.5, _driveSubsystem);
-
         //return Autonomous.generateFullAuto("HighScoreAndMobility", eventMap, 3, 0.5, _driveSubsystem);
 
         return _dashboardSubsystem.getSelectedAutonomousCommand();
@@ -247,6 +247,10 @@ public class RobotContainer {
         } else {
             return 0.0;
         }
+    }
+
+    private static void runAutonomous(){
+
     }
 
     private static double modifyAxis(double value) {
