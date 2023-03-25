@@ -28,9 +28,9 @@ public class GrpMoveArmToPosition extends SequentialCommandGroup {
         new CmdArmUpdateGoal(armSubsystem, position),
         // Turn on the intake if needed
 
-        new CmdArmRunIntake(armSubsystem, -0.4)
-            .unless(() -> armSubsystem.getCurrentArmPosition() != ArmPosition.GroundPickUp &&
-                armSubsystem.getCurrentArmPosition() != ArmPosition.LoadStationPickUp),
+        new CmdArmRunIntake(armSubsystem, 0.4)
+            .unless(() -> position != ArmPosition.GroundPickUp &&
+              position != ArmPosition.LoadStationPickUp),
         // Added for auto. Will keep running until arm is in position
         new CmdArmWaitForArm(armSubsystem)
 

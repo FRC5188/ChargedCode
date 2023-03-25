@@ -10,8 +10,8 @@ public class ArmConstants {
 
         public static double SHOULDER_0_DEGREE_POT_OFFSET = 2217;
         public static double SHOULDER_90_DEGREE_POT_OFFSET = 1868;
-        public static double ELBOW_90_DEGREE_POT_OFFSET = 1708;
-        public static double ELBOW_0_DEGREE_POT_OFFSET = 2060;
+        public static double ELBOW_90_DEGREE_POT_OFFSET = 1630;
+        public static double ELBOW_0_DEGREE_POT_OFFSET = 1981;
 
         // All in degrees
         public static double SHOULDER_UPPER_SOFT_STOP = 150;
@@ -60,11 +60,11 @@ public class ArmConstants {
                 public static double STORED_SHOULDER_POS = 81.7;
                 public static double STORED_ELBOW_POS = 1;
 
-                public static double MID_CONE_SHOULDER_POS = 83; //WAS: 78.1 Should be at 80, moving back for ??? - Mike
-                public static double MID_CONE_ELBOW_POS = 83; //WAS: 91.6
+                public static double MID_CONE_SHOULDER_POS = 84; //WAS: 78.1 Should be at 80, moving back for ??? - Mike
+                public static double MID_CONE_ELBOW_POS = 90; //WAS: 91.6
 
-                public static double MID_CONE_SHOULDER_PLACE_POS = 83; //WAS: 78.1 Should be at 80, moving back for ??? - Mike
-                public static double MID_CONE_ELBOW_PLACE_POS = 83; //WAS 67.1 
+                public static double MID_CONE_SHOULDER_PLACE_POS = 84; //WAS: 78.1 Should be at 80, moving back for ??? - Mike
+                public static double MID_CONE_ELBOW_PLACE_POS = 90; //WAS 67.1 
 
                 public static double MID_CUBE_SHOULDER_POS = 107.8;
                 public static double MID_CUBE_ELBOW_POS = 80.7;
@@ -84,8 +84,9 @@ public class ArmConstants {
                 public static double HUMAN_PLAYER_SHOULDER_POS = 113.5;
                 public static double HUMAN_PLAYER_ELBOW_POS = 92.5;
 
-                public static double GROUND_PICKUP_SHOULDER_POS = 46.2;
-                public static double GROUND_PICKUP_ELBOW_POS = 1;
+                public static double GROUND_PICKUP_SHOULDER_POS = 45.5;
+                public static double GROUND_PICKUP_ELBOW_POS = 2.5
+                ;
 
                 public static double TIPPED_CONE_SHOULDER_POS = 0; // TODO
                 public static double TIPPED_CONE_ELBOW_POS = 0; // TODO
@@ -111,13 +112,13 @@ public class ArmConstants {
                 // Each inner array is a waypoint with 2 numbers; First is the shoulder angle,
                 // and second is the elbow angle
                 public static double[][] STORED_TO_SCORING = { { 95, 31 } };
-                public static double[][] STORED_TO_ENGARDE = { { 97, 18 }, { 113.2, 34 }, { 126.6, 46 },
+                public static double[][] STORED_TO_ENGARDE = { { 97, 14 }, { 113.2, 30 }, { 126.6, 46 },
                                 { 136.2, 59.2 } };
-                public static double[][] ENGARDE_TO_STORED = { { 131, 63.7 }, { 113.5, 39.3 }, { 97.7, 20.7 },
-                                { 87.1, 22 }, { 84.1, 18 }, { 81.7, 10 }};
-                public static double[][] STORED_TO_GROUND_PICKUP = { { 95, 31 } };
-                public static double[][] ENGARDE_TO_HIGH_CONE = { { 130, 100 }, { 128, 106 }, { 105, 135 }, { 85, 150 }, { 75, 150 } };
-                public static double[][] ENGUARD_TO_MID_CONE = { {115, 90 }, {100, 85 }, {84, 85 } };
+                public static double[][] ENGARDE_TO_STORED = { { 131, 63.7 }, { 113.5, 39.3 }, { 97.7, 30 },
+                                { 87.1, 30 }, { 84.1, 29 }, { 81.7, 29 }};
+                public static double[][] STORED_TO_GROUND_PICKUP = { { 114, 30 }, { 103.2, 40.3 }, { 92.3, 55.5 }, { 49, 50 } };
+                public static double[][] ENGARDE_TO_HIGH_CONE = { { 130, 100 }, { 128, 120 }, { 105, 160 }, { 85, 173 }, { 75, 178 } };
+                public static double[][] ENGUARD_TO_MID_CONE = { {115, 130 }, {100, 135 }, {94, 135 } };
                 // static double [][] ENGARDE_TO_HIGH_CONE = { { 104, 89 }, { 80, 95}, {45, 120}};
                 
                 
@@ -125,7 +126,7 @@ public class ArmConstants {
 
                 // {148,100}, {147,113}, {137,118}, {129,124}, {117,123}, {101,120}, {86,120}, {74,121}, {65,124}, {57,127}, {50,135}, {43,135}, {36,127}
                 //{135,90},{134,100},{134,112},{134,120},{134,126},{134,130},{131,127},{127,127},{119,128},{107,134},{92,136},{82,134},{75,140},{70,146},{63,151},{55,143},{52,139},{45,142},{41,138},{35,136}
-                public static double[][] GROUND_PICKUP_TO_STORED = {{46.2, 7}, {69.6, 30}, {80, 3.5}};
+                public static double[][] GROUND_PICKUP_TO_STORED = {{46.2, 7}, {69.6, 35}, {80, 3.5}};
         } 
         public static class SetPoints2D {
 
@@ -240,5 +241,5 @@ public class ArmConstants {
                         ELBOW_MAX_ACCELERATION);
 
         // public static double MAX_TRAJECTORY_SPEED = 50;
-        public static double MAX_TRAJECTORY_SPEED = 10;
+        public static double MAX_TRAJECTORY_SPEED = 40;
 }

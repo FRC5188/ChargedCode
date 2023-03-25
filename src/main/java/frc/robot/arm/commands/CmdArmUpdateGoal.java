@@ -18,7 +18,7 @@ public class CmdArmUpdateGoal extends CommandBase {
     @Override
     public void initialize() {
         // _armSubsystem.setArmGoalsFromPosition(_position);
-        // _armSubsystem.setWristPosition(_position);
+        _armSubsystem.setWristPosition(_position);
         _armSubsystem.generateTrajectory(_position);
         _armSubsystem.startTrajectory();
         
