@@ -136,11 +136,11 @@ public class Vision {
         }
     }
 
-    public static Pose2d getRobotInitialPose(){
+    public static Pose3d getRobotInitialPose(){
         PhotonTrackedTarget target = camera.getLatestResult().getBestTarget();
         Pose3d robotPose = PhotonUtils.estimateFieldToRobotAprilTag(target.getBestCameraToTarget(),
                         layout.getTagPose(target.getFiducialId()).get(), cameraPos);
-        return robotPose.toPose2d();
+        return robotPose;
     }
 
     /**
