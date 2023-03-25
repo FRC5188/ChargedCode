@@ -25,12 +25,14 @@ import frc.robot.arm.commands.CmdArmRunIntake;
 import frc.robot.arm.commands.CmdArmSetMode;
 import frc.robot.arm.commands.CmdArmSpit;
 import frc.robot.arm.commands.CmdArmUpdateGoal;
+import frc.robot.autonomous.Autonomous;
 import frc.robot.arm.commands.CmdArmDisablePID;
 import frc.robot.arm.commands.CmdArmEnablePID;
 import frc.robot.arm.commands.CmdArmMoveElbowManual;
 import frc.robot.arm.commands.CmdArmMoveShoulderManual;
 import frc.robot.dashboard.Dashboard;
 import frc.robot.drive.Drive;
+import frc.robot.drive.commands.CmdDriveAutoBalance;
 import frc.robot.drive.commands.CmdDriveChangeCoR;
 import frc.robot.drive.commands.CmdDriveChangeSpeedMult;
 import frc.robot.drive.commands.DefaultDriveCommand;
@@ -208,11 +210,10 @@ public class RobotContainer {
         eventMap.put("HighCubeArm", new GrpMoveArmToPosition(_armSubsystem, ArmPosition.HighCube));
         eventMap.put("Spit", new CmdArmSpit(_armSubsystem, 0.4));
         eventMap.put("StoreArm", new GrpMoveArmToPosition(_armSubsystem, ArmPosition.Stored));
-        //return Autonomous.generateFullAuto("DriveBackwardsToPlatform", eventMap, 3, 0.5, _driveSubsystem);
+        eventMap.put("Auto_Balance", new CmdDriveAutoBalance(_driveSubsystem));
+        return Autonomous.generateFullAuto("AutoDriveOntoPlatform", eventMap, 3, 0.5, _driveSubsystem);
 
         //return Autonomous.generateFullAuto("HighScoreAndMobility", eventMap, 3, 0.5, _driveSubsystem);
-
-        return _dashboardSubsystem.getSelectedAutonomousCommand();
     }
 
     public Command getInitialArmPosCommand() {
