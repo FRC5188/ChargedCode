@@ -39,6 +39,7 @@ public class LEDs extends SubsystemBase {
     // private final int LEDCount = 9;
     public CANdle candle = new CANdle(Constants.CanIDs.CANDLE_ID, "rio");
     private LEDMode currentMode = LEDMode.Default;
+    public Boolean _runningHasGamepieceAnimation = false;
 
     public LEDs() {
 
@@ -53,6 +54,16 @@ public class LEDs extends SubsystemBase {
         configAll.vBatOutputMode = VBatOutputMode.Modulated;
         candle.configAllSettings(configAll, 100);
 
+    }
+
+
+
+    public Boolean getRunningGamepieceAnimation() {
+        return _runningHasGamepieceAnimation;
+    }
+
+    public void setRunningGamepieceAnimation(Boolean runningHasGamepieceAnimation) {
+        _runningHasGamepieceAnimation = runningHasGamepieceAnimation;
     }
     
     /**
@@ -130,7 +141,7 @@ public class LEDs extends SubsystemBase {
 
         switch(color) {
             case Pink: 
-                candle.setLEDs(205, 55, 130); 
+                candle.setLEDs(210, 55, 120); 
                 break;
 
             case Blue: 
@@ -142,7 +153,7 @@ public class LEDs extends SubsystemBase {
                 break;
 
             case Purple:
-                candle.setLEDs(185, 0, 205);
+                candle.setLEDs(165, 0, 215);
                 break;
             
             case White:

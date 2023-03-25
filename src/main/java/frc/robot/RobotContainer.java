@@ -13,8 +13,10 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.LEDs.LEDs;
 import frc.robot.LEDs.commands.CmdLEDDefault;
+import frc.robot.LEDs.commands.CmdLEDPieceCollected;
 import frc.robot.arm.Arm;
 import frc.robot.arm.Arm.ArmMode;
 import frc.robot.arm.Arm.ArmPosition;
@@ -93,10 +95,17 @@ public class RobotContainer {
     // Constant Arm Multiplier In To Reduce Arm Speed
     private static final double ARM_MULTIPLIER = 0.3;
 
+
+
     /**
      * The container for the robot. Contains subsystems, OI devices, and commands.
      */
     public RobotContainer() {
+
+        Trigger hasGamePieceTrigger = new Trigger(() ->( _armSubsystem.checkGamepiece()));
+        hasGamePieceTrigger.onTrue(new CmdLEDPieceCollected(_leds, _armSubsystem));
+
+
 
         // Driver Configuration
         _driveSubsystem.setDefaultCommand(new DefaultDriveCommand(
@@ -210,10 +219,11 @@ public class RobotContainer {
         eventMap.put("HighCubeArm", new GrpMoveArmToPosition(_armSubsystem, ArmPosition.HighCube));
         eventMap.put("Spit", new CmdArmSpit(_armSubsystem, 0.4));
         eventMap.put("StoreArm", new GrpMoveArmToPosition(_armSubsystem, ArmPosition.Stored));
-        eventMap.put("Auto_Balance", new CmdDriveAutoBalance(_driveSubsystem));
-        return Autonomous.generateFullAuto("AutoDriveOntoPlatform", eventMap, 3, 0.5, _driveSubsystem);
+        //return Autonomous.generateFullAuto("DriveBackwardsToPlatform", eventMap, 3, 0.5, _driveSubsystem);
 
         //return Autonomous.generateFullAuto("HighScoreAndMobility", eventMap, 3, 0.5, _driveSubsystem);
+
+        return _dashboardSubsystem.getSelectedAutonomousCommand();
     }
 
     public Command getInitialArmPosCommand() {
@@ -225,6 +235,7 @@ public class RobotContainer {
     }
 
     public Command updateLEDs() {
+        System.out.println("Cmd UpdateLEDs");
         return new CmdLEDDefault(_leds, _armSubsystem);
     }
 

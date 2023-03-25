@@ -262,7 +262,7 @@ public class Arm extends SubsystemBase {
     }
 
     public void setCurrentPosition(ArmPosition inputArmPosition) {
-        //System.out.println("Goofy AAA Robot Code");
+        //System.out.println("SETTING POSITION __________" + inputArmPosition);
         this._currentArmPos = inputArmPosition;
     }
 
@@ -574,7 +574,8 @@ public class Arm extends SubsystemBase {
      *         otherwise
      */
     public boolean intakeHasPiece() {
-        _hasGamepiece = true;
+        // _hasGamepiece = true; old logic -gh 3/24/23
+        _hasGamepiece = _intakeMotor.getOutputCurrent() >= ArmConstants.INTAKE_HAS_PIECE_CURRENT;
         return _intakeMotor.getOutputCurrent() >= ArmConstants.INTAKE_HAS_PIECE_CURRENT;
     }
 
@@ -873,6 +874,7 @@ public class Arm extends SubsystemBase {
                     break;
             }
         } else if (_currentArmPos == ArmPosition.EnGarde) {
+            System.out.println("ENGARDE ENGARDE ____________________");
             // We only want to run these intermediate positions if we are going somewhere
             // from ground pickup
             switch (position) {
@@ -880,6 +882,21 @@ public class Arm extends SubsystemBase {
                     System.out.println("HNJMDSUYDDWKJHWUIJKDJWDYEUKDUi");
                     addWaypointsFrom2DArray(intermediatePositions,
                             ArmConstants.IntermediateWaypoints.ENGARDE_TO_STORED);
+                    break;
+                case High:
+                if (this.getArmMode() == ArmMode.Cone) {
+                    addWaypointsFrom2DArray(intermediatePositions, 
+                    ArmConstants.IntermediateWaypoints.ENGARDE_TO_HIGH_CONE);
+                } else {
+                    
+                }
+                    break;
+                case Middle:
+                if (this.getArmMode() == ArmMode.Cone) {
+                    addWaypointsFrom2DArray(intermediatePositions, ArmConstants.IntermediateWaypoints.ENGUARD_TO_MID_CONE);
+                } else {
+
+                }
                     break;
                 default:
 

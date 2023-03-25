@@ -133,8 +133,14 @@ public class Vision {
             } catch (Exception e) {
 
             }
-
         }
+    }
+
+    public static Pose3d getRobotInitialPose(){
+        PhotonTrackedTarget target = camera.getLatestResult().getBestTarget();
+        Pose3d robotPose = PhotonUtils.estimateFieldToRobotAprilTag(target.getBestCameraToTarget(),
+                        layout.getTagPose(target.getFiducialId()).get(), cameraPos);
+        return robotPose;
     }
 
     /**

@@ -16,6 +16,7 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -93,6 +94,8 @@ public class Drive extends SubsystemBase {
      * impacts the odometry of the robot, as well as field-oriented drive.
      */
     private AHRS _navx;
+
+    public Field2d _field;
 
     private SwerveDrivePoseEstimator _odometry;
     private double _speedMultiplier = 0.4;
@@ -185,13 +188,18 @@ public class Drive extends SubsystemBase {
 
         _chassisSpeeds = new ChassisSpeeds(0.0, 0.0, 0.0);
 
-        _odometry = new SwerveDrivePoseEstimator(_kinematics, getGyroscopeRotation(), new SwerveModulePosition[] {
+        _odometry = new SwerveDrivePoseEstimator(
+            _kinematics, 
+            getGyroscopeRotation(), 
+            new SwerveModulePosition[] {
                 _frontLeftModule.getModulePosition(), _frontRightModule.getModulePosition(),
-                _backLeftModule.getModulePosition(), _backRightModule.getModulePosition() }, new Pose2d(2, 1, new Rotation2d(0)),
-                VecBuilder.fill(0.01, 0.01, Units.degreesToRadians(0.1)),
-                VecBuilder.fill(0.1, 0.1, Units.degreesToRadians(0.1)));
+                _backLeftModule.getModulePosition(), _backRightModule.getModulePosition() }, 
+            Vision.getRobotInitialPose().toPose2d());
+            //TODO: Get real starting position, may need to use apriltag pose or read starting pose from autonomous trajectory
 
         _navx.reset();
+
+        _field = new Field2d();
     }
 
     public static void setInstance() {
@@ -260,6 +268,10 @@ public class Drive extends SubsystemBase {
         return _navx;
     }
 
+    public Field2d getField() {
+        return _field;
+    }
+
     public void drive(ChassisSpeeds chassisSpeeds) {
         _chassisSpeeds = chassisSpeeds;
     }
@@ -274,6 +286,7 @@ public class Drive extends SubsystemBase {
 
     @Override
     public void periodic() {
+        System.out.println(getPose());
         // Convert the drive base vector into module vectors
         SwerveModuleState[] states = _kinematics.toSwerveModuleStates(_chassisSpeeds, _centerOfRotation);
         // Normalize the wheel speeds so we aren't trying to set above the max
@@ -298,5 +311,8 @@ public class Drive extends SubsystemBase {
                 states[2].angle.getRadians());
         _backRightModule.set(states[3].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE,
                 states[3].angle.getRadians());
+
+        _field.setRobotPose(_odometry.getEstimatedPosition());
+        SmartDashboard.putData("Field", _field);
     }
 }
