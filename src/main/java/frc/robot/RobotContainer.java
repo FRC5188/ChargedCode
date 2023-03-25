@@ -28,6 +28,7 @@ import frc.robot.arm.commands.CmdArmSetMode;
 import frc.robot.arm.commands.CmdArmSpit;
 import frc.robot.arm.commands.CmdArmUpdateGoal;
 import frc.robot.autonomous.Autonomous;
+import frc.robot.autonomous.Autonomous.FIELD_POSITIONS;
 import frc.robot.arm.commands.CmdArmDisablePID;
 import frc.robot.arm.commands.CmdArmEnablePID;
 import frc.robot.arm.commands.CmdArmMoveElbowManual;
@@ -221,7 +222,7 @@ public class RobotContainer {
         eventMap.put("StoreArm", new GrpMoveArmToPosition(_armSubsystem, ArmPosition.Stored));
         eventMap.put("Auto_Balance", new CmdDriveAutoBalance(_driveSubsystem));
         return Autonomous.generateFullAuto("AutoDriveOntoPlatform", eventMap, 3, 0.5, _driveSubsystem);
-
+        //return Autonomous.getMovementCommand(FIELD_POSITIONS.LEFT_SIDE_GRID_CUBE_SECOND_CLOSEST, 3, 4, _driveSubsystem, null)
         //return Autonomous.generateFullAuto("HighScoreAndMobility", eventMap, 3, 0.5, _driveSubsystem);
     }
 
