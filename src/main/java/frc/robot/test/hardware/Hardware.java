@@ -8,9 +8,19 @@ import frc.robot.test.console_output.Output;
 
 @Deprecated
 public abstract class Hardware {
-
+    /**
+    <Strong>Test One: </Strong>Is the CAN Bus connected? <p>
+    <Strong>Test Two: </Strong>Is the Battery Charged?
+    **/
     public static Command check(){
-        return null;       
+        return new InstantCommand(
+        () -> {
+        if(isCANBusConnected()){Output.sucess("CAN Bus Is Connected");}
+        else {Output.error("CAN Bus Isn't Connected. Zero Utilization");}
+
+        if(isBatteryCharged()){Output.sucess("Battery Charged");}
+        else {Output.warning("Battery Isn't Fully Charged");}
+        });
     }
 
     private static boolean isCANBusConnected(){return RobotController.getCANStatus().percentBusUtilization <= 0;}
