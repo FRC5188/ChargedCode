@@ -21,12 +21,13 @@ public class CmdDriveAutoBalance extends CommandBase {
 		BALANCING_MAX_ACCELERATION = BALANCING_MAX_SPEED; //TODO: Find the actual max acceleration
 		BALANCING_CONSTRAINTS = new TrapezoidProfile.Constraints(BALANCING_MAX_SPEED, BALANCING_MAX_ACCELERATION);
 		addRequirements(_driveSubsystem);
-		pidController = new ProfiledPIDController(0.02, 0, 0, BALANCING_CONSTRAINTS); //TODO: Tune PID values
+		pidController = new ProfiledPIDController(0.01, 0, 0, BALANCING_CONSTRAINTS); //TODO: Tune PID values
 	}
 
 
 	@Override
 	public void initialize() {
+		System.out.println("[INFO] Auto Balance PID Running");
 		pidController.setGoal(0);
 		pidController.setTolerance(PID_TOLERANCE);
 	}
@@ -34,19 +35,22 @@ public class CmdDriveAutoBalance extends CommandBase {
 	// Called every time the scheduler runs while the command is scheduled.
 	@Override
 	public void execute() {
-		_driveSubsystem.drive(new ChassisSpeeds(0, pidController.calculate(_driveSubsystem.getRobotPitch()), 0));
+		double y = pidController.calculate(_driveSubsystem.getRobotPitch());
+		System.out.printf("[INFO] PID (Y): %d \n",y);
+		_driveSubsystem.drive(new ChassisSpeeds(0, y, 0));
 	}
 
 	// Called once the command ends or is interrupted.
 	@Override
 	public void end(boolean interrupted) {
+		System.out.println("[INFO] Auto Balance Ended");
 		_driveSubsystem.drive(new ChassisSpeeds(0, 0, 0));
 	}
 
 	// Returns true when the command should end.
 	@Override
 	public boolean isFinished() {
-		return false;
+		return pidController.atGoal();
 	}
 	
 }
