@@ -45,7 +45,6 @@ public class CmdArmRunIntake extends CommandBase {
         // Once the intake has a piece, stop the motors and close the intake
         System.out.println("Intake has piece");
         _armSubsystem.setIntakeMotorSpeed(0);
-        _armSubsystem.setIntakeMode(IntakeMode.Closed);
     }
 
     @Override

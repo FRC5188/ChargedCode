@@ -21,7 +21,7 @@ public class CmdDriveAutoBalance extends CommandBase {
 		BALANCING_MAX_ACCELERATION = BALANCING_MAX_SPEED; //TODO: Find the actual max acceleration
 		BALANCING_CONSTRAINTS = new TrapezoidProfile.Constraints(BALANCING_MAX_SPEED, BALANCING_MAX_ACCELERATION);
 		addRequirements(_driveSubsystem);
-		pidController = new ProfiledPIDController(0.01, 0, 0, BALANCING_CONSTRAINTS); //TODO: Tune PID values
+		pidController = new ProfiledPIDController(0.02, 0, 0, BALANCING_CONSTRAINTS); //TODO: Tune PID values
 	}
 
 
@@ -36,7 +36,7 @@ public class CmdDriveAutoBalance extends CommandBase {
 	@Override
 	public void execute() {
 		double y = pidController.calculate(_driveSubsystem.getRobotPitch());
-		System.out.printf("[INFO] PID (Y): %d \n",y);
+		System.out.println("[INFO]:" + y);
 		_driveSubsystem.drive(new ChassisSpeeds(0, y, 0));
 	}
 

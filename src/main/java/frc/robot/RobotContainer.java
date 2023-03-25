@@ -140,7 +140,7 @@ public class RobotContainer {
         // .whenPressed(m_drivetrainSubsystem::zeroGyroscope);
 
         // Driver Reduce Speed 40%
-        _driverButtonRB.onFalse(new CmdDriveChangeSpeedMult(_driveSubsystem, 0.4));
+        _driverButtonRB.onFalse(new CmdDriveChangeSpeedMult(_driveSubsystem, 0.6));
         _driverButtonRB.onTrue(new CmdDriveChangeSpeedMult(_driveSubsystem, 1.0)); 
 
         // _driverButtonA.onTrue(new AutoRotateCommand(

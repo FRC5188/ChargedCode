@@ -60,10 +60,10 @@ public class ArmConstants {
                 public static double STORED_SHOULDER_POS = 81.7;
                 public static double STORED_ELBOW_POS = 1;
 
-                public static double MID_CONE_SHOULDER_POS = 84; //WAS: 78.1 Should be at 80, moving back for ??? - Mike
+                public static double MID_CONE_SHOULDER_POS = 86; //WAS: 78.1 Should be at 80, moving back for ??? - Mike
                 public static double MID_CONE_ELBOW_POS = 90; //WAS: 91.6
 
-                public static double MID_CONE_SHOULDER_PLACE_POS = 84; //WAS: 78.1 Should be at 80, moving back for ??? - Mike
+                public static double MID_CONE_SHOULDER_PLACE_POS = 86; //WAS: 78.1 Should be at 80, moving back for ??? - Mike
                 public static double MID_CONE_ELBOW_PLACE_POS = 90; //WAS 67.1 
 
                 public static double MID_CUBE_SHOULDER_POS = 107.8;
@@ -76,13 +76,13 @@ public class ArmConstants {
                 // needs refactored
                 // shol 44.7, elbow 121.5
                 public static double HIGH_CONE_DROP_SHOULDER_POS = 44; //WAS: 35
-                public static double HIGH_CONE_DROP_ELBOW_POS = 118; //WAS: 125
+                public static double HIGH_CONE_DROP_ELBOW_POS = 118.5; //WAS: 125
 
                 public static double HIGH_CUBE_SHOULDER_POS = 77.3;
                 public static double HIGH_CUBE_ELBOW_POS = 95.0;
 
                 public static double HUMAN_PLAYER_SHOULDER_POS = 113.5;
-                public static double HUMAN_PLAYER_ELBOW_POS = 92.5;
+                public static double HUMAN_PLAYER_ELBOW_POS = 94.5;
 
                 public static double GROUND_PICKUP_SHOULDER_POS = 45.5;
                 public static double GROUND_PICKUP_ELBOW_POS = 2.5
