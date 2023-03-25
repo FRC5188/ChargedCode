@@ -1,5 +1,7 @@
 package frc.robot.LEDs.commands;
 
+import org.apache.commons.lang3.function.FailableSupplier;
+
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.LEDs.LEDs;
@@ -14,17 +16,23 @@ public class CmdLEDDefault extends CommandBase {
     private DriverStation _driverStation;
     private ArmMode armMode;
     private ArmPosition armPosition;
+    private Integer counter;
+    
 
     public CmdLEDDefault(LEDs leds, Arm armSubsystem) {
         _armSubsystem = armSubsystem;
         _leds = leds;
+        this.counter = 0;
         
     }
 
     @Override
     public void initialize() {
         // this.color = LEDColors.White;
-        // this._leds.changeColor(this.color);
+        //this._leds.setLEDMode(LEDMode.Off);
+    
+        
+        System.out.println("LEDs Off (initializing)");
         // this._leds.brightness = 0.00;
         
     }
@@ -35,9 +43,21 @@ public class CmdLEDDefault extends CommandBase {
         
         this.armMode = this._armSubsystem.getArmMode();
         this.armPosition = this._armSubsystem.getCurrentArmPosition();
-        // this.isRobotDisabled = this._driverStation.isDisabled();
+
         if (DriverStation.isDisabled()) {
             this._leds.setLEDMode(LEDMode.Off);
+            System.out.println("LEDs off");
+        }
+
+        if (_leds.getRunningGamepieceAnimation()) {
+            this.counter = 100;
+            _leds.setRunningGamepieceAnimation(false);
+
+        }
+
+        else if (this.counter > 0) {
+            this.counter -= 1;
+            this._leds.setLEDMode(LEDMode.HasGamepiece);
         }
         
         else {
