@@ -249,10 +249,6 @@ public class RobotContainer {
         }
     }
 
-    private static void runAutonomous(){
-
-    }
-
     private static double modifyAxis(double value) {
         // Deadband
         value = deadband(value, 0.05);
