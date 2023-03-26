@@ -288,7 +288,7 @@ public class Drive extends SubsystemBase {
 
     @Override
     public void periodic() {
-        System.out.println(getPose());
+        // System.out.println(getPose());
         // Convert the drive base vector into module vectors
         SwerveModuleState[] states = _kinematics.toSwerveModuleStates(_chassisSpeeds, _centerOfRotation);
         // Normalize the wheel speeds so we aren't trying to set above the max

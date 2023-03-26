@@ -26,6 +26,7 @@ public class CmdLEDPieceCollected extends CommandBase {
     @Override
     public void initialize() {
         // print statement here
+        System.out.println("SETTING CANDLE LED TO GREEN FOR GAME PIECE");
         
     }
 

@@ -84,7 +84,7 @@ public class Vision {
             System.out.println("Tag couldn't be found. Please ensure that ID for apriltag is correct.");
             throw new Exception("Tag couldn't be found. Please ensure that ID for apriltag is correct.");
         }
-        System.out.println("Current Robot Angle:" + robotPose.relativeTo(apriltagPose).getRotation().getDegrees());
+        // System.out.println("Current Robot Angle:" + robotPose.relativeTo(apriltagPose).getRotation().getDegrees());
         return robotPose.relativeTo(apriltagPose).getRotation().getDegrees();
     }
 
