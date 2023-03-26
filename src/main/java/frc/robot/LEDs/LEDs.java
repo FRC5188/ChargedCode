@@ -13,12 +13,13 @@ public class LEDs extends SubsystemBase {
 
     public enum LEDColors {
         Pink,
-        Blue,
+        Teal,
         Yellow,
         Purple,
         White,
         Red,
         Green, 
+        Blue,
         Off
     }
 
@@ -35,15 +36,16 @@ public class LEDs extends SubsystemBase {
         Off
     }
 
-    // TODO: Change to length of LED strips.
+    // TODO: Change to length of LED strips. Only necessary for animations, so it's working for now. -KH
     // private final int LEDCount = 9;
+
     public CANdle candle = new CANdle(Constants.CanIDs.CANDLE_ID, "rio");
     private LEDMode currentMode = LEDMode.Default;
     public Boolean _runningHasGamepieceAnimation = false;
 
     public LEDs() {
 
-        //TODO: Test brightness and update this to preferred look.
+        //TODO: Test brightness and update this to preferred look. -KH
         candle.configBrightnessScalar(0.5);
 
         CANdleConfiguration configAll = new CANdleConfiguration();
@@ -92,7 +94,7 @@ public class LEDs extends SubsystemBase {
                 break;
 
             case HasGamepiece:
-                setColor(LEDColors.Green);
+                setColor(LEDColors.Teal);
                 this.currentMode = LEDMode.HasGamepiece;
                 break;
 
@@ -102,7 +104,7 @@ public class LEDs extends SubsystemBase {
                 break;
 
             // Note: the following scoring colors are arbitrary/temporary and can be changed to fit driver preferences.
-            // TODO: Decide whether to have separate cone + cube LEDModes.
+            // TODO: Decide whether to have separate scoring cone + cube LEDModes.
 
             case ScoreHigh:
                 setColor(LEDColors.White);
@@ -144,12 +146,12 @@ public class LEDs extends SubsystemBase {
                 candle.setLEDs(210, 55, 120); 
                 break;
 
-            case Blue: 
-                candle.setLEDs(0, 0, 255);
+            case Teal: 
+                candle.setLEDs(2, 153, 138);
                 break;
 
             case Yellow:
-                candle.setLEDs(235, 225, 0);
+                candle.setLEDs(255, 213, 0);
                 break;
 
             case Purple:
@@ -168,6 +170,10 @@ public class LEDs extends SubsystemBase {
                 candle.setLEDs(0, 255, 0);
                 break;
 
+            case Blue:
+                candle.setLEDs(0, 0, 255);
+                break;
+
             case Off:
                 candle.setLEDs(0, 0, 0);
                 candle.configBrightnessScalar(0.0, 100);
@@ -180,5 +186,3 @@ public class LEDs extends SubsystemBase {
 
     //private Colors _currentAnimation;
 }
-
-// TODO: Revisit auto/teleop inits. Should LEDs start there?

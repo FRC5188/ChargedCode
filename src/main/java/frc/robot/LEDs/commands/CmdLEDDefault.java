@@ -27,10 +27,7 @@ public class CmdLEDDefault extends CommandBase {
     }
 
     @Override
-    public void initialize() {
-        // this.color = LEDColors.White;
-        //this._leds.setLEDMode(LEDMode.Off);
-    
+    public void initialize() {    
         
         System.out.println("LEDs Off (initializing)");
         // this._leds.brightness = 0.00;
@@ -50,7 +47,8 @@ public class CmdLEDDefault extends CommandBase {
         }
 
         if (_leds.getRunningGamepieceAnimation()) {
-            this.counter = 100;
+            //countdown for 1 sec
+            this.counter = 50;
             _leds.setRunningGamepieceAnimation(false);
 
         }
