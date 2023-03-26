@@ -128,14 +128,20 @@ public class Vision {
             Pose3d robotPose = PhotonUtils.estimateFieldToRobotAprilTag(target.getBestCameraToTarget(),
                         layout.getTagPose(target.getFiducialId()).get(), cameraPos);
             poseEstimator.addVisionMeasurement(robotPose.toPose2d(), Timer.getFPGATimestamp());
-            System.out.println("[INFO]: Robot Pose Updated From Vision" + robotPose);
+            System.out.println("[INFO]: Robot Pose Updated From Vision " + robotPose);
             return poseEstimator;
         } else {
+            System.out.println("[WARNING]: Robot Cannot See Apriltag");
             return poseEstimator;
         }
     }
-
-    public static Pose3d getRobotInitialPose(){
+    /**
+     * {@summary} Should be called whenever intializing the odometry system. Uses Apriltag to localize the
+     * robot on the field. <Strong>Note: Needs to be facing an Apriltag or exception thrown.</Strong>
+     * @return Pose of robot in three dimensions. 
+     * @throws NullPointerException Apriltag cannot be found. 
+     */
+    public static Pose3d getRobotInitialPose() throws NullPointerException{
         try {
         PhotonTrackedTarget target = camera.getLatestResult().getBestTarget();
         Pose3d robotPose = PhotonUtils.estimateFieldToRobotAprilTag(target.getBestCameraToTarget(),
@@ -143,7 +149,7 @@ public class Vision {
         return robotPose;
         }
         catch(Exception exception){
-            return new Pose3d(0, 0, 0, new Rotation3d(0, 0, 0));
+            throw new NullPointerException("[ERROR] Please Start Robot Facing An Apriltag. Pose Cannot Be Determined.");
         }
     }
 
@@ -154,7 +160,6 @@ public class Vision {
      * @throws IOException
      * @return AprilTag Field Layout
      */
-
     private static Optional<EstimatedRobotPose> getEstimatedRobotGlobalPose(Pose2d previousEstimatedRobotPose) {
         poseEstimator.setReferencePose(previousEstimatedRobotPose);
         return poseEstimator.update();

@@ -2,11 +2,9 @@ package frc.robot.drive;
 
 import com.kauailabs.navx.frc.AHRS;
 
-import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
@@ -190,14 +188,16 @@ public class Drive extends SubsystemBase {
 
         _odometry = new SwerveDrivePoseEstimator(
             _kinematics, 
+            // TODO: Determine if vision rotation could be used instead of the gyroscope. 
             getGyroscopeRotation(),
            // Vision.getRobotInitialPose().getRotation().toRotation2d(),
             new SwerveModulePosition[] {
                 _frontLeftModule.getModulePosition(), _frontRightModule.getModulePosition(),
                 _backLeftModule.getModulePosition(), _backRightModule.getModulePosition() }, 
-            new Pose2d(0, 0, new Rotation2d(0)));
-            //Vision.getRobotInitialPose().toPose2d());
-            //TODO: Get real starting position, may need to use apriltag pose or read starting pose from autonomous trajectory
+                // If doesn't work then you didn't face the robot toward an apriltag before starting.
+                // If you want to get rid of it put some random Pose values in. 
+                Vision.getRobotInitialPose().toPose2d()
+            );
 
         _navx.reset();
 
@@ -288,7 +288,6 @@ public class Drive extends SubsystemBase {
 
     @Override
     public void periodic() {
-        // System.out.println(getPose());
         // Convert the drive base vector into module vectors
         SwerveModuleState[] states = _kinematics.toSwerveModuleStates(_chassisSpeeds, _centerOfRotation);
         // Normalize the wheel speeds so we aren't trying to set above the max
