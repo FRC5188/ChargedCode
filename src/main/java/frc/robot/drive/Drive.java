@@ -295,8 +295,10 @@ public class Drive extends SubsystemBase {
         SwerveDriveKinematics.desaturateWheelSpeeds(states, MAX_VELOCITY_METERS_PER_SECOND);
 
         // Update odometry if applicable
-        Vision.getVisionEstimatedRobotPose(_odometry);
-        _odometry.update(getGyroscopeRotation(), new SwerveModulePosition[] {
+        _odometry = Vision.getVisionEstimatedRobotPose(_odometry);
+        _odometry.update(
+            getGyroscopeRotation(), 
+            new SwerveModulePosition[] {
                 _frontLeftModule.getModulePosition(), _frontRightModule.getModulePosition(),
                 _backLeftModule.getModulePosition(), _backRightModule.getModulePosition()
         });

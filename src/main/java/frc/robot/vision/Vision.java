@@ -122,18 +122,16 @@ public class Vision {
      * @param poseEstimator
      * @return SwerveDrivePoseEstimator from WPILIB
      */
-    public static void getVisionEstimatedRobotPose(SwerveDrivePoseEstimator poseEstimator) {
+    public static SwerveDrivePoseEstimator getVisionEstimatedRobotPose(SwerveDrivePoseEstimator poseEstimator) {
         PhotonTrackedTarget target = camera.getLatestResult().getBestTarget();
-
         if (target != null) {
-            try {
-                Pose3d robotPose = PhotonUtils.estimateFieldToRobotAprilTag(target.getBestCameraToTarget(),
+            Pose3d robotPose = PhotonUtils.estimateFieldToRobotAprilTag(target.getBestCameraToTarget(),
                         layout.getTagPose(target.getFiducialId()).get(), cameraPos);
-             //   poseEstimator.addVisionMeasurement(robotPose.toPose2d(), Timer.getFPGATimestamp());
-               // System.out.println("AprilTag: " + robotPose);
-            } catch (Exception e) {
-
-            }
+            poseEstimator.addVisionMeasurement(robotPose.toPose2d(), Timer.getFPGATimestamp());
+            System.out.println("[INFO]: Robot Pose Updated From Vision" + robotPose);
+            return poseEstimator;
+        } else {
+            return poseEstimator;
         }
     }
 
