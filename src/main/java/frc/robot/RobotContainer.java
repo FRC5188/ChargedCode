@@ -61,6 +61,8 @@ public class RobotContainer {
     private final JoystickButton _driverButtonRB = new JoystickButton(_driverController, Constants.ButtonMappings.RIGHT_BUMPER);
     private final JoystickButton _driverButtonY = new JoystickButton(_driverController, Constants.ButtonMappings.Y_BUTTON);
     private final JoystickButton _driverButtonA = new JoystickButton(_driverController, Constants.ButtonMappings.A_BUTTON);
+    private final JoystickButton _driverButtonLB = new JoystickButton(_driverController, Constants.ButtonMappings.LEFT_BUMPER);
+
 
     //Top row of buttons
     private final Joystick _operatorController1 = new Joystick(1);
@@ -155,8 +157,8 @@ public class RobotContainer {
 
         // Reset Gyro
        // _driverButtonA.whileTrue(new CmdDriveResetGyro(_driveSubsystem));
-       _driverButtonA.whileTrue(new CmdDriveChangeCoR(_driveSubsystem, new Translation2d(1.07, 0)));
-       _driverButtonA.whileFalse(new CmdDriveChangeCoR(_driveSubsystem, new Translation2d(0, 0)));
+       _driverButtonLB.whileTrue(new CmdDriveChangeCoR(_driveSubsystem, new Translation2d(1.07, 0)));
+       _driverButtonLB.whileFalse(new CmdDriveChangeCoR(_driveSubsystem, new Translation2d(0, 0)));
 
         // -- Operator Controls --
         _opButtonOne.onTrue(new GrpMoveArmToPosition(_armSubsystem, ArmPosition.EnGarde));
@@ -221,9 +223,11 @@ public class RobotContainer {
         eventMap.put("Spit", new CmdArmSpit(_armSubsystem, 0.4));
         eventMap.put("StoreArm", new GrpMoveArmToPosition(_armSubsystem, ArmPosition.Stored));
         eventMap.put("Auto_Balance", new CmdDriveAutoBalance(_driveSubsystem));
-        return Autonomous.generateFullAuto("AutoDriveOntoPlatform", eventMap, 3, 0.5, _driveSubsystem);
+        // return Autonomous.generateFullAuto("AutoDriveOntoPlatform", eventMap, 3, 0.5, _driveSubsystem);
         //return Autonomous.getMovementCommand(FIELD_POSITIONS.LEFT_SIDE_GRID_CUBE_SECOND_CLOSEST, 3, 4, _driveSubsystem, null)
         //return Autonomous.generateFullAuto("HighScoreAndMobility", eventMap, 3, 0.5, _driveSubsystem);
+    
+        return new CmdDriveAutoBalance(_driveSubsystem);
     }
 
     public Command getInitialArmPosCommand() {

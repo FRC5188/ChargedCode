@@ -23,6 +23,7 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.arm.ArmConstants.TrajectorySpeeds;
 
 public class Arm extends SubsystemBase {
 
@@ -986,6 +987,12 @@ public class Arm extends SubsystemBase {
         waypoints.add(getArmAnglesFromPosition(position));
 
         _trajectory = new ArmTrajectory(waypoints);
+
+        // if we are going from loading station to stored go at a different speed
+        if(this._currentArmPos == ArmPosition.LoadStationPickUp && position == ArmPosition.Stored){
+            System.out.println("SETTING TRAJECTRYO SPEED" + TrajectorySpeeds.HUMAN_PLAYER_TO_STORED_SPEED);
+            _trajectory.setTrajectorySpeed(TrajectorySpeeds.HUMAN_PLAYER_TO_STORED_SPEED);
+        }
     }
 
     public void startTrajectory() {

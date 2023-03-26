@@ -17,11 +17,15 @@ public class CmdDriveAutoBalance extends CommandBase {
 	public CmdDriveAutoBalance(Drive driveSubsystem) {
 		_driveSubsystem = driveSubsystem;
 		PID_TOLERANCE = 2.0;
-		BALANCING_MAX_SPEED = Drive.MAX_VELOCITY_METERS_PER_SECOND * 0.25;
+		BALANCING_MAX_SPEED = Drive.MAX_VELOCITY_METERS_PER_SECOND * 0.35;
 		BALANCING_MAX_ACCELERATION = BALANCING_MAX_SPEED; //TODO: Find the actual max acceleration
 		BALANCING_CONSTRAINTS = new TrapezoidProfile.Constraints(BALANCING_MAX_SPEED, BALANCING_MAX_ACCELERATION);
 		addRequirements(_driveSubsystem);
-		pidController = new ProfiledPIDController(0.02, 0, 0, BALANCING_CONSTRAINTS); //TODO: Tune PID values
+
+		// THIS ONE WORKS BUT IS KINDA SLOW
+		// pidController = new ProfiledPIDController(0.02, 0, 0, BALANCING_CONSTRAINTS); //TODO: Tune PID values
+	
+		pidController = new ProfiledPIDController(0.035, 0, 0, BALANCING_CONSTRAINTS); //TODO: Tune PID values
 	}
 
 
@@ -37,7 +41,7 @@ public class CmdDriveAutoBalance extends CommandBase {
 	public void execute() {
 		double y = pidController.calculate(_driveSubsystem.getRobotPitch());
 		System.out.println("[INFO]:" + y);
-		_driveSubsystem.drive(new ChassisSpeeds(0, y, 0));
+		_driveSubsystem.drive(new ChassisSpeeds(y, 0, 0));
 	}
 
 	// Called once the command ends or is interrupted.

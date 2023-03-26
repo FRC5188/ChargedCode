@@ -57,6 +57,11 @@ public class ArmTrajectory {
         }
     }
 
+    // if this is not called then the default from arm constants is used.
+    public void setTrajectorySpeed(double max_speed){
+        this.m_maxTranslationalSpeed = max_speed;
+    }
+
     /**
      * Generate new setpoint for the PID controllers based on how long
      * the trajectory has been running

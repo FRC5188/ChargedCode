@@ -60,23 +60,23 @@ public class ArmConstants {
                 public static double STORED_SHOULDER_POS = 81.7;
                 public static double STORED_ELBOW_POS = 1;
 
-                public static double MID_CONE_SHOULDER_POS = 86; //WAS: 78.1 Should be at 80, moving back for ??? - Mike
-                public static double MID_CONE_ELBOW_POS = 90; //WAS: 91.6
+                public static double MID_CONE_SHOULDER_POS = 83; //WAS: 78.1 Should be at 80, moving back for ??? - Mike
+                public static double MID_CONE_ELBOW_POS = 95; //WAS: 91.6
 
-                public static double MID_CONE_SHOULDER_PLACE_POS = 86; //WAS: 78.1 Should be at 80, moving back for ??? - Mike
-                public static double MID_CONE_ELBOW_PLACE_POS = 90; //WAS 67.1 
+                public static double MID_CONE_SHOULDER_PLACE_POS = 84; //WAS: 78.1 Should be at 80, moving back for ??? - Mike
+                public static double MID_CONE_ELBOW_PLACE_POS = 95; //WAS 67.1 
 
                 public static double MID_CUBE_SHOULDER_POS = 107.8;
                 public static double MID_CUBE_ELBOW_POS = 80.7;
                 //shoul 40.2, elbow 110
-                public static double HIGH_CONE_SPIT_SHOULDER_POS = 44; //WAS: 35
-                public static double HIGH_CONE_SPIT_ELBOW_POS = 118; //WAS: 125
+                public static double HIGH_CONE_SPIT_SHOULDER_POS = 42; //WAS: 35
+                public static double HIGH_CONE_SPIT_ELBOW_POS = 120; //WAS: 125
 
                 // this is set to be the height prior to dropping. ignore the name.
                 // needs refactored
                 // shol 44.7, elbow 121.5
-                public static double HIGH_CONE_DROP_SHOULDER_POS = 44; //WAS: 35
-                public static double HIGH_CONE_DROP_ELBOW_POS = 118.5; //WAS: 125
+                public static double HIGH_CONE_DROP_SHOULDER_POS = 42; //WAS: 35
+                public static double HIGH_CONE_DROP_ELBOW_POS = 120; //WAS: 125
 
                 public static double HIGH_CUBE_SHOULDER_POS = 77.3;
                 public static double HIGH_CUBE_ELBOW_POS = 95.0;
@@ -105,6 +105,10 @@ public class ArmConstants {
 
                 public static double INTERMEDIATE_ALL_SHOULDER_POS = 109.6;
                 public static double INTERMEDIATE_ALL_ELBOW_POS = 25.7;
+        }
+
+        public static class TrajectorySpeeds{
+                public static final double HUMAN_PLAYER_TO_STORED_SPEED = 50;
         }
 
         public static class IntermediateWaypoints {
@@ -204,7 +208,7 @@ public class ArmConstants {
         public static double ELBOW_IS_HITTING_CURRENT = 15.0; // TODO: Find actual value for this (Probably around 10-15 - Mike)
         public static double MAX_MOTOR_VOLTAGE = 11.5; // May want to adjust -Garrett
 
-        public static double INTAKE_HAS_PIECE_CURRENT = 40;
+        public static double INTAKE_HAS_PIECE_CURRENT = 25;
 
         public static IntakeMode INTAKE_MODE_DEFAULT = IntakeMode.Open;
 

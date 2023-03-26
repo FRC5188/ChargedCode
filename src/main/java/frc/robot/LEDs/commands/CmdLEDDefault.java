@@ -16,7 +16,7 @@ public class CmdLEDDefault extends CommandBase {
     private DriverStation _driverStation;
     private ArmMode armMode;
     private ArmPosition armPosition;
-    private Integer counter;
+    private int counter;
     
 
     public CmdLEDDefault(LEDs leds, Arm armSubsystem) {
@@ -53,7 +53,8 @@ public class CmdLEDDefault extends CommandBase {
 
         }
 
-        else if (this.counter > 0) {
+        if (this.counter > 0) {
+            System.out.println("STILL RUNNING GAME PIECE ANIMATION. COunter: " + counter);
             this.counter -= 1;
             this._leds.setLEDMode(LEDMode.HasGamepiece);
         }
