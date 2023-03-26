@@ -131,7 +131,7 @@ public class Vision {
             System.out.println("[INFO]: Robot Pose Updated From Vision " + robotPose);
             return poseEstimator;
         } else {
-            System.out.println("[WARNING]: Robot Cannot See Apriltag");
+            //System.out.println("[WARNING]: Robot Cannot See Apriltag");
             return poseEstimator;
         }
     }
