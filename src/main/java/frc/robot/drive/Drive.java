@@ -196,7 +196,8 @@ public class Drive extends SubsystemBase {
                 _backLeftModule.getModulePosition(), _backRightModule.getModulePosition() }, 
                 // If doesn't work then you didn't face the robot toward an apriltag before starting.
                 // If you want to get rid of it put some random Pose values in. 
-                Vision.getRobotInitialPose().toPose2d()
+                //Vision.getRobotInitialPose().toPose2d()
+                new Pose2d(0, 0, new Rotation2d(0,0))
             );
 
         _navx.reset();
