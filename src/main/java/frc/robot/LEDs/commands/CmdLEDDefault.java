@@ -13,7 +13,8 @@ import frc.robot.arm.Arm.ArmPosition;
 public class CmdLEDDefault extends CommandBase {
     private Arm _armSubsystem;
     private LEDs _leds;
-    private DriverStation _driverStation;
+    // Note: only used DriverStation for getting state of comms, which will likely be omitted. -KH 2023/3/27
+    //private DriverStation _driverStation;
     private ArmMode armMode;
     private ArmPosition armPosition;
     private int counter;
@@ -47,14 +48,14 @@ public class CmdLEDDefault extends CommandBase {
         }
 
         if (_leds.getRunningGamepieceAnimation()) {
-            //countdown for 1 sec
+            //count down for 1 sec
             this.counter = 50;
             _leds.setRunningGamepieceAnimation(false);
 
         }
 
         if (this.counter > 0) {
-            System.out.println("STILL RUNNING GAME PIECE ANIMATION. COunter: " + counter);
+            System.out.println("STILL RUNNING GAME PIECE ANIMATION. Cuunter: " + counter);
             this.counter -= 1;
             this._leds.setLEDMode(LEDMode.HasGamepiece);
         }

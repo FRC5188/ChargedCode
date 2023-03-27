@@ -57,15 +57,21 @@ public class LEDs extends SubsystemBase {
     private final int LEDCount = 9;
 
     public CANdle _candle = new CANdle(Constants.CanIDs.CANDLE_ID, "rio");
-    private LEDMode _currentMode = LEDMode.Default;
     public Boolean _runningHasGamepieceAnimation = false;
-    private LEDAnimations _currentAnimation = null;
     private Animation _storedAnimation;
+
+    //TODO: Should I set LEDMode to default or null at first? -KH 2023/3/27
+    private LEDMode _currentMode = LEDMode.Default;
+    private LEDColors _currentColor;
+    private LEDAnimations _currentAnimation = null;
 
     public LEDs() {
 
         //TODO: Test brightness and update this to preferred look. -KH 2023/3/27
         _candle.configBrightnessScalar(0.5);
+
+        //TODO: AYOOO we can get the temperature of the candle and check if it overheats!!! -KH 2023/3/27
+        //_candle.getTemperature();
 
         CANdleConfiguration configAll = new CANdleConfiguration();
         configAll.statusLedOffWhenActive = true;
@@ -145,7 +151,7 @@ public class LEDs extends SubsystemBase {
             default:
                 setColor(LEDColors.Pink);
                 this._currentMode = LEDMode.Default;
-
+                break;
         }
     }
 
@@ -160,43 +166,53 @@ public class LEDs extends SubsystemBase {
         switch(color) {
             case Pink: 
                 _candle.setLEDs(210, 55, 120); 
+                this._currentColor = LEDColors.Pink;
                 break;
 
             case Teal: 
                 _candle.setLEDs(2, 153, 138);
+                this._currentColor = LEDColors.Teal;
                 break;
 
             case Yellow:
                 _candle.setLEDs(255, 213, 0);
+                this._currentColor = LEDColors.Yellow;
                 break;
 
             case Purple:
                 _candle.setLEDs(165, 0, 215);
+                this._currentColor = LEDColors.Purple;
                 break;
             
             case White:
                 _candle.setLEDs(255, 255, 255);
+                this._currentColor = LEDColors.White;
                 break;
 
             case Red:
                 _candle.setLEDs(255, 0, 0);
+                this._currentColor = LEDColors.Red;
                 break;
 
             case Green:
                 _candle.setLEDs(0, 255, 0);
+                this._currentColor = LEDColors.Green;
                 break;
 
             case Blue:
                 _candle.setLEDs(0, 0, 255);
+                this._currentColor = LEDColors.Blue;
                 break;
 
             case Off:
                 _candle.setLEDs(0, 0, 0);
                 _candle.configBrightnessScalar(0.0, 100);
+                this._currentColor = LEDColors.Off;
                 break;
 
             default:
                 _candle.setLEDs(255, 255, 255);
+                this._currentColor = LEDColors.White;
         }
     }
 
@@ -236,5 +252,17 @@ public class LEDs extends SubsystemBase {
 
         // Use this print statement for testing/debugging:
         //System.out.println("Current animation: " + _storedAnimation.toString());
+    }
+
+    public LEDMode getCurrentLEDMode() {
+        return this._currentMode;
+    }
+
+    public LEDAnimations getCurrentLEDAnimation() {
+        return this._currentAnimation;
+    }
+
+    public LEDColors getCurrentLEDColor() {
+        return this._currentColor;
     }
 }
