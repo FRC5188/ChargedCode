@@ -6,6 +6,8 @@ public interface SwerveModule {
     double getDriveVelocity();
 
     double getSteerAngle();
+   
+    DriveController getDriveController();
 
     SwerveModulePosition getModulePosition();
 
