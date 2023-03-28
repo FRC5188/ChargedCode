@@ -114,6 +114,7 @@ public class LEDs extends SubsystemBase {
 
             case HasGamepiece:
                 setAnimation(LEDAnimations.TealStrobe);
+                //setColor(LEDColors.Teal);
                 this._currentMode = LEDModes.HasGamepiece;
                 break;
 
