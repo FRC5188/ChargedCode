@@ -5,6 +5,7 @@
 package frc.robot;
 
 import java.util.HashMap;
+import java.util.Map;
 
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.GenericHID;
@@ -12,6 +13,8 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.SelectCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.LEDs.LEDs;
@@ -21,13 +24,16 @@ import frc.robot.arm.Arm;
 import frc.robot.arm.Arm.ArmMode;
 import frc.robot.arm.Arm.ArmPosition;
 import frc.robot.arm.commandGroups.GrpAutoHighConeScore;
+import frc.robot.arm.commandGroups.GrpEngardeForScoring;
 import frc.robot.arm.commandGroups.GrpMoveArmToPosition;
 import frc.robot.arm.commandGroups.GrpMoveArmToScore;
+import frc.robot.arm.commandGroups.GrpScoreAndStow;
 import frc.robot.arm.commands.CmdArmDefault;
 import frc.robot.arm.commands.CmdArmRunIntake;
 import frc.robot.arm.commands.CmdArmSetMode;
 import frc.robot.arm.commands.CmdArmSpit;
 import frc.robot.arm.commands.CmdArmUpdateGoal;
+import frc.robot.arm.commands.CmdArmUpdateToFinalPosition;
 import frc.robot.autonomous.Autonomous;
 import frc.robot.autonomous.Autonomous.FIELD_POSITIONS;
 import frc.robot.arm.commands.CmdArmDisablePID;
@@ -154,7 +160,14 @@ public class RobotContainer {
         //     0));
         //_driverButtonA.onTrue(new CmdDriveResetGyro(_driveSubsystem));
         //_driverButtonA.onTrue(new CmdArmSpit(_armSubsystem, 0.4));
-        _driverButtonY.onTrue(new GrpMoveArmToScore(_armSubsystem));
+
+        _driverButtonY.onTrue(new SelectCommand(
+            // Maps selector values to commands
+            Map.ofEntries(
+                Map.entry(ArmPosition.High, new GrpScoreAndStow(_armSubsystem)),
+                Map.entry(ArmPosition.EnGarde, new CmdArmUpdateToFinalPosition(_armSubsystem)),
+                Map.entry(ArmPosition.HighCube, new GrpScoreAndStow(_armSubsystem))),
+                _armSubsystem::getCurrentArmPosition).unless(() -> !_armSubsystem.atFinalPosition()));
 
         // Reset Gyro
        // _driverButtonA.whileTrue(new CmdDriveResetGyro(_driveSubsystem));
@@ -177,7 +190,9 @@ public class RobotContainer {
 
         _opButtonSix.onTrue(new GrpMoveArmToPosition(_armSubsystem, ArmPosition.GroundPickUp));
 
-        _opButtonSeven.onTrue(new GrpMoveArmToPosition(_armSubsystem, ArmPosition.High));
+        _opButtonSeven.onTrue(new GrpEngardeForScoring(_armSubsystem, ArmPosition.High));
+
+        //_opButtonSeven.onTrue(new GrpMoveArmToPosition(_armSubsystem, ArmPosition.High));
 
         _opButtonEight.onTrue(new GrpMoveArmToPosition(_armSubsystem, ArmPosition.Middle));
 
@@ -196,12 +211,12 @@ public class RobotContainer {
         double shoulderDownAmount = -3.0;
 
         // Elbow manual buttons
-        // _op2ButtonOne.onTrue(new CmdArmMoveElbowManual(_armSubsystem, elbowDownAmount));
-        // _op2ButtonTwo.onTrue(new CmdArmMoveElbowManual(_armSubsystem, elbowUpAmount));
+        _op2ButtonOne.onTrue(new CmdArmMoveElbowManual(_armSubsystem, () -> elbowDownAmount));
+        _op2ButtonTwo.onTrue(new CmdArmMoveElbowManual(_armSubsystem, () -> elbowUpAmount));
 
         // Shoulder manual buttons
-        // _op2ButtonThree.onTrue(new CmdArmMoveShoulderManual(_armSubsystem, shoulderDownAmount));
-        // _op2ButtonFour.onTrue(new CmdArmMoveShoulderManual(_armSubsystem, shoulderUpAmount));
+        _op2ButtonThree.onTrue(new CmdArmMoveShoulderManual(_armSubsystem, () -> shoulderDownAmount));
+        _op2ButtonFour.onTrue(new CmdArmMoveShoulderManual(_armSubsystem, () -> shoulderUpAmount));
        // this currently infinitely adds to the current setpoint while button is held
         // _opButtonOne.whileTrue(Commands.parallel(
         //     new CmdArmMoveElbowManual(
@@ -245,6 +260,10 @@ public class RobotContainer {
     public Command updateLEDs() {
         System.out.println("Cmd UpdateLEDs");
         return new CmdLEDDefault(_leds, _armSubsystem);
+    }
+
+    public void setTestMode(boolean inTest) {
+        _armSubsystem.setTestMode(inTest);
     }
 
     private static double deadband(double value, double deadband) {

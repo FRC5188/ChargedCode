@@ -70,16 +70,16 @@ public class ArmConstants {
                 public static double MID_CUBE_ELBOW_POS = 80.7;
                 //shoul 40.2, elbow 110
                 public static double HIGH_CONE_SPIT_SHOULDER_POS = 42; //WAS: 35
-                public static double HIGH_CONE_SPIT_ELBOW_POS = 120; //WAS: 125
+                public static double HIGH_CONE_SPIT_ELBOW_POS = 125; //WAS: 125
 
                 // this is set to be the height prior to dropping. ignore the name.
                 // needs refactored
                 // shol 44.7, elbow 121.5
                 public static double HIGH_CONE_DROP_SHOULDER_POS = 42; //WAS: 35
-                public static double HIGH_CONE_DROP_ELBOW_POS = 120; //WAS: 125
+                public static double HIGH_CONE_DROP_ELBOW_POS = 125; //WAS: 125
 
                 public static double HIGH_CUBE_SHOULDER_POS = 77.3;
-                public static double HIGH_CUBE_ELBOW_POS = 95.0;
+                public static double HIGH_CUBE_ELBOW_POS = 100.0;
 
                 public static double HUMAN_PLAYER_SHOULDER_POS = 113.5;
                 public static double HUMAN_PLAYER_ELBOW_POS = 94.5;
@@ -109,6 +109,7 @@ public class ArmConstants {
 
         public static class TrajectorySpeeds{
                 public static final double HUMAN_PLAYER_TO_STORED_SPEED = 50;
+                public static final double ENGARDE_TO_HIGH_CONE_SPEED = 60;
         }
 
         public static class IntermediateWaypoints {
@@ -121,10 +122,10 @@ public class ArmConstants {
                 public static double[][] ENGARDE_TO_STORED = { { 131, 63.7 }, { 113.5, 39.3 }, { 97.7, 30 },
                                 { 87.1, 30 }, { 84.1, 29 }, { 81.7, 29 }};
                 public static double[][] STORED_TO_GROUND_PICKUP = { { 114, 30 }, { 103.2, 40.3 }, { 92.3, 55.5 }, { 49, 50 } };
-                public static double[][] ENGARDE_TO_HIGH_CONE = { { 130, 100 }, { 128, 120 }, { 105, 160 }, { 85, 173 }, { 75, 178 } };
+                public static double[][] ENGARDE_TO_HIGH_CONE = { { 130, 100 }, { 128, 120 }, { 105, 160 }, { 85, 173 }, { 75, 178 }, { 65, 178 }, { 55, 178 }, { 45, 178 } };
                 public static double[][] ENGUARD_TO_MID_CONE = { {115, 130 }, {100, 135 }, {94, 135 } };
                 // static double [][] ENGARDE_TO_HIGH_CONE = { { 104, 89 }, { 80, 95}, {45, 120}};
-                
+                public static double[][] ENGARDE_TO_HIGH_CUBE = { {121.46, 120}, {116.80, 130}, {110.80, 130}, {105.80, 130}, {99.80, 130}, {94.80, 130}, {89.80, 130}, {78.80, 130} };
                 
                 //{ {148,100}, {147,113}, {137,118}, {129,124}, {117,123}, {101,120}, {86,120}, {74,121}, {65,124}, {57,127}, {50,135}, {43,135}, {36,127}
 
@@ -208,7 +209,7 @@ public class ArmConstants {
         public static double ELBOW_IS_HITTING_CURRENT = 15.0; // TODO: Find actual value for this (Probably around 10-15 - Mike)
         public static double MAX_MOTOR_VOLTAGE = 11.5; // May want to adjust -Garrett
 
-        public static double INTAKE_HAS_PIECE_CURRENT = 25;
+        public static double INTAKE_HAS_PIECE_CURRENT = 30;
 
         public static IntakeMode INTAKE_MODE_DEFAULT = IntakeMode.Open;
 

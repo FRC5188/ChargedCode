@@ -20,10 +20,7 @@ public class GrpMoveArmToPosition extends SequentialCommandGroup {
     //
 
     addCommands(
-        // // Update arm goal to the intermediate position
-        // new CmdArmUpdateToItermediate(armSubsystem, position),
-        // // Wait for us to get there
-        // new CmdArmWaitForArm(armSubsystem),
+      
         // Now go to actual position
         new CmdArmUpdateGoal(armSubsystem, position),
         // Turn on the intake if needed

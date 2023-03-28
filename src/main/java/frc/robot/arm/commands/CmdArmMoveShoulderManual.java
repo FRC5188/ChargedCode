@@ -19,7 +19,9 @@ public class CmdArmMoveShoulderManual extends CommandBase {
 
     @Override
     public void initialize() {
-        _armSubsystem.setShoulderGoalFromAngle(_armSubsystem.getShoulderSetpoint() + _changeAmount.getAsDouble());
+        double setpoint = _armSubsystem.getShoulderSetpoint() + _changeAmount.getAsDouble();
+        System.out.println("Changing Shoulder from " + _armSubsystem.getShoulderJointAngle() + " to " + setpoint);
+        _armSubsystem.setShoulderGoalFromAngle(setpoint);
     }
     
     @Override

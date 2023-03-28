@@ -18,7 +18,7 @@ public class CmdArmWaitForArm extends CommandBase {
 
     @Override
     public void execute() {
-
+        System.out.println("Waiting");
     }
 
     @Override
@@ -28,6 +28,6 @@ public class CmdArmWaitForArm extends CommandBase {
 
     @Override
     public boolean isFinished() {
-        return _armSubsystem.shoulderAtSetpoint() && _armSubsystem.elbowAtSetpoint();
+        return _armSubsystem.atFinalPosition();
     }
 }

@@ -24,11 +24,11 @@ public class ArmTrajectory {
      * Create a new trajectory from the given waypoints
      * @param waypoints ArrayList of joint angle waypoints
      */
-    public ArmTrajectory(ArrayList<ArmJointAngles> waypoints) {
+    public ArmTrajectory(ArrayList<ArmJointAngles> waypoints, double speed) {
         m_waypoints = new ArrayList<ArmJointAngles>(waypoints);
 
         // Calculate characteristics of the trajectory
-        m_maxTranslationalSpeed = ArmConstants.MAX_TRAJECTORY_SPEED;
+        m_maxTranslationalSpeed = speed;
         m_totalLength = calcTotalDistance(m_waypoints);
         m_totalTime = m_totalLength / m_maxTranslationalSpeed;
 
@@ -51,15 +51,11 @@ public class ArmTrajectory {
         SmartDashboard.putString("WaypointTimes", m_waypointTimes.toString());
         SmartDashboard.putNumber("TotalTime", m_totalTime);
         SmartDashboard.putNumber("TotalLength", m_totalLength);
+        System.out.println("SPEED: " + m_maxTranslationalSpeed);
         System.out.println("WAYPOINTS");
         for(ArmJointAngles w : m_waypoints) {
             System.out.println("Shoulder: " + w.getShoulderJointAngle() + " Elbow: " + w.getElbowJointAngle());
         }
-    }
-
-    // if this is not called then the default from arm constants is used.
-    public void setTrajectorySpeed(double max_speed){
-        this.m_maxTranslationalSpeed = max_speed;
     }
 
     /**

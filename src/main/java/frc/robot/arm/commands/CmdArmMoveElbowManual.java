@@ -18,7 +18,9 @@ public class CmdArmMoveElbowManual extends CommandBase {
 
     @Override
     public void initialize() {
-        _armSubsystem.setElbowGoalFromAngle(_armSubsystem.getElbowSetpoint() + _changeAmount.getAsDouble());
+        double setpoint = _armSubsystem.getElbowSetpoint() + _changeAmount.getAsDouble();
+        System.out.println("Changing Elbow from " + _armSubsystem.getElbowJointAngleRelativeToGround() + " to " + setpoint);
+        _armSubsystem.setElbowGoalFromAngle(setpoint);
     }
 
     @Override

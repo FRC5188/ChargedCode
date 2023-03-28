@@ -158,6 +158,7 @@ public class Arm extends SubsystemBase {
     private Solenoid _intakeSolenoid;
 
     private ArmPosition _targetPosition;
+    private ArmPosition _finalPosition;
 
     /** Arm elbow and wrist potentionmeters. Measures arm angle **/
     private AnalogInput _elbowPotentiometer;
@@ -169,13 +170,14 @@ public class Arm extends SubsystemBase {
     private PIDController _shoulderMotorPID;
     private PIDController _elbowMotorPID;
 
-    private ArmPosition _currentArmPos;
+    public ArmPosition _currentArmPos;
     private ArmMode _armMode;
     public boolean _hasGamepiece = true;
     public IntakeMode _intakeMode;
 
     // Set this to true so that the arm is in coast and the motors don't run
-    //WARNING: DOESN'T UPDATE THE POTS, WILL ALWAYS ASSUME THAT THE ROBOT IS IN ONE POSITION
+    // WARNING: DOESN'T UPDATE THE POTS, WILL ALWAYS ASSUME THAT THE ROBOT IS IN ONE
+    // POSITION
     // setCurrentPosition isn't updated
     private boolean _inSetpointTestingMode = false;
 
@@ -224,6 +226,8 @@ public class Arm extends SubsystemBase {
         _intakeMotor.setInverted(true);
         _intakeMotor.setIdleMode(IdleMode.kBrake);
 
+        _targetPosition = ArmPosition.Stored;
+        _finalPosition = ArmPosition.Stored;
         _currentArmPos = ArmPosition.Stored;
         _armMode = ArmMode.Cube;
         _intakeMode = IntakeMode.Closed;
@@ -252,18 +256,35 @@ public class Arm extends SubsystemBase {
         this.updateShuffleBoard();
     }
 
+    public void setTestMode(boolean inTest) {
+        // set motor breaking
+        _shoulderMotor.setNeutralMode((inTest) ? NeutralMode.Coast : NeutralMode.Brake);
+        _elbowMotor.setNeutralMode((inTest) ? NeutralMode.Coast : NeutralMode.Brake);
+        _inSetpointTestingMode = inTest;
+    }
+
     public ArmPosition getTargetArmPosition() {
         return this._targetPosition;
     }
 
+    public ArmPosition getFinalPosition() {
+        return this._finalPosition;
+    }
+
+    public void setFinalPosition(ArmPosition position) {
+        this._finalPosition = position;
+    }
+
     public boolean atFinalPosition() {
         ArmJointAngles angles = getArmAnglesFromPosition(_targetPosition);
-        return (Math.abs(angles.shoulderJointAngle - getShoulderJointAngle()) < ArmConstants.SHOULDER_MOTOR_TOLERANCE) && 
-            (Math.abs(angles.elbowJointAngle - getElbowJointAngleRelativeToGround()) < ArmConstants.ELBOW_MOTOR_TOLERANCE);
+        return (Math.abs(angles.shoulderJointAngle - getShoulderJointAngle()) < ArmConstants.SHOULDER_MOTOR_TOLERANCE)
+                &&
+                (Math.abs(angles.elbowJointAngle
+                        - getElbowJointAngleRelativeToGround()) < ArmConstants.ELBOW_MOTOR_TOLERANCE);
     }
 
     public void setCurrentPosition(ArmPosition inputArmPosition) {
-        //System.out.println("SETTING POSITION __________" + inputArmPosition);
+        // System.out.println("SETTING POSITION __________" + inputArmPosition);
         this._currentArmPos = inputArmPosition;
     }
 
@@ -278,6 +299,8 @@ public class Arm extends SubsystemBase {
         SmartDashboard.putNumber("Shoulder Motor Output", this._shoulderMotor.get());
         SmartDashboard.putString("Current Position", this._currentArmPos.toString());
         SmartDashboard.putString("Current Mode", this._armMode.toString());
+        SmartDashboard.putString("Target Position", this._targetPosition.toString());
+        SmartDashboard.putString("Final Scoring Position", this._finalPosition.toString());
     }
 
     public double getElbowSetpoint() {
@@ -846,8 +869,8 @@ public class Arm extends SubsystemBase {
             switch (position) {
                 case LowScore:
                 case GroundPickUp:
-                    addWaypointsFrom2DArray(intermediatePositions, 
-                        ArmConstants.IntermediateWaypoints.STORED_TO_GROUND_PICKUP);
+                    addWaypointsFrom2DArray(intermediatePositions,
+                            ArmConstants.IntermediateWaypoints.STORED_TO_GROUND_PICKUP);
                     break;
                 case Stored:
                     break;
@@ -863,13 +886,14 @@ public class Arm extends SubsystemBase {
         } else if (_currentArmPos == ArmPosition.GroundPickUp || _currentArmPos == ArmPosition.LowScore) {
             // We only want to run these intermediate positions if we are going somewhere
             // from ground pickup
-            //System.out.println("Goofy Ground Position");
+            // System.out.println("Goofy Ground Position");
             switch (position) {
                 case LowScore:
                 case GroundPickUp:
                     break;
                 case Stored:
-                    addWaypointsFrom2DArray(intermediatePositions, ArmConstants.IntermediateWaypoints.GROUND_PICKUP_TO_STORED);
+                    addWaypointsFrom2DArray(intermediatePositions,
+                            ArmConstants.IntermediateWaypoints.GROUND_PICKUP_TO_STORED);
                 default:
 
                     break;
@@ -880,24 +904,25 @@ public class Arm extends SubsystemBase {
             // from ground pickup
             switch (position) {
                 case Stored:
-                    System.out.println("HNJMDSUYDDWKJHWUIJKDJWDYEUKDUi");
                     addWaypointsFrom2DArray(intermediatePositions,
                             ArmConstants.IntermediateWaypoints.ENGARDE_TO_STORED);
                     break;
                 case High:
-                if (this.getArmMode() == ArmMode.Cone) {
-                    addWaypointsFrom2DArray(intermediatePositions, 
-                    ArmConstants.IntermediateWaypoints.ENGARDE_TO_HIGH_CONE);
-                } else {
-                    
-                }
+                    if (this.getArmMode() == ArmMode.Cone) {
+                        addWaypointsFrom2DArray(intermediatePositions,
+                                ArmConstants.IntermediateWaypoints.ENGARDE_TO_HIGH_CONE);
+                    } else {
+                        addWaypointsFrom2DArray(intermediatePositions,
+                                ArmConstants.IntermediateWaypoints.ENGARDE_TO_HIGH_CUBE);
+                    }
                     break;
                 case Middle:
-                if (this.getArmMode() == ArmMode.Cone) {
-                    addWaypointsFrom2DArray(intermediatePositions, ArmConstants.IntermediateWaypoints.ENGUARD_TO_MID_CONE);
-                } else {
+                    if (this.getArmMode() == ArmMode.Cone) {
+                        addWaypointsFrom2DArray(intermediatePositions,
+                                ArmConstants.IntermediateWaypoints.ENGUARD_TO_MID_CONE);
+                    } else {
 
-                }
+                    }
                     break;
                 default:
 
@@ -970,11 +995,13 @@ public class Arm extends SubsystemBase {
     }
 
     public void setShoulderGoalFromAngle(double setpoint) {
-        // _shoulderMotorPID.reset(this.getShoulderJointAngle());
-        // _shoulderMotorPID.setGoal(setpoint);
+        _shoulderMotorPID.reset();
+        _shoulderMotorPID.setSetpoint(setpoint);
     }
 
     public void generateTrajectory(ArmPosition position) {
+        stopTrajectory();
+
         ArrayList<ArmJointAngles> intermediates = getIntermediatePositions(position);
 
         ArrayList<ArmJointAngles> waypoints = new ArrayList<>();
@@ -986,13 +1013,17 @@ public class Arm extends SubsystemBase {
 
         waypoints.add(getArmAnglesFromPosition(position));
 
-        _trajectory = new ArmTrajectory(waypoints);
-
+        double speed = ArmConstants.MAX_TRAJECTORY_SPEED;
         // if we are going from loading station to stored go at a different speed
-        if(this._currentArmPos == ArmPosition.LoadStationPickUp && position == ArmPosition.Stored){
-            System.out.println("SETTING TRAJECTRYO SPEED" + TrajectorySpeeds.HUMAN_PLAYER_TO_STORED_SPEED);
-            _trajectory.setTrajectorySpeed(TrajectorySpeeds.HUMAN_PLAYER_TO_STORED_SPEED);
+        if (this._currentArmPos == ArmPosition.LoadStationPickUp && position == ArmPosition.Stored) {
+            System.out.println("SETTING TRAJECTORY SPEED: " + TrajectorySpeeds.HUMAN_PLAYER_TO_STORED_SPEED);
+            speed = TrajectorySpeeds.HUMAN_PLAYER_TO_STORED_SPEED;
+        } else if (this._currentArmPos == ArmPosition.EnGarde && position == ArmPosition.High) {
+            System.out.println("SETTING TRAJECTORY SPEED: " + TrajectorySpeeds.ENGARDE_TO_HIGH_CONE_SPEED);
+            speed = TrajectorySpeeds.ENGARDE_TO_HIGH_CONE_SPEED;
         }
+
+        _trajectory = new ArmTrajectory(waypoints, speed);
     }
 
     public void startTrajectory() {
@@ -1021,7 +1052,8 @@ public class Arm extends SubsystemBase {
         _trajTimer.stop();
     }
 
-    public ArmJointAngles getArmAnglesFromPosition(ArmPosition position) {
+    public ArmJointAngles 
+    getArmAnglesFromPosition(ArmPosition position) {
         double shoulderPos = this.getShoulderJointAngle();
         double elbowPos = this.getElbowJointAngleRelativeToGround();
         this._targetPosition = position;
