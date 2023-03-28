@@ -23,13 +23,11 @@ public class CmdLEDPieceCollected extends CommandBase {
     @Override
     public void initialize() {
         System.out.println("SETTING CANDLE LED TO TEAL FOR GAME PIECE");
-        
     }
 
       @Override
     public void execute() {
         _leds.setRunningGamepieceAnimation(true);
-  
     }
     
     @Override
