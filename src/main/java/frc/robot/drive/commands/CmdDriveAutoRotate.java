@@ -96,7 +96,7 @@ public class CmdDriveAutoRotate extends CommandBase {
     // Returns true when the command should end.
     @Override
     public boolean isFinished() {
-        System.out.println("COMMAND DONE");
+        System.out.println("COMMAND DONE:" + this.m_angleController.atSetpoint());
         return this.m_angleController.atSetpoint();
     }
 }
