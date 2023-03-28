@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SelectCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.Constants.ButtonMappings;
 import frc.robot.LEDs.LEDs;
 import frc.robot.LEDs.commands.CmdLEDDefault;
 import frc.robot.LEDs.commands.CmdLEDPieceCollected;
@@ -43,6 +44,7 @@ import frc.robot.arm.commands.CmdArmMoveShoulderManual;
 import frc.robot.dashboard.Dashboard;
 import frc.robot.drive.Drive;
 import frc.robot.drive.commands.CmdDriveAutoBalance;
+import frc.robot.drive.commands.CmdDriveAutoRotate;
 import frc.robot.drive.commands.CmdDriveChangeCoR;
 import frc.robot.drive.commands.CmdDriveChangeSpeedMult;
 import frc.robot.drive.commands.DefaultDriveCommand;
@@ -68,6 +70,8 @@ public class RobotContainer {
     private final JoystickButton _driverButtonRB = new JoystickButton(_driverController, Constants.ButtonMappings.RIGHT_BUMPER);
     private final JoystickButton _driverButtonY = new JoystickButton(_driverController, Constants.ButtonMappings.Y_BUTTON);
     private final JoystickButton _driverButtonA = new JoystickButton(_driverController, Constants.ButtonMappings.A_BUTTON);
+    private final JoystickButton _driverButtonX = new JoystickButton(_driverController, Constants.ButtonMappings.X_BUTTON);
+    private final JoystickButton _driverButtonB = new JoystickButton(_driverController, Constants.ButtonMappings.B_BUTTON);
     private final JoystickButton _driverButtonLB = new JoystickButton(_driverController, Constants.ButtonMappings.LEFT_BUMPER);
 
 
@@ -75,8 +79,7 @@ public class RobotContainer {
     private final Joystick _operatorController1 = new Joystick(1);
     //Bottom row of buttons
     private final Joystick _operatorController2 = new Joystick(2);
-    //manual sliders
-    
+
     
     private JoystickButton _opButtonOne = new JoystickButton(_operatorController1, 1);
     private JoystickButton _opButtonTwo = new JoystickButton(_operatorController1, 2);
@@ -153,21 +156,40 @@ public class RobotContainer {
         _driverButtonRB.onFalse(new CmdDriveChangeSpeedMult(_driveSubsystem, 0.6));
         _driverButtonRB.onTrue(new CmdDriveChangeSpeedMult(_driveSubsystem, 1.0)); 
 
-        // _driverButtonA.onTrue(new AutoRotateCommand(
-        //     _driveSubsystem,
-        //     () -> (-modifyAxis(_driverController.getLeftY() )* Drive.MAX_VELOCITY_METERS_PER_SECOND * _driveSubsystem.getSpeedMultiplier()),
-        //     () -> (-modifyAxis(_driverController.getLeftX()) * Drive.MAX_VELOCITY_METERS_PER_SECOND * _driveSubsystem.getSpeedMultiplier()),
-        //     0));
-        //_driverButtonA.onTrue(new CmdDriveResetGyro(_driveSubsystem));
-        //_driverButtonA.onTrue(new CmdArmSpit(_armSubsystem, 0.4));
+        _driverButtonA.onTrue(new CmdDriveAutoRotate(
+            _driveSubsystem,
+            () -> (-modifyAxis(_driverController.getLeftY() )* Drive.MAX_VELOCITY_METERS_PER_SECOND * _driveSubsystem.getSpeedMultiplier()),
+            () -> (-modifyAxis(_driverController.getLeftX()) * Drive.MAX_VELOCITY_METERS_PER_SECOND * _driveSubsystem.getSpeedMultiplier()),
+            180));
+        
+        _driverButtonB.onTrue(new CmdDriveAutoRotate(
+            _driveSubsystem,
+            () -> (-modifyAxis(_driverController.getLeftY() )* Drive.MAX_VELOCITY_METERS_PER_SECOND * _driveSubsystem.getSpeedMultiplier()),
+            () -> (-modifyAxis(_driverController.getLeftX()) * Drive.MAX_VELOCITY_METERS_PER_SECOND * _driveSubsystem.getSpeedMultiplier()),
+            90));
 
-        _driverButtonY.onTrue(new SelectCommand(
-            // Maps selector values to commands
-            Map.ofEntries(
-                Map.entry(ArmPosition.High, new GrpScoreAndStow(_armSubsystem)),
-                Map.entry(ArmPosition.EnGarde, new CmdArmUpdateToFinalPosition(_armSubsystem)),
-                Map.entry(ArmPosition.HighCube, new GrpScoreAndStow(_armSubsystem))),
-                _armSubsystem::getCurrentArmPosition).unless(() -> !_armSubsystem.atFinalPosition()));
+        _driverButtonX.onTrue(new CmdDriveAutoRotate(
+            _driveSubsystem,
+            () -> (-modifyAxis(_driverController.getLeftY() )* Drive.MAX_VELOCITY_METERS_PER_SECOND * _driveSubsystem.getSpeedMultiplier()),
+            () -> (-modifyAxis(_driverController.getLeftX()) * Drive.MAX_VELOCITY_METERS_PER_SECOND * _driveSubsystem.getSpeedMultiplier()),
+            -90));
+
+        _driverButtonY.onTrue(new CmdDriveAutoRotate(
+            _driveSubsystem,
+            () -> (-modifyAxis(_driverController.getLeftY() )* Drive.MAX_VELOCITY_METERS_PER_SECOND * _driveSubsystem.getSpeedMultiplier()),
+            () -> (-modifyAxis(_driverController.getLeftX()) * Drive.MAX_VELOCITY_METERS_PER_SECOND * _driveSubsystem.getSpeedMultiplier()),
+            0));
+        // _driverButtonA.onTrue(new CmdDriveResetGyro(_driveSubsystem));
+        // _driverButtonA.onTrue(new CmdArmSpit(_armSubsystem, 0.4));
+
+
+        // _driverButtonY.onTrue(new SelectCommand(
+        //     // Maps selector values to commands
+        //     Map.ofEntries(
+        //         Map.entry(ArmPosition.High, new GrpScoreAndStow(_armSubsystem)),
+        //         Map.entry(ArmPosition.EnGarde, new CmdArmUpdateToFinalPosition(_armSubsystem)),
+        //         Map.entry(ArmPosition.HighCube, new GrpScoreAndStow(_armSubsystem))),
+        //         _armSubsystem::getCurrentArmPosition).unless(() -> !_armSubsystem.atFinalPosition()));
 
         // Reset Gyro
        // _driverButtonA.whileTrue(new CmdDriveResetGyro(_driveSubsystem));
