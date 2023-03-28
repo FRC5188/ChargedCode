@@ -674,6 +674,10 @@ public class Arm extends SubsystemBase {
         }
     }
 
+    public Arm getInstance(){
+        return this;
+    }
+
     public boolean checkWristPosition(ArmPosition positionOfArm) {
         switch (positionOfArm) {
             case GroundPickUp:

@@ -2,6 +2,11 @@ package frc.robot.test;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import frc.robot.test.arm.Arm;
+import frc.robot.test.autonomous.Autonomous;
+import frc.robot.test.drive.Drive;
+import frc.robot.test.hardware.Hardware;
+import frc.robot.test.vision.Vision;
 
 public abstract class Robot {
 	/**
@@ -58,7 +63,7 @@ public abstract class Robot {
 	<Strong>Part Five: </Strong> Terminal outputs results from testing including preformance report. 
 	**/
 	private static Command runDriveChecks(){
-        return null;
+        return Drive.runChecks();
 	}
 	
 	/**
@@ -66,21 +71,21 @@ public abstract class Robot {
 	<Strong>Part Two: </Strong> Preformance report will be outputted to the terminal.
 	**/
 	private static Command runAutonomousChecks(){
-        return null;
+        return Autonomous.runChecks();
 	}
 	
 	/**
 	<Strong>Part One: </Strong> 
 	**/
 	private static Command runVisionChecks(){
-        return null;
+        return Vision.runChecks(null);
 	}
 	
 	private static Command runArmChecks(){
-        return null;
+        return Arm.runChecks(null);
 	}
 	
 	private static Command runHardwareChecks(){
-        return null;
+        return Hardware.check();
 	}
 }
