@@ -21,6 +21,7 @@ import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.wpilibj.Timer;
 import frc.robot.drive.Drive;
+import frc.robot.test.console_output.Output;
 
 public class Vision {
     private static final String CAMERA_NAME = "photoncamera";
@@ -42,27 +43,25 @@ public class Vision {
     private static final double CAMERA_PITCH = 0;
     private static final double CAMERA_YAW = Math.toRadians(-10.5);
 
+    private static boolean hasTarget;
+    private static boolean isServerConnected;
+
     private static Transform3d cameraPos = new Transform3d(
             new Translation3d(CAMERA_X_FROM_ROBOT_CENTER, CAMERA_Y_FROM_ROBOT_CENTER, CAMERA_Z_FROM_ROBOT_CENTER),
             new Rotation3d(CAMERA_ROLL, CAMERA_PITCH, CAMERA_YAW));
 
     private static AprilTagFieldLayout layout;
     static {
-        try {
-            layout = AprilTagFields.k2023ChargedUp.loadAprilTagLayoutField();
-        } catch (IOException e) {
-            System.out.println("[ERROR]: Failed to load Apriltag map");
-        }
+        try {layout = AprilTagFields.k2023ChargedUp.loadAprilTagLayoutField();
+        } catch (IOException exception) {Output.warning("Cannot Load Apriltag. Vision Results Cannot Be Used.");}
     };
 
-    private static final PhotonCamera camera = new PhotonCamera(CAMERA_NAME);
+    static final PhotonCamera camera = new PhotonCamera(CAMERA_NAME);
     private static final PhotonPoseEstimator poseEstimator = new PhotonPoseEstimator(
             layout,
             PoseStrategy.LOWEST_AMBIGUITY,
             camera,
             cameraPos);
-
-    private static final String APRIL_TAG_MAP_FILE_NAME = "2023_april_tag_map";
 
     /**
      * {@summary} The angle of the apriltag from the robot based off odometry.
@@ -81,8 +80,7 @@ public class Vision {
                 : null;
 
         if (apriltagPose == null) {
-            System.out.println("Tag couldn't be found. Please ensure that ID for apriltag is correct.");
-            throw new Exception("Tag couldn't be found. Please ensure that ID for apriltag is correct.");
+            Output.warning("Tag Couldn't Be Located. Ensure Apriltag ID is correct. ");
         }
         // System.out.println("Current Robot Angle:" + robotPose.relativeTo(apriltagPose).getRotation().getDegrees());
         return robotPose.relativeTo(apriltagPose).getRotation().getDegrees();
@@ -125,16 +123,19 @@ public class Vision {
     public static SwerveDrivePoseEstimator getVisionEstimatedRobotPose(SwerveDrivePoseEstimator poseEstimator) {
         PhotonTrackedTarget target = camera.getLatestResult().getBestTarget();
         if (target != null) {
+            hasTarget = true;
             Pose3d robotPose = PhotonUtils.estimateFieldToRobotAprilTag(target.getBestCameraToTarget(),
                         layout.getTagPose(target.getFiducialId()).get(), cameraPos);
             poseEstimator.addVisionMeasurement(robotPose.toPose2d(), Timer.getFPGATimestamp());
             System.out.println("[INFO]: Robot Pose Updated From Vision " + robotPose);
             return poseEstimator;
         } else {
+            hasTarget = false;
             //System.out.println("[WARNING]: Robot Cannot See Apriltag");
             return poseEstimator;
         }
     }
+
     /**
      * {@summary} Should be called whenever intializing the odometry system. Uses Apriltag to localize the
      * robot on the field. <Strong>Note: Needs to be facing an Apriltag or exception thrown.</Strong>
@@ -164,4 +165,9 @@ public class Vision {
         poseEstimator.setReferencePose(previousEstimatedRobotPose);
         return poseEstimator.update();
     }
+
+    public static boolean hasTarget(){
+        return hasTarget;
+    }
+    public static boolean isServerConnected(){return camera != null;}
 }
