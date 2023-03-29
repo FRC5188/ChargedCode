@@ -40,14 +40,15 @@ public class CmdDriveAutoRotate extends CommandBase {
             DoubleSupplier translationYSupplier,
             double angleSetpoint) {
 
-        this.m_constraints = new TrapezoidProfile.Constraints(40, 40);
-
         this.m_drivetrainSubsystem = drivetrainSubsystem;
         this.m_translationXSupplier = translationXSupplier;
         this.m_translationYSupplier = translationYSupplier;
+        this.m_angleSetpoint = angleSetpoint;
+
+        this.m_constraints = new TrapezoidProfile.Constraints(40, 40);
         this.m_angleController = new ProfiledPIDController(this.AUTO_ROTATE_KP, this.AUTO_ROTATE_KI,
                 this.AUTO_ROTATE_KD, m_constraints);
-        this.m_angleSetpoint = angleSetpoint;
+        
         this.m_angleController.setTolerance(this.AUTO_ROTATE_TOLERANCE);
         this.m_angleController.enableContinuousInput(-180, 180);
 
@@ -70,8 +71,7 @@ public class CmdDriveAutoRotate extends CommandBase {
         // means that our robot will always take the shortest path to the angle.
         // copied this from windham
         double rotationVal = this.m_angleController.calculate(
-                (MathUtil.inputModulus(this.m_drivetrainSubsystem.getGyroscopeRotation().getDegrees(), -180, 180)),
-                this.m_angleController.getSetpoint());
+                (MathUtil.inputModulus(this.m_drivetrainSubsystem.getGyroscopeRotation().getDegrees(), -180, 180)));
 
         this.m_drivetrainSubsystem.drive(
                 ChassisSpeeds.fromFieldRelativeSpeeds(
