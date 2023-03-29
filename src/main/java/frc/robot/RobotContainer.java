@@ -11,6 +11,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.event.EventLoop;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -47,7 +48,6 @@ import frc.robot.drive.commands.CmdDriveChangeCoR;
 import frc.robot.drive.commands.CmdDriveChangeSpeedMult;
 import frc.robot.drive.commands.DefaultDriveCommand;
 
-
 /**
  * This class is where the bulk of the robot should be declared. Since
  * Command-based is a
@@ -58,26 +58,30 @@ import frc.robot.drive.commands.DefaultDriveCommand;
  * subsystems, commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
-  // The robot's subsystems and commands are defined here...
+    // The robot's subsystems and commands are defined here...
     private final Drive _driveSubsystem = new Drive();
     private final Arm _armSubsystem = new Arm();
     private final Dashboard _dashboardSubsystem = new Dashboard(_armSubsystem, _driveSubsystem);
     private final LEDs _leds = new LEDs();
- 
+
     private final XboxController _driverController = new XboxController(0);
-    private final JoystickButton _driverButtonRB = new JoystickButton(_driverController, Constants.ButtonMappings.RIGHT_BUMPER);
-    private final JoystickButton _driverButtonY = new JoystickButton(_driverController, Constants.ButtonMappings.Y_BUTTON);
-    private final JoystickButton _driverButtonA = new JoystickButton(_driverController, Constants.ButtonMappings.A_BUTTON);
-    private final JoystickButton _driverButtonLB = new JoystickButton(_driverController, Constants.ButtonMappings.LEFT_BUMPER);
+    private final JoystickButton _driverButtonRB = new JoystickButton(_driverController,
+            Constants.ButtonMappings.RIGHT_BUMPER);
+    private final JoystickButton _driverButtonY = new JoystickButton(_driverController,
+            Constants.ButtonMappings.Y_BUTTON);
+    private final JoystickButton _driverButtonA = new JoystickButton(_driverController,
+            Constants.ButtonMappings.A_BUTTON);
+    private final JoystickButton _driverButtonLB = new JoystickButton(_driverController,
+            Constants.ButtonMappings.LEFT_BUMPER);
+    private final JoystickButton _driverButtonLeftPaddle = new JoystickButton(_driverController,
+            Constants.ButtonMappings.LEFT_JOY_BUTTON);
 
-
-    //Top row of buttons
+    // Top row of buttons
     private final Joystick _operatorController1 = new Joystick(1);
-    //Bottom row of buttons
+    // Bottom row of buttons
     private final Joystick _operatorController2 = new Joystick(2);
-    //manual sliders
-    
-    
+    // manual sliders
+
     private JoystickButton _opButtonOne = new JoystickButton(_operatorController1, 1);
     private JoystickButton _opButtonTwo = new JoystickButton(_operatorController1, 2);
     private JoystickButton _opButtonThree = new JoystickButton(_operatorController1, 3);
@@ -91,11 +95,13 @@ public class RobotContainer {
     private JoystickButton _opButtonEleven = new JoystickButton(_operatorController1, 11);
     private JoystickButton _opButtonTwelve = new JoystickButton(_operatorController1, 12);
 
-    // private JoystickButton _opToggle = new JoystickButton(_operatorController2, 10);
+    // private JoystickButton _opToggle = new JoystickButton(_operatorController2,
+    // 10);
     private JoystickButton _op2ButtonOne = new JoystickButton(_operatorController2, 1);
     private JoystickButton _op2ButtonTwo = new JoystickButton(_operatorController2, 2);
     private JoystickButton _op2ButtonThree = new JoystickButton(_operatorController2, 3);
     private JoystickButton _op2ButtonFour = new JoystickButton(_operatorController2, 4);
+    private JoystickButton _op2ButtonFive = new JoystickButton(_operatorController2, 5);
 
     public final Joystick _sliderJoystick = new Joystick(2);
     private JoystickButton _opButtonThirteen = new JoystickButton(_operatorController1, 13);
@@ -105,34 +111,39 @@ public class RobotContainer {
     // Constant Arm Multiplier In To Reduce Arm Speed
     private static final double ARM_MULTIPLIER = 0.3;
 
-
-
     /**
      * The container for the robot. Contains subsystems, OI devices, and commands.
      */
     public RobotContainer() {
 
-        Trigger hasGamePieceTrigger = new Trigger(() ->( _armSubsystem.checkGamepiece()));
+        Trigger hasGamePieceTrigger = new Trigger(() -> (_armSubsystem.checkGamepiece()));
         hasGamePieceTrigger.onTrue(new CmdLEDPieceCollected(_leds, _armSubsystem));
-
-
 
         // Driver Configuration
         _driveSubsystem.setDefaultCommand(new DefaultDriveCommand(
-                                               _driveSubsystem,
-                                               () -> (-modifyAxis(_driverController.getLeftY() )* Drive.MAX_VELOCITY_METERS_PER_SECOND * _driveSubsystem.getSpeedMultiplier()),
-                                               () -> (-modifyAxis(_driverController.getLeftX()) * Drive.MAX_VELOCITY_METERS_PER_SECOND * _driveSubsystem.getSpeedMultiplier()),
-                                               () -> (-modifyAxis(_driverController.getRightX()) * Drive.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND * _driveSubsystem.getSpeedMultiplier())));
-        
+                _driveSubsystem,
+                () -> (-modifyAxis(_driverController.getLeftY()) * Drive.MAX_VELOCITY_METERS_PER_SECOND
+                        * _driveSubsystem.getSpeedMultiplier()),
+                () -> (-modifyAxis(_driverController.getLeftX()) * Drive.MAX_VELOCITY_METERS_PER_SECOND
+                        * _driveSubsystem.getSpeedMultiplier()),
+                () -> (-modifyAxis(_driverController.getRightX()) * Drive.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND
+                        * _driveSubsystem.getSpeedMultiplier())));
+
+        HashMap<String, Command> eventMap = generateEventMap();
+
+        _dashboardSubsystem.addAuto("Mobility and Auto Balance",
+                Autonomous.generateFullAuto("TEST_Mobility_Balance", eventMap, 4, 1, _driveSubsystem));
 
         configureButtonBindings();
     }
 
     // private double getShoulderSpeed(){
-    //     return ARM_MULTIPLIER*((_operatorController.getLeftY()> 0) ? (0) : (_operatorController.getZ()));
+    // return ARM_MULTIPLIER*((_operatorController.getLeftY()> 0) ? (0) :
+    // (_operatorController.getZ()));
     // }
     // private double getArmSpeed(){
-    //     return ARM_MULTIPLIER*((_operatorController.getThrottle() > 0) ? (_operatorController.getZ()) : (0));
+    // return ARM_MULTIPLIER*((_operatorController.getThrottle() > 0) ?
+    // (_operatorController.getZ()) : (0));
     // }
 
     /**
@@ -144,38 +155,28 @@ public class RobotContainer {
      * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
      */
     private void configureButtonBindings() {
-        // Back button zeros the gyroscope
-        // new Button(m_controller::getBackButton)
-        // // No requirements because we don't need to interrupt anything
-        // .whenPressed(m_drivetrainSubsystem::zeroGyroscope);
 
         // Driver Reduce Speed 40%
         _driverButtonRB.onFalse(new CmdDriveChangeSpeedMult(_driveSubsystem, 0.6));
-        _driverButtonRB.onTrue(new CmdDriveChangeSpeedMult(_driveSubsystem, 1.0)); 
+        _driverButtonRB.onTrue(new CmdDriveChangeSpeedMult(_driveSubsystem, 1.0));
 
-        // _driverButtonA.onTrue(new AutoRotateCommand(
-        //     _driveSubsystem,
-        //     () -> (-modifyAxis(_driverController.getLeftY() )* Drive.MAX_VELOCITY_METERS_PER_SECOND * _driveSubsystem.getSpeedMultiplier()),
-        //     () -> (-modifyAxis(_driverController.getLeftX()) * Drive.MAX_VELOCITY_METERS_PER_SECOND * _driveSubsystem.getSpeedMultiplier()),
-        //     0));
-        //_driverButtonA.onTrue(new CmdDriveResetGyro(_driveSubsystem));
-        //_driverButtonA.onTrue(new CmdArmSpit(_armSubsystem, 0.4));
-
-        _driverButtonY.onTrue(new SelectCommand(
-            // Maps selector values to commands
-            Map.ofEntries(
-                Map.entry(ArmPosition.High, new GrpScoreAndStow(_armSubsystem)),
-                Map.entry(ArmPosition.EnGarde, new CmdArmUpdateToFinalPosition(_armSubsystem)),
-                Map.entry(ArmPosition.HighCube, new GrpScoreAndStow(_armSubsystem))),
+        _driverButtonLeftPaddle.onTrue(new SelectCommand(
+                // Maps selector values to commands
+                Map.ofEntries(
+                        Map.entry(ArmPosition.High, new GrpScoreAndStow(_armSubsystem)),
+                        Map.entry(ArmPosition.EnGarde, new CmdArmUpdateToFinalPosition(_armSubsystem)),
+                        Map.entry(ArmPosition.Middle, new GrpScoreAndStow(_armSubsystem))),
                 _armSubsystem::getCurrentArmPosition).unless(() -> !_armSubsystem.atFinalPosition()));
 
-        // Reset Gyro
-       // _driverButtonA.whileTrue(new CmdDriveResetGyro(_driveSubsystem));
-       _driverButtonLB.whileTrue(new CmdDriveChangeCoR(_driveSubsystem, new Translation2d(1.07, 0)));
-       _driverButtonLB.whileFalse(new CmdDriveChangeCoR(_driveSubsystem, new Translation2d(0, 0)));
+        // Change CoR for orbiting around a cone or robot
+        _driverButtonLB.whileTrue(new CmdDriveChangeCoR(_driveSubsystem, new Translation2d(1.07, 0)));
+        _driverButtonLB.whileFalse(new CmdDriveChangeCoR(_driveSubsystem, new Translation2d(0, 0)));
+
+
 
         // -- Operator Controls --
-        _opButtonOne.onTrue(new GrpMoveArmToPosition(_armSubsystem, ArmPosition.EnGarde));
+        _opButtonOne.onTrue(new GrpMoveArmToPosition(_armSubsystem, ArmPosition.EnGarde)
+                .unless(() -> !_armSubsystem.canChangeSetpoint()));
 
         // Run Intake
         _opButtonTwo.onTrue(new CmdArmRunIntake(_armSubsystem, 0.6));
@@ -184,26 +185,30 @@ public class RobotContainer {
         _opButtonThree.onTrue(new CmdArmSpit(_armSubsystem, -0.6));
 
         // Loading Station
-        _opButtonFour.onTrue(new GrpMoveArmToPosition(_armSubsystem, ArmPosition.LoadStationPickUp));
+        _opButtonFour.onTrue(new GrpMoveArmToPosition(_armSubsystem, ArmPosition.LoadStationPickUp)
+                .unless(() -> !_armSubsystem.canChangeSetpoint()));
 
-        _opButtonFive.onTrue(new GrpMoveArmToPosition(_armSubsystem, ArmPosition.Stored));
+        _opButtonFive.onTrue(new GrpMoveArmToPosition(_armSubsystem, ArmPosition.Stored)
+                .unless(() -> !_armSubsystem.canChangeSetpoint()));
 
-        _opButtonSix.onTrue(new GrpMoveArmToPosition(_armSubsystem, ArmPosition.GroundPickUp));
+        _opButtonSix.onTrue(new GrpMoveArmToPosition(_armSubsystem, ArmPosition.GroundPickUp)
+                .unless(() -> !_armSubsystem.canChangeSetpoint()));
 
-        _opButtonSeven.onTrue(new GrpEngardeForScoring(_armSubsystem, ArmPosition.High));
+        _opButtonSeven.onTrue(new GrpEngardeForScoring(_armSubsystem, ArmPosition.High)
+                .unless(() -> !_armSubsystem.canChangeSetpoint()));
 
-        //_opButtonSeven.onTrue(new GrpMoveArmToPosition(_armSubsystem, ArmPosition.High));
+        _opButtonEight.onTrue(new GrpEngardeForScoring(_armSubsystem, ArmPosition.Middle)
+                .unless(() -> !_armSubsystem.canChangeSetpoint()));
 
-        _opButtonEight.onTrue(new GrpMoveArmToPosition(_armSubsystem, ArmPosition.Middle));
-
-        _opButtonNine.onTrue(new GrpMoveArmToPosition(_armSubsystem, ArmPosition.LowScore));
+        _opButtonNine.onTrue(new GrpMoveArmToPosition(_armSubsystem, ArmPosition.LowScore)
+                .unless(() -> !_armSubsystem.canChangeSetpoint()));
 
         _opButtonTen.onTrue(new CmdArmSetMode(_armSubsystem, ArmMode.Cone));
         _opButtonTen.onFalse(new CmdArmSetMode(_armSubsystem, ArmMode.Cube));
 
         _opButtonOne.whileTrue(new CmdArmEnablePID(_armSubsystem));
         _opButtonOne.whileFalse(new CmdArmDisablePID(_armSubsystem));
-        
+
         // Move arm to position manual
         double elbowUpAmount = 5.0;
         double elbowDownAmount = -5.0;
@@ -217,15 +222,31 @@ public class RobotContainer {
         // Shoulder manual buttons
         _op2ButtonThree.onTrue(new CmdArmMoveShoulderManual(_armSubsystem, () -> shoulderDownAmount));
         _op2ButtonFour.onTrue(new CmdArmMoveShoulderManual(_armSubsystem, () -> shoulderUpAmount));
-       // this currently infinitely adds to the current setpoint while button is held
-        // _opButtonOne.whileTrue(Commands.parallel(
-        //     new CmdArmMoveElbowManual(
-        //         _armSubsystem, 
-        //         () -> (_sliderJoystick.getRawAxis(0))),  
-        //     new CmdArmMoveShoulderManual(
-        //         _armSubsystem, 
-        //         () -> (_sliderJoystick.getRawAxis(1)))).repeatedly());
 
+        _op2ButtonFive.onTrue(new InstantCommand(() -> _armSubsystem.setCurrentPosition(_armSubsystem.getTargetArmPosition())));
+
+        // this currently infinitely adds to the current setpoint while button is held
+        // _opButtonOne.whileTrue(Commands.parallel(
+        // new CmdArmMoveElbowManual(
+        // _armSubsystem,
+        // () -> (_sliderJoystick.getRawAxis(0))),
+        // new CmdArmMoveShoulderManual(
+        // _armSubsystem,
+        // () -> (_sliderJoystick.getRawAxis(1)))).repeatedly());
+
+    }
+
+    private HashMap<String, Command> generateEventMap() {
+        HashMap<String, Command> eventMap = new HashMap<>();
+
+        eventMap.put("Score", new GrpAutoHighConeScore(_armSubsystem));
+        eventMap.put("HighCubeArm", new GrpMoveArmToPosition(_armSubsystem, ArmPosition.HighCube));
+        eventMap.put("HighConeArm", new GrpMoveArmToPosition(_armSubsystem, ArmPosition.HighCone));
+        eventMap.put("Spit", new CmdArmSpit(_armSubsystem, 0.4));
+        eventMap.put("StoreArm", new GrpMoveArmToPosition(_armSubsystem, ArmPosition.Stored));
+        eventMap.put("Auto_Balance", new CmdDriveAutoBalance(_driveSubsystem));
+
+        return eventMap;
     }
 
     /**
@@ -234,18 +255,14 @@ public class RobotContainer {
      * @return the command to run in autonomous
      */
     public Command getAutonomousCommand() {
-        HashMap<String, Command> eventMap = new HashMap<>();
-        eventMap.put("Score", new GrpAutoHighConeScore(_armSubsystem));
-        // eventMap.put("HighCubeArm", new GrpMoveArmToPosition(_armSubsystem, ArmPosition.HighCube));
 
-        // eventMap.put("HighConeArm", new GrpMoveArmToPosition(_armSubsystem, ArmPosition.HighCone));
-        // eventMap.put("Spit", new CmdArmSpit(_armSubsystem, 0.4));
-        eventMap.put("StoreArm", new GrpMoveArmToPosition(_armSubsystem, ArmPosition.Stored));
-        eventMap.put("Auto_Balance", new CmdDriveAutoBalance(_driveSubsystem));
-        return Autonomous.generateFullAuto("TEST_Mobility_Balance", eventMap, 4, 1, _driveSubsystem);
-        //return Autonomous.getMovementCommand(FIELD_POSITIONS.LEFT_SIDE_GRID_CUBE_SECOND_CLOSEST, 3, 4, _driveSubsystem, null)
-        //return Autonomous.generateFullAuto("HighScoreAndMobility", eventMap, 3, 0.5, _driveSubsystem);
-    
+        return null;
+        // return
+        // Autonomous.getMovementCommand(FIELD_POSITIONS.LEFT_SIDE_GRID_CUBE_SECOND_CLOSEST,
+        // 3, 4, _driveSubsystem, null)
+        // return Autonomous.generateFullAuto("HighScoreAndMobility", eventMap, 3, 0.5,
+        // _driveSubsystem);
+
         // return new CmdDriveAutoBalance(_driveSubsystem);
     }
 
@@ -288,5 +305,4 @@ public class RobotContainer {
         return value;
     }
 
-    
 }

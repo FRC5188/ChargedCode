@@ -157,6 +157,8 @@ public class Arm extends SubsystemBase {
     private Solenoid _wristSolenoid;
     private Solenoid _intakeSolenoid;
 
+    // Helps keep track of where we are at and where we want to go
+    private ArmPosition _currentArmPos;
     private ArmPosition _targetPosition;
     private ArmPosition _finalPosition;
 
@@ -165,15 +167,16 @@ public class Arm extends SubsystemBase {
     private AnalogInput _shoulderPotentiometer;
 
     // Arm PID controllers
-    // private ProfiledPIDController _shoulderMotorPID;
-    // private ProfiledPIDController _elbowMotorPID;
     private PIDController _shoulderMotorPID;
     private PIDController _elbowMotorPID;
-
-    public ArmPosition _currentArmPos;
+    
     private ArmMode _armMode;
-    public boolean _hasGamepiece = true;
-    public IntakeMode _intakeMode;
+
+    private boolean _hasGamepiece = true;
+    private IntakeMode _intakeMode;
+
+    // If true, we can change where the arm is moving to
+    private boolean _canChangeSetpoint;
 
     // Set this to true so that the arm is in coast and the motors don't run
     // WARNING: DOESN'T UPDATE THE POTS, WILL ALWAYS ASSUME THAT THE ROBOT IS IN ONE
@@ -183,6 +186,7 @@ public class Arm extends SubsystemBase {
 
     private boolean _pidEnable;
 
+    // Stuff to run arm trajectories
     private ArmTrajectory _trajectory;
     private boolean _runningTrajectory = false;
     private Timer _trajTimer = new Timer();
@@ -209,10 +213,6 @@ public class Arm extends SubsystemBase {
         _elbowMotor.configVoltageCompSaturation(ArmConstants.MAX_MOTOR_VOLTAGE);
         _elbowMotor.enableVoltageCompensation(true);
 
-        // TODO: current limit is 0.83 amps
-        // _shoulderMotor.configStatorCurrentLimit(new
-        // StatorCurrentLimitConfiguration())
-
         // set motor breaking
         _shoulderMotor.setNeutralMode((_inSetpointTestingMode) ? NeutralMode.Coast : NeutralMode.Brake);
         _elbowMotor.setNeutralMode((_inSetpointTestingMode) ? NeutralMode.Coast : NeutralMode.Brake);
@@ -233,24 +233,18 @@ public class Arm extends SubsystemBase {
         _intakeMode = IntakeMode.Closed;
 
         // Create Shoulder PID controller
-        // _shoulderMotorPID = new ProfiledPIDController(ArmConstants.SHOULDER_MOTOR_KP,
-        // ArmConstants.SHOULDER_MOTOR_KI,
-        // ArmConstants.SHOULDER_MOTOR_KD,
-        // ArmConstants.SHOULDER_MOTION_PROFILE_CONSTRAINTS);
         _shoulderMotorPID = new PIDController(ArmConstants.SHOULDER_MOTOR_KP,
                 ArmConstants.SHOULDER_MOTOR_KI,
                 ArmConstants.SHOULDER_MOTOR_KD);
         _shoulderMotorPID.setTolerance(ArmConstants.SHOULDER_MOTOR_TOLERANCE);
 
         // create elbow PID controller
-        // _elbowMotorPID = new ProfiledPIDController(ArmConstants.ELBOW_MOTOR_KP,
-        // ArmConstants.ELBOW_MOTOR_KI,
-        // ArmConstants.ELBOW_MOTOR_KD,
-        // ArmConstants.ELBOW_MOTION_PROFILE_CONSTRAINTS);
         _elbowMotorPID = new PIDController(ArmConstants.ELBOW_MOTOR_KP,
                 ArmConstants.ELBOW_MOTOR_KI,
                 ArmConstants.ELBOW_MOTOR_KD);
         _elbowMotorPID.setTolerance(ArmConstants.ELBOW_MOTOR_TOLERANCE);
+
+        _canChangeSetpoint = true;
 
         this.enablePID();
         this.updateShuffleBoard();
@@ -261,6 +255,14 @@ public class Arm extends SubsystemBase {
         _shoulderMotor.setNeutralMode((inTest) ? NeutralMode.Coast : NeutralMode.Brake);
         _elbowMotor.setNeutralMode((inTest) ? NeutralMode.Coast : NeutralMode.Brake);
         _inSetpointTestingMode = inTest;
+    }
+
+    public boolean canChangeSetpoint() {
+        return _canChangeSetpoint;
+    }
+
+    public void setCanChangeSetpoint(boolean canChange) {
+        _canChangeSetpoint = canChange;
     }
 
     public ArmPosition getTargetArmPosition() {
@@ -760,101 +762,6 @@ public class Arm extends SubsystemBase {
                 "Shoulder: " + _shoulderMotorPID.getSetpoint() + " Elbow: " +
                         _elbowMotorPID.getSetpoint());
     }
-
-    //
-    // public Arm2DPosition getArm2DPoseFromPosition(ArmPosition position) {
-    // double shoulderPos;
-    // double elbowPos;
-    // WristPosition wristPos;
-    // switch (position) {
-    // case GroundPickUp:
-    // shoulderPos = ArmConstants.AngleSetpoints.GROUND_PICKUP_SHOULDER_POS;
-    // elbowPos = ArmConstants.AngleSetpoints.GROUND_PICKUP_ELBOW_POS;
-    // wristPos = ArmConstants.SetPoints2D.GROUND_PICKUP_WRIST_POS;
-    // break;
-    // case HighCone:
-    // shoulderPos = ArmConstants.AngleSetpoints.HIGH_CONE_DROP_SHOULDER_POS;
-    // elbowPos = ArmConstants.AngleSetpoints.HIGH_CONE_DROP_ELBOW_POS;
-    // wristPos = ArmConstants.SetPoints2D.HIGH_CONE_WRIST_POS;
-    // break;
-    // case HighCube:
-    // shoulderPos = ArmConstants.AngleSetpoints.HIGH_CUBE_SHOULDER_POS;
-    // elbowPos = ArmConstants.AngleSetpoints.HIGH_CUBE_ELBOW_POS;
-    // wristPos = ArmConstants.SetPoints2D.HIGH_CUBE_WRIST_POS;
-    // break;
-    // case LoadStationPickUp:
-    // shoulderPos = ArmConstants.AngleSetpoints.HUMAN_PLAYER_SHOULDER_POS;
-    // elbowPos = ArmConstants.AngleSetpoints.HUMAN_PLAYER_ELBOW_POS;
-    // wristPos = ArmConstants.SetPoints2D.LOAD_STATION_PICKUP_WRIST_POS;
-    // break;
-    // case LowScore:
-    // shoulderPos = ArmConstants.AngleSetpoints.GROUND_PICKUP_SHOULDER_POS;
-    // elbowPos = ArmConstants.AngleSetpoints.GROUND_PICKUP_ELBOW_POS;
-    // wristPos = ArmConstants.SetPoints2D.LOW_SCORE_WRIST_POS;
-    // break;
-    // case MiddleCone:
-    // shoulderPos = ArmConstants.AngleSetpoints.MID_CONE_SHOULDER_POS;
-    // elbowPos = ArmConstants.AngleSetpoints.MID_CONE_ELBOW_POS;
-    // wristPos = ArmConstants.SetPoints2D.MIDDLE_CONE_WRIST_POS;
-    // break;
-    // case MiddleCube:
-    // shoulderPos = ArmConstants.AngleSetpoints.MID_CUBE_SHOULDER_POS;
-    // elbowPos = ArmConstants.AngleSetpoints.MID_CUBE_ELBOW_POS;
-    // wristPos = ArmConstants.SetPoints2D.MIDDLE_CUBE_WRIST_POS;
-    // break;
-    // case Stored:
-    // shoulderPos = ArmConstants.AngleSetpoints.STORED_SHOULDER_POS;
-    // elbowPos = ArmConstants.AngleSetpoints.STORED_ELBOW_POS;
-    // wristPos = ArmConstants.SetPoints2D.STORED_WRIST_POS;
-    // break;
-    // case IntermediateScoring:
-    // shoulderPos = ArmConstants.AngleSetpoints.INTERMEDIATE_SCORING_SHOULDER_POS;
-    // elbowPos = ArmConstants.AngleSetpoints.INTERMEDIATE_SCORING_ELBOW_POS;
-    // wristPos = getWristPosition();
-    // break;
-    // case EnGarde:
-    // shoulderPos = ArmConstants.AngleSetpoints.EN_GARDE_SHOULDER_POS;
-    // elbowPos = ArmConstants.AngleSetpoints.EN_GARDE_ELBOW_POS;
-    // wristPos = getWristPosition();
-    // break;
-    // case IntermediateToPickup:
-    // shoulderPos =
-    // ArmConstants.AngleSetpoints.INTERMEDIATE_TO_PICKUP_SHOULDER_POS;
-    // elbowPos = ArmConstants.AngleSetpoints.INTERMEDIATE_TO_PICKUP_ELBOW_POS;
-    // wristPos = getWristPosition();
-    // break;
-    // case Middle:
-    // if (_armMode == ArmMode.Cone) {
-    // shoulderPos = ArmConstants.AngleSetpoints.MID_CONE_SHOULDER_POS;
-    // elbowPos = ArmConstants.AngleSetpoints.MID_CONE_ELBOW_POS;
-    // wristPos = ArmConstants.SetPoints2D.MIDDLE_CONE_WRIST_POS;
-    // } else {
-    // shoulderPos = ArmConstants.AngleSetpoints.MID_CUBE_SHOULDER_POS;
-    // elbowPos = ArmConstants.AngleSetpoints.MID_CUBE_ELBOW_POS;
-    // wristPos = ArmConstants.SetPoints2D.MIDDLE_CUBE_WRIST_POS;
-    // }
-    // break;
-    // case High:
-    // if (_armMode == ArmMode.Cone) {
-    // shoulderPos = ArmConstants.AngleSetpoints.HIGH_CONE_DROP_SHOULDER_POS;
-    // elbowPos = ArmConstants.AngleSetpoints.HIGH_CONE_DROP_ELBOW_POS;
-    // wristPos = ArmConstants.SetPoints2D.HIGH_CONE_WRIST_POS;
-    // } else {
-    // shoulderPos = ArmConstants.AngleSetpoints.HIGH_CUBE_SHOULDER_POS;
-    // elbowPos = ArmConstants.AngleSetpoints.HIGH_CUBE_ELBOW_POS;
-    // wristPos = ArmConstants.SetPoints2D.HIGH_CUBE_WRIST_POS;
-    // }
-    // break;
-    // default:
-    // shoulderPos = getShoulderJointAngle();
-    // elbowPos = getElbowJointAngleRelativeToGround();
-    // wristPos = getWristPosition();
-    // // If we hit default that means we don't know what position we are in
-    // // So we just wanna stay put until we get a new position
-    // break;
-    // }
-    // return arm2DPositionFromAngles(shoulderPos, elbowPos, wristPos);
-    // }
 
     /**
      * Finds what intermediate position to use, if any, for the position we want the

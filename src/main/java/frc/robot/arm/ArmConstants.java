@@ -233,7 +233,7 @@ public class ArmConstants {
         // private final double ELBOW_MOTOR_KP = 0.02;
         // private final double ELBOW_MOTOR_KI = 0.0005;
         // private final double ELBOW_MOTOR_KD = 0.0005;
-        public static double ELBOW_MOTOR_KP = 0.015;
+        public static double ELBOW_MOTOR_KP = 0.0175;
         public static double ELBOW_MOTOR_KI = 0.0005;
         public static double ELBOW_MOTOR_KD = 0.0005;
         public static double ELBOW_MOTOR_TOLERANCE = 5.0;

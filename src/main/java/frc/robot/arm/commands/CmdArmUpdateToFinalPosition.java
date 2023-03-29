@@ -17,9 +17,11 @@ public class CmdArmUpdateToFinalPosition extends CommandBase {
   @Override
   public void initialize() {
     ArmPosition pos = _armSubsystem.getFinalPosition();
+    
     _armSubsystem.setWristPosition(pos);
     _armSubsystem.generateTrajectory(pos);
     _armSubsystem.startTrajectory();
+    _armSubsystem.setCanChangeSetpoint(false);
 
     System.out.println("Updated arm position to " + pos);
   }

@@ -8,6 +8,7 @@ import frc.robot.arm.Arm.ArmPosition;
 import frc.robot.arm.commands.CmdArmSpit;
 import frc.robot.arm.commands.CmdArmUpdateFinalPosition;
 import frc.robot.arm.commands.CmdArmWaitForArm;
+import frc.robot.arm.commands.CmdWait;
 
 public class GrpScoreAndStow extends SequentialCommandGroup {
   public GrpScoreAndStow(Arm armSubsystem) {
