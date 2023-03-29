@@ -17,7 +17,7 @@
       "isStopPoint": false,
       "stopEvent": {
         "names": [
-          "Score"
+          "HighCubeArm"
         ],
         "executionBehavior": "sequential",
         "waitBehavior": "after",
@@ -41,7 +41,7 @@
       "isReversal": true,
       "velOverride": null,
       "isLocked": false,
-      "isStopPoint": true,
+      "isStopPoint": false,
       "stopEvent": {
         "names": [],
         "executionBehavior": "parallel",
@@ -51,20 +51,20 @@
     },
     {
       "anchorPoint": {
-        "x": 7.0,
+        "x": 5.699723133413014,
         "y": 2.75
       },
       "prevControl": {
-        "x": 7.00424212947779,
+        "x": 5.7039652628908035,
         "y": 2.7421452380093685
       },
       "nextControl": {
-        "x": 6.994142940892518,
+        "x": 5.693866074305531,
         "y": 2.76084497903593
       },
       "holonomicAngle": 0.0,
       "isReversal": false,
-      "velOverride": 0.5,
+      "velOverride": 1.0,
       "isLocked": false,
       "isStopPoint": false,
       "stopEvent": {
@@ -100,7 +100,7 @@
     }
   ],
   "maxVelocity": 3.0,
-  "maxAcceleration": 0.5,
+  "maxAcceleration": 2.0,
   "isReversed": null,
   "markers": [
     {

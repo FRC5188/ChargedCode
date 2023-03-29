@@ -7,9 +7,12 @@ package frc.robot.arm.commandGroups;
 import frc.robot.arm.Arm;
 import frc.robot.arm.Arm.ArmPosition;
 import frc.robot.arm.Arm.WristPosition;
+import frc.robot.arm.commands.CmdArmSetModeFromPosition;
 import frc.robot.arm.commands.CmdArmSetWristPosition;
 import frc.robot.arm.commands.CmdArmSetWristPositionManual;
 import frc.robot.arm.commands.CmdArmSpit;
+import frc.robot.arm.commands.CmdArmUpdateFinalPosition;
+import frc.robot.arm.commands.CmdArmUpdateToFinalPosition;
 import frc.robot.arm.commands.CmdArmUpdateToScorePos;
 import frc.robot.arm.commands.CmdArmWaitForArm;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
@@ -17,17 +20,17 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
 // information, see:
 // https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
-public class GrpAutoHighConeScore extends SequentialCommandGroup {
+public class GrpAutoScore extends SequentialCommandGroup {
   /** Creates a new GrpAutoHighConeScore. */
-  public GrpAutoHighConeScore(Arm armSubsystem) {
+  public GrpAutoScore(Arm armSubsystem, ArmPosition position) {
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
     addCommands(
+      new CmdArmSetModeFromPosition(armSubsystem, position),
+      new CmdArmUpdateFinalPosition(armSubsystem, ArmPosition.High),
       new GrpMoveArmToPosition(armSubsystem, ArmPosition.EnGarde), 
       new CmdArmWaitForArm(armSubsystem),
-      new GrpMoveArmToPosition(armSubsystem, ArmPosition.HighCone), 
-      new CmdArmUpdateToScorePos(armSubsystem),
-      new CmdArmSetWristPositionManual(armSubsystem, WristPosition.Parallel),
+      new CmdArmUpdateToFinalPosition(armSubsystem),
       new CmdArmWaitForArm(armSubsystem),
       new CmdArmSpit(armSubsystem, 0.4),
       new GrpMoveArmToPosition(armSubsystem, ArmPosition.EnGarde)

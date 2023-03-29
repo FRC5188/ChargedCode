@@ -219,8 +219,9 @@ public class Drive extends SubsystemBase {
      * 'forwards' direction.
      */
     public void zeroGyroscope() {
-        _navx.reset();
+        System.out.println("Reset");
         _odometry.resetPosition(getGyroscopeRotation(), this.getSwerveModulePositions(), this.getPose());
+        _navx.reset();
     }
 
     public void resetPose(Pose2d pose) {
