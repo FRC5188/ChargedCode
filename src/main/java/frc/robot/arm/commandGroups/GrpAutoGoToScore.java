@@ -17,23 +17,15 @@ import frc.robot.arm.commands.CmdArmUpdateToScorePos;
 import frc.robot.arm.commands.CmdArmWaitForArm;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 
-// NOTE:  Consider using this command inline, rather than writing a subclass.  For more
-// information, see:
-// https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
-public class GrpAutoScore extends SequentialCommandGroup {
-  /** Creates a new GrpAutoHighConeScore. */
-  public GrpAutoScore(Arm armSubsystem, ArmPosition position) {
-    // Add your commands in the addCommands() call, e.g.
-    // addCommands(new FooCommand(), new BarCommand());
+public class GrpAutoGoToScore extends SequentialCommandGroup {
+  public GrpAutoGoToScore(Arm armSubsystem, ArmPosition position) {
     addCommands(
       new CmdArmSetModeFromPosition(armSubsystem, position),
       new CmdArmUpdateFinalPosition(armSubsystem, ArmPosition.High),
       new GrpMoveArmToPosition(armSubsystem, ArmPosition.EnGarde), 
       new CmdArmWaitForArm(armSubsystem),
       new CmdArmUpdateToFinalPosition(armSubsystem),
-      new CmdArmWaitForArm(armSubsystem),
-      new CmdArmSpit(armSubsystem, 0.4),
-      new GrpMoveArmToPosition(armSubsystem, ArmPosition.EnGarde)
+      new CmdArmWaitForArm(armSubsystem)
     );
   }
 }

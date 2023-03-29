@@ -25,7 +25,8 @@ import frc.robot.LEDs.commands.CmdLEDPieceCollected;
 import frc.robot.arm.Arm;
 import frc.robot.arm.Arm.ArmMode;
 import frc.robot.arm.Arm.ArmPosition;
-import frc.robot.arm.commandGroups.GrpAutoScore;
+import frc.robot.arm.commandGroups.GrpAutoEngardeScoreStow;
+import frc.robot.arm.commandGroups.GrpAutoGoToScore;
 import frc.robot.arm.commandGroups.GrpEngardeForScoring;
 import frc.robot.arm.commandGroups.GrpEngardeScoreAndStow;
 import frc.robot.arm.commandGroups.GrpMoveArmToPosition;
@@ -179,11 +180,11 @@ public class RobotContainer {
                 _armSubsystem::getCurrentArmPosition).unless(() -> !_armSubsystem.atFinalPosition()));
         _driverButtonRB.onTrue(new CmdDriveChangeSpeedMult(_driveSubsystem, 1.0)); 
 
-        // _driverButtonA.onTrue(new CmdDriveAutoRotate(
-        //     _driveSubsystem,
-        //     () -> (-modifyAxis(_driverController.getLeftY() )* Drive.MAX_VELOCITY_METERS_PER_SECOND * _driveSubsystem.getSpeedMultiplier()),
-        //     () -> (-modifyAxis(_driverController.getLeftX()) * Drive.MAX_VELOCITY_METERS_PER_SECOND * _driveSubsystem.getSpeedMultiplier()),
-        //     180));
+        _driverButtonA.onTrue(new CmdDriveAutoRotate(
+            _driveSubsystem,
+            () -> (-modifyAxis(_driverController.getLeftY() )* Drive.MAX_VELOCITY_METERS_PER_SECOND * _driveSubsystem.getSpeedMultiplier()),
+            () -> (-modifyAxis(_driverController.getLeftX()) * Drive.MAX_VELOCITY_METERS_PER_SECOND * _driveSubsystem.getSpeedMultiplier()),
+            180));
         
         _driverButtonB.onTrue(new CmdDriveAutoRotate(
             _driveSubsystem,
@@ -202,17 +203,6 @@ public class RobotContainer {
             () -> (-modifyAxis(_driverController.getLeftY() )* Drive.MAX_VELOCITY_METERS_PER_SECOND * _driveSubsystem.getSpeedMultiplier()),
             () -> (-modifyAxis(_driverController.getLeftX()) * Drive.MAX_VELOCITY_METERS_PER_SECOND * _driveSubsystem.getSpeedMultiplier()),
             0));
-        _driverButtonA.onTrue(new CmdDriveResetGyro(_driveSubsystem));
-        // _driverButtonA.onTrue(new CmdArmSpit(_armSubsystem, 0.4));
-
-
-        // _driverButtonY.onTrue(new SelectCommand(
-        //     // Maps selector values to commands
-        //     Map.ofEntries(
-        //         Map.entry(ArmPosition.High, new GrpScoreAndStow(_armSubsystem)),
-        //         Map.entry(ArmPosition.EnGarde, new CmdArmUpdateToFinalPosition(_armSubsystem)),
-        //         Map.entry(ArmPosition.HighCube, new GrpScoreAndStow(_armSubsystem))),
-        //         _armSubsystem::getCurrentArmPosition).unless(() -> !_armSubsystem.atFinalPosition()));
 
         // Change CoR for orbiting around a cone or robot
         _driverButtonLB.whileTrue(new CmdDriveChangeCoR(_driveSubsystem, new Translation2d(1.07, 0)));
@@ -285,12 +275,17 @@ public class RobotContainer {
     private HashMap<String, Command> generateEventMap() {
         HashMap<String, Command> eventMap = new HashMap<>();
 
-        eventMap.put("ScoreCone", new GrpAutoScore(_armSubsystem, ArmPosition.HighCone));
-        eventMap.put("ScoreCube", new GrpAutoScore(_armSubsystem, ArmPosition.HighCube));
-        eventMap.put("HighCubeArm", new GrpEngardeScoreAndStow(_armSubsystem, ArmPosition.HighCube));
-        eventMap.put("HighConeArm", new GrpEngardeScoreAndStow(_armSubsystem, ArmPosition.HighCone));
-        eventMap.put("Spit", new CmdArmSpit(_armSubsystem, 0.4));
-        eventMap.put("StoreArm", new GrpMoveArmToPosition(_armSubsystem, ArmPosition.Stored));
+        eventMap.put("ScoreCone", new GrpAutoGoToScore(_armSubsystem, ArmPosition.HighCone));
+        eventMap.put("ScoreCube", new GrpAutoGoToScore(_armSubsystem, ArmPosition.HighCube));
+        eventMap.put("HighCubeArm", new GrpAutoGoToScore(_armSubsystem, ArmPosition.HighCube));
+        eventMap.put("HighConeArm", new GrpAutoGoToScore(_armSubsystem, ArmPosition.HighCube));
+        eventMap.put("HighConeScoreAndStow", new GrpAutoEngardeScoreStow(_armSubsystem, ArmPosition.HighCone));
+        eventMap.put("Spit", new CmdArmSpit(_armSubsystem, 0.6));
+        eventMap.put("GroundPickup", new GrpMoveArmToPosition(_armSubsystem, ArmPosition.GroundPickUp));
+        eventMap.put("Stow", new GrpMoveArmToPosition(_armSubsystem, ArmPosition.Stored));
+        eventMap.put("EnGarde", new GrpMoveArmToPosition(_armSubsystem, ArmPosition.EnGarde));
+        eventMap.put("HighCube", new GrpMoveArmToPosition(_armSubsystem, ArmPosition.HighCube));
+        eventMap.put("ScoreAndStow", new GrpScoreAndStow(_armSubsystem));
         eventMap.put("Balance", new CmdDriveAutoBalance(_driveSubsystem));
 
         return eventMap;

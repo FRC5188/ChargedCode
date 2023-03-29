@@ -17,7 +17,7 @@
       "isStopPoint": false,
       "stopEvent": {
         "names": [
-          "ScoreHighCone"
+          "HighConeScoreAndStow"
         ],
         "executionBehavior": "sequential",
         "waitBehavior": "after",
@@ -34,10 +34,10 @@
         "y": 0.92
       },
       "nextControl": {
-        "x": 5.585684073753343,
+        "x": 6.031578965673541,
         "y": 0.92
       },
-      "holonomicAngle": 0.0,
+      "holonomicAngle": 0.01,
       "isReversal": false,
       "velOverride": null,
       "isLocked": false,
@@ -87,7 +87,7 @@
         "x": 3.4243250434244352,
         "y": 0.9330084218363207
       },
-      "holonomicAngle": 180.0,
+      "holonomicAngle": 180.01,
       "isReversal": false,
       "velOverride": null,
       "isLocked": false,
@@ -142,8 +142,10 @@
       "isLocked": false,
       "isStopPoint": false,
       "stopEvent": {
-        "names": [],
-        "executionBehavior": "parallel",
+        "names": [
+          "ScoreAndStow"
+        ],
+        "executionBehavior": "sequential",
         "waitBehavior": "none",
         "waitTime": 0
       }
@@ -151,13 +153,19 @@
   ],
   "markers": [
     {
-      "position": 0.2727272727272727,
+      "position": 0.2,
       "names": [
         "GroundPickup"
       ]
     },
     {
       "position": 1.5818181818181816,
+      "names": [
+        "EnGarde"
+      ]
+    },
+    {
+      "position": 3.0909090909089376,
       "names": [
         "HighCube"
       ]
