@@ -179,30 +179,31 @@ public class RobotContainer {
                 _armSubsystem::getCurrentArmPosition).unless(() -> !_armSubsystem.atFinalPosition()));
         _driverButtonRB.onTrue(new CmdDriveChangeSpeedMult(_driveSubsystem, 1.0)); 
 
-        // _driverButtonA.onTrue(new CmdDriveAutoRotate(
-        //     _driveSubsystem,
-        //     () -> (-modifyAxis(_driverController.getLeftY() )* Drive.MAX_VELOCITY_METERS_PER_SECOND * _driveSubsystem.getSpeedMultiplier()),
-        //     () -> (-modifyAxis(_driverController.getLeftX()) * Drive.MAX_VELOCITY_METERS_PER_SECOND * _driveSubsystem.getSpeedMultiplier()),
-        //     180));
+        _driverButtonA.onTrue(new CmdDriveAutoRotate(
+            _driveSubsystem,
+            () -> (-modifyAxis(_driverController.getLeftY() )* Drive.MAX_VELOCITY_METERS_PER_SECOND * _driveSubsystem.getSpeedMultiplier()),
+            () -> (-modifyAxis(_driverController.getLeftX()) * Drive.MAX_VELOCITY_METERS_PER_SECOND * _driveSubsystem.getSpeedMultiplier()),
+            180));
         
+        // Counter clockwise is positive angle
         _driverButtonB.onTrue(new CmdDriveAutoRotate(
             _driveSubsystem,
             () -> (-modifyAxis(_driverController.getLeftY() )* Drive.MAX_VELOCITY_METERS_PER_SECOND * _driveSubsystem.getSpeedMultiplier()),
             () -> (-modifyAxis(_driverController.getLeftX()) * Drive.MAX_VELOCITY_METERS_PER_SECOND * _driveSubsystem.getSpeedMultiplier()),
-            90));
+            -90));
 
         _driverButtonX.onTrue(new CmdDriveAutoRotate(
             _driveSubsystem,
             () -> (-modifyAxis(_driverController.getLeftY() )* Drive.MAX_VELOCITY_METERS_PER_SECOND * _driveSubsystem.getSpeedMultiplier()),
             () -> (-modifyAxis(_driverController.getLeftX()) * Drive.MAX_VELOCITY_METERS_PER_SECOND * _driveSubsystem.getSpeedMultiplier()),
-            -90));
+            90));
 
         _driverButtonY.onTrue(new CmdDriveAutoRotate(
             _driveSubsystem,
             () -> (-modifyAxis(_driverController.getLeftY() )* Drive.MAX_VELOCITY_METERS_PER_SECOND * _driveSubsystem.getSpeedMultiplier()),
             () -> (-modifyAxis(_driverController.getLeftX()) * Drive.MAX_VELOCITY_METERS_PER_SECOND * _driveSubsystem.getSpeedMultiplier()),
             0));
-        _driverButtonA.onTrue(new CmdDriveResetGyro(_driveSubsystem));
+        // _driverButtonA.onTrue(new CmdDriveResetGyro(_driveSubsystem));
         // _driverButtonA.onTrue(new CmdArmSpit(_armSubsystem, 0.4));
 
 
@@ -218,6 +219,7 @@ public class RobotContainer {
         _driverButtonLB.whileTrue(new CmdDriveChangeCoR(_driveSubsystem, new Translation2d(1.07, 0)));
         _driverButtonLB.whileFalse(new CmdDriveChangeCoR(_driveSubsystem, new Translation2d(0, 0)));
 
+ 
 
 
         // -- Operator Controls --
