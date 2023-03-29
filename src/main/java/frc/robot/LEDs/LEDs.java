@@ -38,6 +38,7 @@ public class LEDs extends SubsystemBase {
         ScoreMid,
         ScoreLow,
         LostComms,
+        PartyMode,
         Off
     }
 
@@ -51,23 +52,30 @@ public class LEDs extends SubsystemBase {
         TealTwinkle
     }
 
-    // TODO: Change to length of LED strips. Only necessary for animations, so it's working for now. -KH 2023/3/27
-    // TODO: Find out if the length includes the 8 LEDs on the Candle. If so, include in a comment. -KH 2023/3/27
+    public enum LEDCustomAnimations {
+        High,
+        Mid,
+        Low
+    }
+
+    // TODO: Change to length of LED strips. Only necessary for animations, so it's working for now. -KtH 2023/3/27
+    // TODO: Find out if the length includes the 8 LEDs on the Candle. If so, include in a comment. -KtH 2023/3/27
 
     private final int LEDCount = 64;
 
     public CANdle _candle = new CANdle(Constants.CanIDs.CANDLE_ID, "rio");
-    public Boolean _runningHasGamepieceAnimation = false;
+    public Boolean _shouldRunHasGamepieceAnimation = false;
     private Animation _storedAnimation;
 
-    //TODO: Should I set LEDMode to default or null at first? -KH 2023/3/27
-    private LEDModes _currentMode = LEDModes.Default;
-    private LEDColors _currentColor;
-    private LEDAnimations _currentAnimation = null;
+    //TODO: Should I set LEDMode to default or null at first? -KtH 2023/3/27
+    public LEDModes _currentMode = LEDModes.Default;
+    public LEDColors _currentColor;
+    public LEDAnimations _currentAnimation = null;
+    private LEDCustomAnimations _currentCustomAnimation;
 
     public LEDs() {
 
-        //TODO: Test brightness and update this to preferred look. -KH 2023/3/27
+        //TODO: Test brightness and update this to preferred look. -KtH 2023/3/27
         _candle.configBrightnessScalar(0.5);
 
         CANdleConfiguration configAll = new CANdleConfiguration();
@@ -80,12 +88,12 @@ public class LEDs extends SubsystemBase {
 
     }
 
-    public Boolean getRunningGamepieceAnimation() {
-        return _runningHasGamepieceAnimation;
+    public Boolean getShouldRunGamepieceAnimation() {
+        return _shouldRunHasGamepieceAnimation;
     }
 
-    public void setRunningGamepieceAnimation(Boolean runningHasGamepieceAnimation) {
-        _runningHasGamepieceAnimation = runningHasGamepieceAnimation;
+    public void setShouldRunGamepieceAnimation(Boolean shouldRunHasGamepieceAnimation) {
+        _shouldRunHasGamepieceAnimation = shouldRunHasGamepieceAnimation;
     }
     
     /**
@@ -95,6 +103,7 @@ public class LEDs extends SubsystemBase {
      */
 
     public void setLEDMode(LEDModes mode) {
+
         switch(mode) {
 
             case LostComms:
@@ -114,7 +123,6 @@ public class LEDs extends SubsystemBase {
 
             case HasGamepiece:
                 setAnimation(LEDAnimations.TealStrobe);
-                //setColor(LEDColors.Teal);
                 this._currentMode = LEDModes.HasGamepiece;
                 break;
 
@@ -124,7 +132,7 @@ public class LEDs extends SubsystemBase {
                 break;
 
             // Note: the following scoring colors are arbitrary/temporary and can be changed to fit driver preferences.
-            // TODO: Decide whether to have separate scoring cone + cube LEDModes. -KH 2023/3/27
+            // TODO: Decide whether to have separate scoring cone + cube LEDModes. -KtH 2023/3/27
 
             case ScoreHigh:
                 setColor(LEDColors.White);
@@ -139,6 +147,11 @@ public class LEDs extends SubsystemBase {
             case ScoreLow:
                 setColor(LEDColors.White);
                 this._currentMode = LEDModes.ScoreLow;
+                break;
+
+            case PartyMode:
+                setAnimation(LEDAnimations.Rainbow);
+                this._currentMode = LEDModes.PartyMode;
                 break;
 
             case Off:
@@ -259,6 +272,27 @@ public class LEDs extends SubsystemBase {
         //System.out.println("Current animation: " + _storedAnimation.toString());
     }
 
+    public void setCustomAnimation(LEDCustomAnimations customAnimation) {
+        this._currentCustomAnimation = customAnimation;
+
+        switch(customAnimation) {
+            case High:
+                setColor(LEDColors.Pink);
+                break;
+
+            case Mid:
+                this._candle.setLEDs(210, 55, 120, 100, 0, LEDCount/3);
+                this._candle.setLEDs(210, 55, 120, 100, LEDCount*2/3, LEDCount/3);
+                break;
+
+            case Low:
+                // TODO: Should I fix white value? I put in an arbitrary value, but will it count for an RGB strip? -KtH 2023/3/28
+                this._candle.setLEDs(210, 55, 120, 100, 8, LEDCount/6);
+                this._candle.setLEDs(210, 55, 120, 100, (LEDCount*5/6) + 8, LEDCount/6);
+                break;
+        }
+    }
+
     /**
      * Returns enumeration from LEDModes.
      */
@@ -283,10 +317,21 @@ public class LEDs extends SubsystemBase {
         return this._currentColor;
     }
 
+    /**
+     * Returns enumeration from LEDCustomAnimations.
+     */
+
+    public LEDCustomAnimations getCurrentLEDCustomAnimation() {
+        return this._currentCustomAnimation;
+    }
+
+    /**
+     * @return Double - temperature in Celsius
+     */
+
     public Double getLEDTemperature() {
         return this._candle.getTemperature();
     }
-
 
     /**
      * If LEDs are greater that 80 degrees Celsius, turn them off. Prevents vision (which is connected) from failing.

@@ -125,7 +125,7 @@ public class RobotContainer {
     public RobotContainer() {
 
         Trigger hasGamePieceTrigger = new Trigger(() -> (_armSubsystem.checkGamepiece()));
-        hasGamePieceTrigger.onTrue(new CmdLEDPieceCollected(_leds, _armSubsystem));
+        hasGamePieceTrigger.onTrue(new CmdLEDPieceCollected(_leds));
 
         // Driver Configuration
         _driveSubsystem.setDefaultCommand(new DefaultDriveCommand(
