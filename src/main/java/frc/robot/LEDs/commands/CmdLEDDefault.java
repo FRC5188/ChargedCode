@@ -2,10 +2,10 @@ package frc.robot.LEDs.commands;
 
 // import org.apache.commons.lang3.function.FailableSupplier;
 
-import edu.wpi.first.wpilibj.DriverStation;
+//import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.LEDs.LEDs;
-import frc.robot.LEDs.LEDs.LEDMode;
+import frc.robot.LEDs.LEDs.LEDModes;
 import frc.robot.arm.Arm;
 import frc.robot.arm.Arm.ArmMode;
 import frc.robot.arm.Arm.ArmPosition;
@@ -18,7 +18,8 @@ public class CmdLEDDefault extends CommandBase {
     private ArmMode armMode;
     private ArmPosition armPosition;
     private int counter;
-    
+    private Double currentTemperature;
+
 
     public CmdLEDDefault(LEDs leds, Arm armSubsystem) {
         _armSubsystem = armSubsystem;
@@ -41,11 +42,13 @@ public class CmdLEDDefault extends CommandBase {
         
         this.armMode = this._armSubsystem.getArmMode();
         this.armPosition = this._armSubsystem.getCurrentArmPosition();
+        this.currentTemperature = this._leds.getLEDTemperature();
+        this._leds.adjustLEDTemperature(currentTemperature);
 
-        if (DriverStation.isDisabled()) {
-            this._leds.setLEDMode(LEDMode.Off);
-            System.out.println("LEDs off");
-        }
+        // if (DriverStation.isDisabled()) {
+        //     this._leds.setLEDMode(LEDMode.Off);
+        //     System.out.println("LEDs off");
+        // }
 
         if (_leds.getRunningGamepieceAnimation()) {
             //count down for 1 sec
@@ -55,20 +58,22 @@ public class CmdLEDDefault extends CommandBase {
         }
 
         if (this.counter > 0) {
-            System.out.println("STILL RUNNING GAME PIECE ANIMATION. Cuunter: " + counter);
+            System.out.println("STILL RUNNING GAME PIECE ANIMATION. Counter: " + counter);
             this.counter -= 1;
-            this._leds.setLEDMode(LEDMode.HasGamepiece);
+            this._leds.setLEDMode(LEDModes.HasGamepiece);
         }
         
         else {
+            this._leds._candle.clearAnimation(0);
+            
             if (armPosition == ArmPosition.Stored || armPosition == ArmPosition.LoadStationPickUp || armPosition == ArmPosition.GroundPickUp || armPosition == ArmPosition.EnGarde) {
                 switch (armMode) {
                     case Cone:
-                        this._leds.setLEDMode(LEDMode.Cone);
+                        this._leds.setLEDMode(LEDModes.Cone);
                         break;
 
                     case Cube:
-                        this._leds.setLEDMode(LEDMode.Cube);
+                        this._leds.setLEDMode(LEDModes.Cube);
                         break;
 
                 }

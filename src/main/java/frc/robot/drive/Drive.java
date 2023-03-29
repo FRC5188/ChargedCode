@@ -1,5 +1,6 @@
 package frc.robot.drive;
 
+import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.kauailabs.navx.frc.AHRS;
 
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
@@ -289,6 +290,10 @@ public class Drive extends SubsystemBase {
 
     @Override
     public void periodic() {
+        SmartDashboard.putNumber("Front Left TalonFX Motor Current", _frontLeftModule.getDriveController().getStateCurrent());
+        SmartDashboard.putNumber("Front Right TalonFX Motor Current", _frontRightModule.getDriveController().getStateCurrent());
+        SmartDashboard.putNumber("Back Left TalonFX Motor Current", _backLeftModule.getDriveController().getStateCurrent());
+        SmartDashboard.putNumber("Back Right TalonFX Motor Current", _backRightModule.getDriveController().getStateCurrent());
         // Convert the drive base vector into module vectors
         SwerveModuleState[] states = _kinematics.toSwerveModuleStates(_chassisSpeeds, _centerOfRotation);
         // Normalize the wheel speeds so we aren't trying to set above the max

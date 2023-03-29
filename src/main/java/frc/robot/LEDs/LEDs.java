@@ -28,7 +28,7 @@ public class LEDs extends SubsystemBase {
         Off
     }
 
-    public enum LEDMode {
+    public enum LEDModes {
         Default,
         Cone,
         Cube,
@@ -54,14 +54,14 @@ public class LEDs extends SubsystemBase {
     // TODO: Change to length of LED strips. Only necessary for animations, so it's working for now. -KH 2023/3/27
     // TODO: Find out if the length includes the 8 LEDs on the Candle. If so, include in a comment. -KH 2023/3/27
 
-    private final int LEDCount = 9;
+    private final int LEDCount = 64;
 
     public CANdle _candle = new CANdle(Constants.CanIDs.CANDLE_ID, "rio");
     public Boolean _runningHasGamepieceAnimation = false;
     private Animation _storedAnimation;
 
     //TODO: Should I set LEDMode to default or null at first? -KH 2023/3/27
-    private LEDMode _currentMode = LEDMode.Default;
+    private LEDModes _currentMode = LEDModes.Default;
     private LEDColors _currentColor;
     private LEDAnimations _currentAnimation = null;
 
@@ -69,9 +69,6 @@ public class LEDs extends SubsystemBase {
 
         //TODO: Test brightness and update this to preferred look. -KH 2023/3/27
         _candle.configBrightnessScalar(0.5);
-
-        //TODO: AYOOO we can get the temperature of the candle and check if it overheats!!! -KH 2023/3/27
-        //_candle.getTemperature();
 
         CANdleConfiguration configAll = new CANdleConfiguration();
         configAll.statusLedOffWhenActive = true;
@@ -97,32 +94,33 @@ public class LEDs extends SubsystemBase {
      * @param mode - Input enumeration name from LEDMode (ex: HasGamepiece)
      */
 
-    public void setLEDMode(LEDMode mode) {
+    public void setLEDMode(LEDModes mode) {
         switch(mode) {
 
             case LostComms:
                 setColor(LEDColors.Red);
-                this._currentMode = LEDMode.LostComms;
+                this._currentMode = LEDModes.LostComms;
                 break;
 
             case Cone:
                 setColor(LEDColors.Yellow);
-                this._currentMode = LEDMode.Cone;
+                this._currentMode = LEDModes.Cone;
                 break;
 
             case Cube:
                 setColor(LEDColors.Purple);
-                this._currentMode = LEDMode.Cube;
+                this._currentMode = LEDModes.Cube;
                 break;
 
             case HasGamepiece:
                 setAnimation(LEDAnimations.TealStrobe);
-                this._currentMode = LEDMode.HasGamepiece;
+                //setColor(LEDColors.Teal);
+                this._currentMode = LEDModes.HasGamepiece;
                 break;
 
             case IsAligned:
                 setColor(LEDColors.Blue);
-                this._currentMode = LEDMode.IsAligned;
+                this._currentMode = LEDModes.IsAligned;
                 break;
 
             // Note: the following scoring colors are arbitrary/temporary and can be changed to fit driver preferences.
@@ -130,33 +128,33 @@ public class LEDs extends SubsystemBase {
 
             case ScoreHigh:
                 setColor(LEDColors.White);
-                this._currentMode = LEDMode.ScoreHigh;
+                this._currentMode = LEDModes.ScoreHigh;
                 break;
 
             case ScoreMid:
                 setColor(LEDColors.White);
-                this._currentMode = LEDMode.ScoreMid;
+                this._currentMode = LEDModes.ScoreMid;
                 break;
 
             case ScoreLow:
                 setColor(LEDColors.White);
-                this._currentMode = LEDMode.ScoreLow;
+                this._currentMode = LEDModes.ScoreLow;
                 break;
 
             case Off:
                 setColor(LEDColors.Off);
-                this._currentMode = LEDMode.Off;
+                this._currentMode = LEDModes.Off;
                 break;
 
             default:
                 setColor(LEDColors.Pink);
-                this._currentMode = LEDMode.Default;
+                this._currentMode = LEDModes.Default;
                 break;
         }
     }
 
     /**
-     * Changes the color of the LEDs. Called by setLEDMode command.
+     * Changes the color of the LEDs. Called by setLEDMode method.
      * 
      * @param color - Input enumeration name from LEDColors (ex: White)
      */
@@ -216,53 +214,91 @@ public class LEDs extends SubsystemBase {
         }
     }
 
+    /**
+     * Gives an animation to the LEDs. Called by setLEDMode method.
+     * 
+     * @param animation - Input enumeration name from LEDAnimations (ex: TealStrobe)
+     * 
+     */
+
     public void setAnimation(LEDAnimations animation) {
 
-        _currentAnimation = animation;
+        this._currentAnimation = animation;
 
         switch(animation) {
 
             case PinkStrobe: 
-                _storedAnimation = new StrobeAnimation(210, 55, 120, 0, 0, LEDCount);
+                this._storedAnimation = new StrobeAnimation(210, 55, 120, 0, 0, LEDCount);
                 break;
 
             case Rainbow: 
-                _storedAnimation = new RainbowAnimation(0.4, 0.1, LEDCount);
+                this._storedAnimation = new RainbowAnimation(0.4, 0.1, LEDCount);
                 break;
 
             case Fire: 
-                _storedAnimation = new FireAnimation(0.5, 0.7, LEDCount, 0.7, 0.5);
+                this._storedAnimation = new FireAnimation(0.5, 0.7, LEDCount, 0.7, 0.5);
                 break;
 
             case TealStrobe:
-                _storedAnimation = new StrobeAnimation(2, 153, 138, 0, 0, LEDCount);
+                this._storedAnimation = new StrobeAnimation(2, 153, 138, 0, 0, LEDCount);
                 break;
 
             case TealTwinkle:
-                _storedAnimation = new TwinkleAnimation(2, 153, 138, 0, 0.4, LEDCount, TwinklePercent.Percent6);
+                this._storedAnimation = new TwinkleAnimation(2, 153, 138, 0, 0.4, LEDCount, TwinklePercent.Percent6);
                 break;
 
             default:
-                _storedAnimation = null;
+                this._storedAnimation = null;
                 break;
 
         }
 
-        _candle.animate(_storedAnimation, LEDCount);
+        this._candle.animate(this._storedAnimation, 0);
 
         // Use this print statement for testing/debugging:
         //System.out.println("Current animation: " + _storedAnimation.toString());
     }
 
-    public LEDMode getCurrentLEDMode() {
+    /**
+     * Returns enumeration from LEDModes.
+     */
+
+    public LEDModes getCurrentLEDMode() {
         return this._currentMode;
     }
+
+    /**
+     * Returns enumeration from LEDAnimations.
+     */
 
     public LEDAnimations getCurrentLEDAnimation() {
         return this._currentAnimation;
     }
 
+    /**
+     * Returns enumeration from LEDColors.
+     */
+
     public LEDColors getCurrentLEDColor() {
         return this._currentColor;
+    }
+
+    public Double getLEDTemperature() {
+        return this._candle.getTemperature();
+    }
+
+
+    /**
+     * If LEDs are greater that 80 degrees Celsius, turn them off. Prevents vision (which is connected) from failing.
+     * Called by LEDDefault command.
+     * 
+     * @param temperature - Input Double for temperature (ex: currentTemperature)
+     */
+
+    public void adjustLEDTemperature(Double temperature) {
+        if (temperature >= 80.0) {
+            this._candle.setLEDs(0, 0, 0);
+            this._candle.configBrightnessScalar(0.0);
+        }
     }
 }
