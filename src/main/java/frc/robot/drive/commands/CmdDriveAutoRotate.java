@@ -2,7 +2,9 @@ package frc.robot.drive.commands;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.drive.Drive;
 
@@ -14,13 +16,14 @@ public class CmdDriveAutoRotate extends CommandBase {
     private final DoubleSupplier m_translationXSupplier;
     private final DoubleSupplier m_translationYSupplier;
     private final double m_angleSetpoint;
-    private PIDController m_angleController;
+    private ProfiledPIDController m_angleController;
+    private TrapezoidProfile.Constraints m_constraints;
 
     // windham gains were 0.02, 0.0, 0.0. It worked well for their week 1
-    private final double AUTO_ROTATE_KP = 0.005;
+    private final double AUTO_ROTATE_KP = 0.2;
     private final double AUTO_ROTATE_KI = 0.001;
-    private final double AUTO_ROTATE_KD = 0.0;
-    private final double AUTO_ROTATE_TOLERANCE = 3;
+    private final double AUTO_ROTATE_KD = 0.001;
+    private final double AUTO_ROTATE_TOLERANCE = 1.0;
 
     /**
      * Auto Rotate the robot to a specified angle. This command will still allow the
@@ -37,10 +40,16 @@ public class CmdDriveAutoRotate extends CommandBase {
             DoubleSupplier translationYSupplier,
             double angleSetpoint) {
 
+        this.m_constraints = new TrapezoidProfile.Constraints(40, 40);
+
         this.m_drivetrainSubsystem = drivetrainSubsystem;
         this.m_translationXSupplier = translationXSupplier;
         this.m_translationYSupplier = translationYSupplier;
+        this.m_angleController = new ProfiledPIDController(this.AUTO_ROTATE_KP, this.AUTO_ROTATE_KI,
+                this.AUTO_ROTATE_KD, m_constraints);
         this.m_angleSetpoint = angleSetpoint;
+        this.m_angleController.setTolerance(this.AUTO_ROTATE_TOLERANCE);
+        this.m_angleController.enableContinuousInput(-180, 180);
 
         addRequirements(drivetrainSubsystem);
     }
@@ -48,12 +57,8 @@ public class CmdDriveAutoRotate extends CommandBase {
     // Called when the command is initially scheduled.
     @Override
     public void initialize() {
-        this.m_angleController = new PIDController(this.AUTO_ROTATE_KP, this.AUTO_ROTATE_KI, this.AUTO_ROTATE_KD);
-
-        this.m_angleController.enableContinuousInput(-180, 180);
-        this.m_angleController.setSetpoint(this.m_angleSetpoint);
-        this.m_angleController.setTolerance(this.AUTO_ROTATE_TOLERANCE);
-
+        m_angleController.reset(m_drivetrainSubsystem.getGyroscopeRotation().getDegrees());
+        this.m_angleController.setGoal(this.m_angleSetpoint);
     }
 
     // Called every time the scheduler runs while the command is scheduled.
@@ -65,7 +70,7 @@ public class CmdDriveAutoRotate extends CommandBase {
         // means that our robot will always take the shortest path to the angle.
         // copied this from windham
         double rotationVal = this.m_angleController.calculate(
-                -(MathUtil.inputModulus(this.m_drivetrainSubsystem.getGyroscopeRotation().getDegrees(), -180, 180)),
+                (MathUtil.inputModulus(this.m_drivetrainSubsystem.getGyroscopeRotation().getDegrees(), -180, 180)),
                 this.m_angleController.getSetpoint());
 
         this.m_drivetrainSubsystem.drive(
@@ -74,9 +79,9 @@ public class CmdDriveAutoRotate extends CommandBase {
                         m_translationYSupplier.getAsDouble(),
                         rotationVal,
                         m_drivetrainSubsystem.getGyroscopeRotation()));
-        System.out.println("Setpoint: " + this.m_angleSetpoint + "power " + rotationVal);
+        System.out.println("Setpoint: " + this.m_angleController.getGoal().position + "power " + rotationVal);
         System.out.println("Current angle: "
-                + -(MathUtil.inputModulus(this.m_drivetrainSubsystem.getGyroscopeRotation().getDegrees(), -180, 180)));
+                + (MathUtil.inputModulus(this.m_drivetrainSubsystem.getGyroscopeRotation().getDegrees(), -180, 180)));
 
     }
 
@@ -96,7 +101,9 @@ public class CmdDriveAutoRotate extends CommandBase {
     // Returns true when the command should end.
     @Override
     public boolean isFinished() {
-        System.out.println("COMMAND DONE:" + this.m_angleController.atSetpoint());
-        return this.m_angleController.atSetpoint();
+        double error = Math
+                .abs(m_angleController.getGoal().position - m_drivetrainSubsystem.getGyroscopeRotation().getDegrees());
+        System.out.println("setpoint: " + m_angleSetpoint);
+        return error < AUTO_ROTATE_TOLERANCE;
     }
 }

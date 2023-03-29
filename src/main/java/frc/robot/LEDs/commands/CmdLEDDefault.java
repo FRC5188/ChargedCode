@@ -2,6 +2,7 @@ package frc.robot.LEDs.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.LEDs.LEDs;
+import frc.robot.LEDs.LEDs.LEDCustomAnimations;
 import frc.robot.LEDs.LEDs.LEDModes;
 import frc.robot.arm.Arm;
 import frc.robot.arm.Arm.ArmMode;
@@ -14,6 +15,7 @@ public class CmdLEDDefault extends CommandBase {
     private ArmPosition armPosition;
     private int counter;
     private Double currentTemperature;
+    private ArmPosition _finalArmPosition;
 
 
     public CmdLEDDefault(LEDs leds, Arm armSubsystem) {
@@ -24,9 +26,8 @@ public class CmdLEDDefault extends CommandBase {
 
     @Override
     public void initialize() {    
-        
+
         System.out.println("LEDs Off (initializing)");
-        
     }
 
     @Override
@@ -36,6 +37,7 @@ public class CmdLEDDefault extends CommandBase {
         this.armPosition = this._armSubsystem.getCurrentArmPosition();
         this.currentTemperature = this._leds.getLEDTemperature();
         this._leds.adjustLEDTemperature(currentTemperature);
+        this._finalArmPosition = this._armSubsystem.getFinalPosition();
 
         if (_leds.getShouldRunGamepieceAnimation()) {
             // Code runs 50 times per second.
@@ -68,36 +70,22 @@ public class CmdLEDDefault extends CommandBase {
                 }
             }
 
-            /* 
             else {
-                switch (armPosition) {
-                    // TODO: Are these the official scoring position names? There seem to be a lot of variations. -KtH 2023/3/28
+                switch (_finalArmPosition) {
                     case High:
                         this._leds.setCustomAnimation(LEDCustomAnimations.High);
                         break;
                     case Middle:
                         this._leds.setCustomAnimation(LEDCustomAnimations.Mid);
                         break;
-                    case LowScore:
-                        this._leds.setCustomAnimation(LEDCustomAnimations.Low);
-                        break;
-                    // case HighCone:
-                    //     break;
-                    // case HighCube:
-                    //     break;
-                    // case MiddleCone:
-                    //     break;
-                    // case MiddleCube:
-                    //     break;
-                    // case ScoringConeHigh:
-                    //     break;
-                    // case ScoringConeMiddle:
-                    //     break;
+                    // case Stored:
+                    //     this._leds.setCustomAnimation(LEDCustomAnimations.Low);
+                        // break;
                     default:
                         break;
 
                 }
-            } */
+            } 
         }
     }
 

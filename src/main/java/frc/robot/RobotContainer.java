@@ -186,17 +186,18 @@ public class RobotContainer {
             () -> (-modifyAxis(_driverController.getLeftX()) * Drive.MAX_VELOCITY_METERS_PER_SECOND * _driveSubsystem.getSpeedMultiplier()),
             180));
         
+        // Counter clockwise is positive angle
         _driverButtonB.onTrue(new CmdDriveAutoRotate(
             _driveSubsystem,
             () -> (-modifyAxis(_driverController.getLeftY() )* Drive.MAX_VELOCITY_METERS_PER_SECOND * _driveSubsystem.getSpeedMultiplier()),
             () -> (-modifyAxis(_driverController.getLeftX()) * Drive.MAX_VELOCITY_METERS_PER_SECOND * _driveSubsystem.getSpeedMultiplier()),
-            90));
+            -90));
 
         _driverButtonX.onTrue(new CmdDriveAutoRotate(
             _driveSubsystem,
             () -> (-modifyAxis(_driverController.getLeftY() )* Drive.MAX_VELOCITY_METERS_PER_SECOND * _driveSubsystem.getSpeedMultiplier()),
             () -> (-modifyAxis(_driverController.getLeftX()) * Drive.MAX_VELOCITY_METERS_PER_SECOND * _driveSubsystem.getSpeedMultiplier()),
-            -90));
+            90));
 
         _driverButtonY.onTrue(new CmdDriveAutoRotate(
             _driveSubsystem,
@@ -207,8 +208,6 @@ public class RobotContainer {
         // Change CoR for orbiting around a cone or robot
         _driverButtonLB.whileTrue(new CmdDriveChangeCoR(_driveSubsystem, new Translation2d(1.07, 0)));
         _driverButtonLB.whileFalse(new CmdDriveChangeCoR(_driveSubsystem, new Translation2d(0, 0)));
-
-
 
         // -- Operator Controls --
         _opButtonOne.onTrue(new GrpMoveArmToPosition(_armSubsystem, ArmPosition.EnGarde)
