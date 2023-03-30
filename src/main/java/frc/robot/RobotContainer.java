@@ -71,8 +71,10 @@ public class RobotContainer {
 
     private final XboxController _driverController = new XboxController(0);
 
-    private final JoystickButton _driverButtonX = new JoystickButton(_driverController, Constants.ButtonMappings.X_BUTTON);
-    private final JoystickButton _driverButtonB = new JoystickButton(_driverController, Constants.ButtonMappings.B_BUTTON);
+    private final JoystickButton _driverButtonX = new JoystickButton(_driverController,
+            Constants.ButtonMappings.X_BUTTON);
+    private final JoystickButton _driverButtonB = new JoystickButton(_driverController,
+            Constants.ButtonMappings.B_BUTTON);
 
     private final JoystickButton _driverButtonRB = new JoystickButton(_driverController,
             Constants.ButtonMappings.RIGHT_BUMPER);
@@ -82,8 +84,8 @@ public class RobotContainer {
             Constants.ButtonMappings.A_BUTTON);
     private final JoystickButton _driverButtonLB = new JoystickButton(_driverController,
             Constants.ButtonMappings.LEFT_BUMPER);
-    private final JoystickButton _driverButtonLeftPaddle = new JoystickButton(_driverController,
-            Constants.ButtonMappings.LEFT_JOY_BUTTON);
+    private final JoystickButton _driverButtonRightJoyButton = new JoystickButton(_driverController,
+            Constants.ButtonMappings.RIGHT_JOY_BUTTON);
 
     // Top row of buttons
     private final Joystick _operatorController1 = new Joystick(1);
@@ -91,8 +93,6 @@ public class RobotContainer {
     private final Joystick _operatorController2 = new Joystick(2);
     // manual sliders
 
-
-    
     private JoystickButton _opButtonOne = new JoystickButton(_operatorController1, 1);
     private JoystickButton _opButtonTwo = new JoystickButton(_operatorController1, 2);
     private JoystickButton _opButtonThree = new JoystickButton(_operatorController1, 3);
@@ -171,43 +171,51 @@ public class RobotContainer {
         _driverButtonRB.onFalse(new CmdDriveChangeSpeedMult(_driveSubsystem, 0.6));
         _driverButtonRB.onTrue(new CmdDriveChangeSpeedMult(_driveSubsystem, 1.0));
 
-        _driverButtonLeftPaddle.onTrue(new SelectCommand(
+        // Change CoR for orbiting around a cone or robot
+
+        _driverButtonRightJoyButton.whileTrue(new CmdDriveChangeCoR(_driveSubsystem, new Translation2d(1.07, 0)));
+        _driverButtonRightJoyButton.whileFalse(new CmdDriveChangeCoR(_driveSubsystem, new Translation2d(0, 0)));
+
+        _driverButtonA.onTrue(new CmdDriveAutoRotate(
+                _driveSubsystem,
+                () -> (-modifyAxis(_driverController.getLeftY()) * Drive.MAX_VELOCITY_METERS_PER_SECOND
+                        * _driveSubsystem.getSpeedMultiplier()),
+                () -> (-modifyAxis(_driverController.getLeftX()) * Drive.MAX_VELOCITY_METERS_PER_SECOND
+                        * _driveSubsystem.getSpeedMultiplier()),
+                180));
+
+        // Counter clockwise is positive angle
+        _driverButtonB.onTrue(new CmdDriveAutoRotate(
+                _driveSubsystem,
+                () -> (-modifyAxis(_driverController.getLeftY()) * Drive.MAX_VELOCITY_METERS_PER_SECOND
+                        * _driveSubsystem.getSpeedMultiplier()),
+                () -> (-modifyAxis(_driverController.getLeftX()) * Drive.MAX_VELOCITY_METERS_PER_SECOND
+                        * _driveSubsystem.getSpeedMultiplier()),
+                -90));
+
+        _driverButtonX.onTrue(new CmdDriveAutoRotate(
+                _driveSubsystem,
+                () -> (-modifyAxis(_driverController.getLeftY()) * Drive.MAX_VELOCITY_METERS_PER_SECOND
+                        * _driveSubsystem.getSpeedMultiplier()),
+                () -> (-modifyAxis(_driverController.getLeftX()) * Drive.MAX_VELOCITY_METERS_PER_SECOND
+                        * _driveSubsystem.getSpeedMultiplier()),
+                90));
+
+        _driverButtonY.onTrue(new CmdDriveAutoRotate(
+                _driveSubsystem,
+                () -> (-modifyAxis(_driverController.getLeftY()) * Drive.MAX_VELOCITY_METERS_PER_SECOND
+                        * _driveSubsystem.getSpeedMultiplier()),
+                () -> (-modifyAxis(_driverController.getLeftX()) * Drive.MAX_VELOCITY_METERS_PER_SECOND
+                        * _driveSubsystem.getSpeedMultiplier()),
+                0));
+
+        _driverButtonLB.onTrue(new SelectCommand(
                 // Maps selector values to commands
                 Map.ofEntries(
                         Map.entry(ArmPosition.High, new GrpScoreAndStow(_armSubsystem)),
                         Map.entry(ArmPosition.EnGarde, new CmdArmUpdateToFinalPosition(_armSubsystem)),
                         Map.entry(ArmPosition.Middle, new GrpScoreAndStow(_armSubsystem))),
-                _armSubsystem::getCurrentArmPosition).unless(() -> !_armSubsystem.atFinalPosition()));
-        _driverButtonRB.onTrue(new CmdDriveChangeSpeedMult(_driveSubsystem, 1.0)); 
-
-        _driverButtonA.onTrue(new CmdDriveAutoRotate(
-            _driveSubsystem,
-            () -> (-modifyAxis(_driverController.getLeftY() )* Drive.MAX_VELOCITY_METERS_PER_SECOND * _driveSubsystem.getSpeedMultiplier()),
-            () -> (-modifyAxis(_driverController.getLeftX()) * Drive.MAX_VELOCITY_METERS_PER_SECOND * _driveSubsystem.getSpeedMultiplier()),
-            180));
-        
-        // Counter clockwise is positive angle
-        _driverButtonB.onTrue(new CmdDriveAutoRotate(
-            _driveSubsystem,
-            () -> (-modifyAxis(_driverController.getLeftY() )* Drive.MAX_VELOCITY_METERS_PER_SECOND * _driveSubsystem.getSpeedMultiplier()),
-            () -> (-modifyAxis(_driverController.getLeftX()) * Drive.MAX_VELOCITY_METERS_PER_SECOND * _driveSubsystem.getSpeedMultiplier()),
-            -90));
-
-        _driverButtonX.onTrue(new CmdDriveAutoRotate(
-            _driveSubsystem,
-            () -> (-modifyAxis(_driverController.getLeftY() )* Drive.MAX_VELOCITY_METERS_PER_SECOND * _driveSubsystem.getSpeedMultiplier()),
-            () -> (-modifyAxis(_driverController.getLeftX()) * Drive.MAX_VELOCITY_METERS_PER_SECOND * _driveSubsystem.getSpeedMultiplier()),
-            90));
-
-        _driverButtonY.onTrue(new CmdDriveAutoRotate(
-            _driveSubsystem,
-            () -> (-modifyAxis(_driverController.getLeftY() )* Drive.MAX_VELOCITY_METERS_PER_SECOND * _driveSubsystem.getSpeedMultiplier()),
-            () -> (-modifyAxis(_driverController.getLeftX()) * Drive.MAX_VELOCITY_METERS_PER_SECOND * _driveSubsystem.getSpeedMultiplier()),
-            0));
-
-        // Change CoR for orbiting around a cone or robot
-        _driverButtonLB.whileTrue(new CmdDriveChangeCoR(_driveSubsystem, new Translation2d(1.07, 0)));
-        _driverButtonLB.whileFalse(new CmdDriveChangeCoR(_driveSubsystem, new Translation2d(0, 0)));
+                _armSubsystem::getCurrentArmPosition).unless(() -> !_armSubsystem.canChangeSetpoint()));
 
         // -- Operator Controls --
         _opButtonOne.onTrue(new GrpMoveArmToPosition(_armSubsystem, ArmPosition.EnGarde)
@@ -227,7 +235,8 @@ public class RobotContainer {
                 .unless(() -> !_armSubsystem.canChangeSetpoint()));
 
         _opButtonSix.onTrue(new GrpMoveArmToPosition(_armSubsystem, ArmPosition.GroundPickUp)
-                .unless(() -> (!_armSubsystem.canChangeSetpoint() || _armSubsystem.getCurrentArmPosition() != ArmPosition.Stored)));
+                .unless(() -> (!_armSubsystem.canChangeSetpoint()
+                        || _armSubsystem.getCurrentArmPosition() != ArmPosition.Stored)));
 
         _opButtonSeven.onTrue(new GrpEngardeForScoring(_armSubsystem, ArmPosition.High)
                 .unless(() -> !_armSubsystem.canChangeSetpoint()));
@@ -258,7 +267,8 @@ public class RobotContainer {
         _op2ButtonThree.onTrue(new CmdArmMoveShoulderManual(_armSubsystem, () -> shoulderDownAmount));
         _op2ButtonFour.onTrue(new CmdArmMoveShoulderManual(_armSubsystem, () -> shoulderUpAmount));
 
-        _op2ButtonFive.onTrue(new InstantCommand(() -> _armSubsystem.setCurrentPosition(_armSubsystem.getTargetArmPosition())));
+        _op2ButtonFive.onTrue(
+                new InstantCommand(() -> _armSubsystem.setCurrentPosition(_armSubsystem.getTargetArmPosition())));
 
         // this currently infinitely adds to the current setpoint while button is held
         // _opButtonOne.whileTrue(Commands.parallel(
