@@ -23,7 +23,7 @@ public class CmdDriveAutoRotate extends CommandBase {
     private final double AUTO_ROTATE_KP = 0.2;
     private final double AUTO_ROTATE_KI = 0.001;
     private final double AUTO_ROTATE_KD = 0.001;
-    private final double AUTO_ROTATE_TOLERANCE = 1.0;
+    private final double AUTO_ROTATE_TOLERANCE = 3.0;
 
     /**
      * Auto Rotate the robot to a specified angle. This command will still allow the
@@ -79,10 +79,7 @@ public class CmdDriveAutoRotate extends CommandBase {
                         m_translationYSupplier.getAsDouble(),
                         rotationVal,
                         m_drivetrainSubsystem.getGyroscopeRotation()));
-        System.out.println("Setpoint: " + this.m_angleController.getGoal().position + "power " + rotationVal);
-        System.out.println("Current angle: "
-                + (MathUtil.inputModulus(this.m_drivetrainSubsystem.getGyroscopeRotation().getDegrees(), -180, 180)));
-
+       
     }
 
     // Called once the command ends or is interrupted.
@@ -102,8 +99,8 @@ public class CmdDriveAutoRotate extends CommandBase {
     @Override
     public boolean isFinished() {
         double error = Math
-                .abs(m_angleController.getGoal().position - m_drivetrainSubsystem.getGyroscopeRotation().getDegrees());
-        System.out.println("setpoint: " + m_angleSetpoint);
+                .abs(m_angleController.getGoal().position - m_drivetrainSubsystem.getGyroscopeRotation().getDegrees()) % 360;
+        System.out.println("error: " + error);
         return error < AUTO_ROTATE_TOLERANCE;
     }
 }
