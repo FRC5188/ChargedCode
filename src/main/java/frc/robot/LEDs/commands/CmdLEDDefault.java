@@ -2,7 +2,7 @@ package frc.robot.LEDs.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.LEDs.LEDs;
-import frc.robot.LEDs.LEDs.LEDCustomAnimations;
+//import frc.robot.LEDs.LEDs.LEDCustomAnimations;
 import frc.robot.LEDs.LEDs.LEDModes;
 import frc.robot.arm.Arm;
 import frc.robot.arm.Arm.ArmMode;
@@ -15,7 +15,7 @@ public class CmdLEDDefault extends CommandBase {
     private ArmPosition armPosition;
     private int counter;
     private Double currentTemperature;
-    private ArmPosition _finalArmPosition;
+    //private ArmPosition _finalArmPosition;
 
 
     public CmdLEDDefault(LEDs leds, Arm armSubsystem) {
@@ -37,7 +37,7 @@ public class CmdLEDDefault extends CommandBase {
         this.armPosition = this._armSubsystem.getCurrentArmPosition();
         this.currentTemperature = this._leds.getLEDTemperature();
         this._leds.adjustLEDTemperature(currentTemperature);
-        this._finalArmPosition = this._armSubsystem.getFinalPosition();
+        //this._finalArmPosition = this._armSubsystem.getFinalPosition();
 
         if (_leds.getShouldRunGamepieceAnimation()) {
             // Code runs 50 times per second.
@@ -70,22 +70,22 @@ public class CmdLEDDefault extends CommandBase {
                 }
             }
 
-            else {
-                switch (_finalArmPosition) {
-                    case High:
-                        this._leds.setCustomAnimation(LEDCustomAnimations.High);
-                        break;
-                    case Middle:
-                        this._leds.setCustomAnimation(LEDCustomAnimations.Mid);
-                        break;
-                    // case Stored:
-                    //     this._leds.setCustomAnimation(LEDCustomAnimations.Low);
-                        // break;
-                    default:
-                        break;
+            // else {
+            //     switch (_finalArmPosition) {
+            //         // case High:
+            //         //     this._leds.setCustomAnimation(LEDCustomAnimations.High);
+            //         //     break;
+            //         // case Middle:
+            //         //     this._leds.setCustomAnimation(LEDCustomAnimations.Mid);
+            //         //     break;
+            //         // case Stored:
+            //         //     this._leds.setCustomAnimation(LEDCustomAnimations.Low);
+            //             // break;
+            //         default:
+            //             break;
 
-                }
-            } 
+            //     }
+            // } 
         }
     }
 
