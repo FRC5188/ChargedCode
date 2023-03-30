@@ -145,6 +145,9 @@ public class RobotContainer {
         _dashboardSubsystem.addAuto("Mobility and Auto Balance",
                 Autonomous.generateFullAuto("TEST_Mobility_Balance", eventMap, 4, 1, _driveSubsystem));
 
+        _dashboardSubsystem.addAuto("Move a Meter",
+                Autonomous.generateFullAuto("TEST_Short_Distance", eventMap, 4, 1, _driveSubsystem));
+
         configureButtonBindings();
     }
 
@@ -176,7 +179,7 @@ public class RobotContainer {
         _driverButtonRightJoyButton.whileTrue(new CmdDriveChangeCoR(_driveSubsystem, new Translation2d(1.07, 0)));
         _driverButtonRightJoyButton.whileFalse(new CmdDriveChangeCoR(_driveSubsystem, new Translation2d(0, 0)));
 
-        _driverButtonA.onTrue(new CmdDriveAutoRotate(
+        _driverButtonA.whileTrue(new CmdDriveAutoRotate(
                 _driveSubsystem,
                 () -> (-modifyAxis(_driverController.getLeftY()) * Drive.MAX_VELOCITY_METERS_PER_SECOND
                         * _driveSubsystem.getSpeedMultiplier()),
@@ -185,7 +188,7 @@ public class RobotContainer {
                 180));
 
         // Counter clockwise is positive angle
-        _driverButtonB.onTrue(new CmdDriveAutoRotate(
+        _driverButtonB.whileTrue(new CmdDriveAutoRotate(
                 _driveSubsystem,
                 () -> (-modifyAxis(_driverController.getLeftY()) * Drive.MAX_VELOCITY_METERS_PER_SECOND
                         * _driveSubsystem.getSpeedMultiplier()),
@@ -193,7 +196,7 @@ public class RobotContainer {
                         * _driveSubsystem.getSpeedMultiplier()),
                 -90));
 
-        _driverButtonX.onTrue(new CmdDriveAutoRotate(
+        _driverButtonX.whileTrue(new CmdDriveAutoRotate(
                 _driveSubsystem,
                 () -> (-modifyAxis(_driverController.getLeftY()) * Drive.MAX_VELOCITY_METERS_PER_SECOND
                         * _driveSubsystem.getSpeedMultiplier()),
@@ -201,7 +204,7 @@ public class RobotContainer {
                         * _driveSubsystem.getSpeedMultiplier()),
                 90));
 
-        _driverButtonY.onTrue(new CmdDriveAutoRotate(
+        _driverButtonY.whileTrue(new CmdDriveAutoRotate(
                 _driveSubsystem,
                 () -> (-modifyAxis(_driverController.getLeftY()) * Drive.MAX_VELOCITY_METERS_PER_SECOND
                         * _driveSubsystem.getSpeedMultiplier()),
@@ -212,9 +215,9 @@ public class RobotContainer {
         _driverButtonLB.onTrue(new SelectCommand(
                 // Maps selector values to commands
                 Map.ofEntries(
-                        Map.entry(ArmPosition.High, new GrpScoreAndStow(_armSubsystem)),
+                        Map.entry(ArmPosition.High, new CmdArmSpit(_armSubsystem, -0.6)),
                         Map.entry(ArmPosition.EnGarde, new CmdArmUpdateToFinalPosition(_armSubsystem)),
-                        Map.entry(ArmPosition.Middle, new GrpScoreAndStow(_armSubsystem))),
+                        Map.entry(ArmPosition.Middle, new CmdArmSpit(_armSubsystem, -0.6))),
                 _armSubsystem::getCurrentArmPosition).unless(() -> !_armSubsystem.canChangeSetpoint()));
 
         // -- Operator Controls --
@@ -222,7 +225,7 @@ public class RobotContainer {
                 .unless(() -> !_armSubsystem.canChangeSetpoint()));
 
         // Run Intake
-        _opButtonTwo.onTrue(new CmdArmRunIntake(_armSubsystem, 0.6));
+        _opButtonTwo.onTrue(new CmdArmRunIntake(_armSubsystem, 1));
 
         // Spit game piece
         _opButtonThree.onTrue(new CmdArmSpit(_armSubsystem, -0.6));

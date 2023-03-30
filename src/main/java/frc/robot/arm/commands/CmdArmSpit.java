@@ -32,9 +32,10 @@ public class CmdArmSpit extends CommandBase {
         if (_armSubsystem.getArmMode() == ArmMode.Cone && _armSubsystem.getCurrentArmPosition() != ArmPosition.Stored) {
             _armSubsystem.setIntakeMode(IntakeMode.Open);
         } else {
-            _counter++;
-            _armSubsystem.setIntakeMotorSpeed(_intakeSpeed);
+            
         }
+        _armSubsystem.setIntakeMotorSpeed(_intakeSpeed);
+        _counter++;
     }
 
     @Override

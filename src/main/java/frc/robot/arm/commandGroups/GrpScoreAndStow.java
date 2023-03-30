@@ -15,7 +15,7 @@ public class GrpScoreAndStow extends SequentialCommandGroup {
     this.addRequirements(armSubsystem);
 
     addCommands(
-      new CmdArmSpit(armSubsystem, -0.6),
+      new CmdArmSpit(armSubsystem, -1),
       new GrpMoveArmToPosition(armSubsystem, ArmPosition.EnGarde),
       new GrpMoveArmToPosition(armSubsystem, ArmPosition.Stored),
       new CmdArmUpdateFinalPosition(armSubsystem, ArmPosition.Stored)

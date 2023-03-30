@@ -18,7 +18,6 @@ public class CmdArmWaitForArm extends CommandBase {
 
     @Override
     public void execute() {
-        System.out.println("Waiting");
     }
 
     @Override
