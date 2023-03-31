@@ -63,13 +63,13 @@ public class Drive extends SubsystemBase {
             Math.hypot(CHASSIS_WIDTH_METERS / 2.0, CHASSIS_HEIGHT_METERS / 2.0) * 0.5;
 
     /** The offset to get the encoder to read 0 when facing forward */
-    private static final double FRONT_LEFT_MODULE_ENCODER_OFFSET = -0;
+    private static final double FRONT_LEFT_MODULE_ENCODER_OFFSET = -43.06641;
     /** The offset to get the encoder to read 0 when facing forward */
-    private static final double FRONT_RIGHT_MODULE_ENCODER_OFFSET = -0;
+    private static final double FRONT_RIGHT_MODULE_ENCODER_OFFSET = -289.85742;
     /** The offset to get the encoder to read 0 when facing forward */
-    private static final double BACK_LEFT_MODULE_ENCODER_OFFSET = -0;
+    private static final double BACK_LEFT_MODULE_ENCODER_OFFSET = -141.32344;
     /** The offset to get the encoder to read 0 when facing forward */
-    private static final double BACK_RIGHT_MODULE_ENCODER_OFFSET = -0;
+    private static final double BACK_RIGHT_MODULE_ENCODER_OFFSET = -351.6434;
 
     private Vision _visionSubsystem;
 

@@ -808,9 +808,11 @@ public class Arm extends SubsystemBase {
                 case Stored:
                     addWaypointsFrom2DArray(intermediatePositions,
                             ArmConstants.IntermediateWaypoints.GROUND_PICKUP_TO_STORED);
+                            break;
                 case EnGarde:
                     addWaypointsFrom2DArray(intermediatePositions,
                             ArmConstants.IntermediateWaypoints.GROUND_PICKUP_TO_ENGARDE);
+                            break;
                 default:
 
                     break;
@@ -942,6 +944,8 @@ public class Arm extends SubsystemBase {
         } else if (this._currentArmPos == ArmPosition.EnGarde && position == ArmPosition.High) {
             System.out.println("SETTING TRAJECTORY SPEED: " + TrajectorySpeeds.ENGARDE_TO_HIGH_CONE_SPEED);
             speed = TrajectorySpeeds.ENGARDE_TO_HIGH_CONE_SPEED;
+        } else if (this._currentArmPos == ArmPosition.EnGarde && position == ArmPosition.GroundPickUp) {
+            speed = TrajectorySpeeds.ENGARDE_TO_GROUND_PICKUP_SPEED;
         }
 
         _trajectory = new ArmTrajectory(waypoints, speed);

@@ -267,7 +267,9 @@ public class RobotContainer {
 
                 _opButtonSix.onTrue(new GrpMoveArmToPosition(_armSubsystem, ArmPosition.GroundPickUp)
                                 .unless(() -> (!_armSubsystem.canChangeSetpoint()
-                                                || _armSubsystem.getCurrentArmPosition() != ArmPosition.Stored)));
+                                                )));
+                                                //|| (_armSubsystem.getCurrentArmPosition() != ArmPosition.Stored
+                                                //&& _armSubsystem.getCurrentArmPosition() != ArmPosition.GroundPickUp
 
                 _opButtonSeven.onTrue(new GrpEngardeForScoring(_armSubsystem, ArmPosition.High)
                                 .unless(() -> !_armSubsystem.canChangeSetpoint()));
