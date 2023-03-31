@@ -171,7 +171,7 @@ public class Arm extends SubsystemBase {
     // Arm PID controllers
     private PIDController _shoulderMotorPID;
     private PIDController _elbowMotorPID;
-    
+
     private ArmMode _armMode;
 
     private boolean _hasGamepiece = true;
@@ -200,7 +200,8 @@ public class Arm extends SubsystemBase {
         _elbowMotor = new WPI_TalonFX(Constants.CanIDs.ARM_ELBOW_MOTOR_ID);
 
         _wristSolenoid = new Solenoid(PneumaticsModuleType.REVPH, Constants.PHPorts.WRIST_SOLENOID_PORT);
-        _intakeSolenoid = new DoubleSolenoid(PneumaticsModuleType.REVPH, Constants.PHPorts.INTAKE_SOLENOID_FORWARD_PORT, Constants.PHPorts.INTAKE_SOLENOID_REVERSE_PORT);
+        _intakeSolenoid = new DoubleSolenoid(PneumaticsModuleType.REVPH, Constants.PHPorts.INTAKE_SOLENOID_FORWARD_PORT,
+                Constants.PHPorts.INTAKE_SOLENOID_REVERSE_PORT);
 
         _elbowPotentiometer = new AnalogInput(Constants.AIO.ELBOW_PORT_POT);
         _shoulderPotentiometer = new AnalogInput(Constants.AIO.SHOULDER_PORT_POT);
@@ -678,7 +679,7 @@ public class Arm extends SubsystemBase {
         }
     }
 
-    public Arm getInstance(){
+    public Arm getInstance() {
         return this;
     }
 
@@ -807,6 +808,9 @@ public class Arm extends SubsystemBase {
                 case Stored:
                     addWaypointsFrom2DArray(intermediatePositions,
                             ArmConstants.IntermediateWaypoints.GROUND_PICKUP_TO_STORED);
+                case EnGarde:
+                    addWaypointsFrom2DArray(intermediatePositions,
+                            ArmConstants.IntermediateWaypoints.GROUND_PICKUP_TO_ENGARDE);
                 default:
 
                     break;
@@ -836,6 +840,10 @@ public class Arm extends SubsystemBase {
                     } else {
 
                     }
+                    break;
+                case GroundPickUp:
+                    addWaypointsFrom2DArray(intermediatePositions,
+                            ArmConstants.IntermediateWaypoints.ENGARDE_TO_GROUND_PICKUP);
                     break;
                 default:
 
@@ -965,8 +973,7 @@ public class Arm extends SubsystemBase {
         _trajTimer.stop();
     }
 
-    public ArmJointAngles 
-    getArmAnglesFromPosition(ArmPosition position) {
+    public ArmJointAngles getArmAnglesFromPosition(ArmPosition position) {
         double shoulderPos = this.getShoulderJointAngle();
         double elbowPos = this.getElbowJointAngleRelativeToGround();
         this._targetPosition = position;

@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SelectCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.ButtonMappings;
@@ -274,8 +275,8 @@ public class RobotContainer {
                 _opButtonEight.onTrue(new GrpEngardeForScoring(_armSubsystem, ArmPosition.Middle)
                                 .unless(() -> !_armSubsystem.canChangeSetpoint()));
 
-                _opButtonNine.onTrue(new GrpMoveArmToPosition(_armSubsystem, ArmPosition.Stored)
-                                .unless(() -> !_armSubsystem.canChangeSetpoint()));
+                _opButtonNine.whileTrue(new InstantCommand(() -> _armSubsystem.setCanChangeSetpoint(true)));
+                _opButtonNine.whileFalse(new InstantCommand(() -> _armSubsystem.setCanChangeSetpoint(false)));
 
                 _opButtonTen.onTrue(new CmdArmSetMode(_armSubsystem, ArmMode.Cone));
                 _opButtonTen.onFalse(new CmdArmSetMode(_armSubsystem, ArmMode.Cube));
@@ -321,10 +322,13 @@ public class RobotContainer {
                 eventMap.put("HighConeArm", new GrpAutoGoToScore(_armSubsystem, ArmPosition.HighCone));
                 eventMap.put("HighConeScoreAndStow", new GrpAutoEngardeScoreStow(_armSubsystem, ArmPosition.HighCone));
                 eventMap.put("Spit", new CmdArmSpit(_armSubsystem, 0.6));
-                eventMap.put("GroundPickup", new GrpMoveArmToPosition(_armSubsystem, ArmPosition.GroundPickUp));
+                eventMap.put("GroundPickupCube",
+                                new SequentialCommandGroup(new CmdArmSetMode(_armSubsystem, ArmMode.Cube),
+                                                new GrpMoveArmToPosition(_armSubsystem, ArmPosition.GroundPickUp)));
                 eventMap.put("Stow", new GrpMoveArmToPosition(_armSubsystem, ArmPosition.Stored));
                 eventMap.put("EnGarde", new GrpMoveArmToPosition(_armSubsystem, ArmPosition.EnGarde));
-                eventMap.put("HighCube", new GrpMoveArmToPosition(_armSubsystem, ArmPosition.HighCube));
+                eventMap.put("HighCube", new SequentialCommandGroup(new CmdArmSetMode(_armSubsystem, ArmMode.Cube),
+                                new GrpMoveArmToPosition(_armSubsystem, ArmPosition.HighCube)));
                 eventMap.put("ScoreAndStow", new GrpScoreAndStow(_armSubsystem));
                 eventMap.put("Balance", new CmdDriveAutoBalance(_driveSubsystem));
 

@@ -17,7 +17,7 @@
       "isStopPoint": false,
       "stopEvent": {
         "names": [
-          "HighConeScoreAndStow"
+          "HighConeArm"
         ],
         "executionBehavior": "sequential",
         "waitBehavior": "after",
@@ -178,15 +178,21 @@
   ],
   "markers": [
     {
-      "position": 0.2,
+      "position": 0.65,
       "names": [
-        "GroundPickup"
+        "GroundPickupCube"
       ]
     },
     {
-      "position": 3.0909090909089376,
+      "position": 3.09,
       "names": [
         "HighCube"
+      ]
+    },
+    {
+      "position": 0.0,
+      "names": [
+        "ScoreAndStow"
       ]
     }
   ]
