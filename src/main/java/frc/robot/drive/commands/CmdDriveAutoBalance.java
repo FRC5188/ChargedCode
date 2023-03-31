@@ -16,7 +16,7 @@ public class CmdDriveAutoBalance extends CommandBase {
 
 	public CmdDriveAutoBalance(Drive driveSubsystem) {
 		_driveSubsystem = driveSubsystem;
-		PID_TOLERANCE = 2.0;
+		PID_TOLERANCE = 1.5;
 		BALANCING_MAX_SPEED = Drive.MAX_VELOCITY_METERS_PER_SECOND * 0.50;
 		BALANCING_MAX_ACCELERATION = BALANCING_MAX_SPEED; //TODO: Find the actual max acceleration
 		BALANCING_CONSTRAINTS = new TrapezoidProfile.Constraints(BALANCING_MAX_SPEED, BALANCING_MAX_ACCELERATION);

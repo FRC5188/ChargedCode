@@ -72,15 +72,18 @@ public class CmdLEDDefault extends CommandBase {
 
             // else {
             //     switch (_finalArmPosition) {
-            //         // case High:
-            //         //     this._leds.setCustomAnimation(LEDCustomAnimations.High);
-            //         //     break;
-            //         // case Middle:
-            //         //     this._leds.setCustomAnimation(LEDCustomAnimations.Mid);
-            //         //     break;
-            //         // case Stored:
-            //         //     this._leds.setCustomAnimation(LEDCustomAnimations.Low);
-            //             // break;
+            //         case High:
+            //             this._leds.setLEDMode(LEDModes.Off);
+            //             this._leds.setCustomAnimation(LEDCustomAnimations.High);
+            //             break;
+            //         case Middle:
+            //             this._leds.setLEDMode(LEDModes.Off);
+            //             this._leds.setCustomAnimation(LEDCustomAnimations.Mid);
+            //             break;
+            //         case Stored:
+            //             this._leds.setLEDMode(LEDModes.Off);
+            //             this._leds.setCustomAnimation(LEDCustomAnimations.Low);
+            //             break;
             //         default:
             //             break;
 

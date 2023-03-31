@@ -12,14 +12,17 @@ public class CmdArmSetModeFromPosition extends CommandBase {
   public CmdArmSetModeFromPosition(Arm armSubsystem, ArmPosition position) {
     _armSubsystem = armSubsystem;
     _position = position;
+    addRequirements(_armSubsystem);
   }
 
   @Override
   public void initialize() {
     if (_position == ArmPosition.HighCone || _position == ArmPosition.MiddleCone) {
       _armSubsystem.setArmMode(ArmMode.Cone);
+      System.out.println("CONE");
     } else {
       _armSubsystem.setArmMode(ArmMode.Cube);
+      System.out.println("CUBE");
     }
   }
 

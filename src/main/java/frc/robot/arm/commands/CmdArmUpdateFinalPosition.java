@@ -12,6 +12,7 @@ public class CmdArmUpdateFinalPosition extends CommandBase {
   public CmdArmUpdateFinalPosition(Arm armSubsystem, ArmPosition position) {
     this._armSubsystem = armSubsystem;
     this._position = position;
+    addRequirements(_armSubsystem);
   }
 
   @Override

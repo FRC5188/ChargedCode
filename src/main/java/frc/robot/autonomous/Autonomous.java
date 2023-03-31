@@ -177,7 +177,7 @@ public abstract class Autonomous {
 
     private static final PIDConstants translationPIDConstants = new PIDConstants(1.3, 0, 0);
     private static final PIDConstants rotationPIDConstants = new PIDConstants(2, 0, 0);
-        
+
     private static final PIDController translationPID = new PIDController(translationPIDConstants.kP,
             translationPIDConstants.kI, translationPIDConstants.kD);
     private static final PIDController rotationPID = new PIDController(rotationPIDConstants.kP, rotationPIDConstants.kI,
@@ -233,7 +233,7 @@ public abstract class Autonomous {
                 driveSubsystem::resetPose,
                 translationPIDConstants,
                 rotationPIDConstants,
-                driveSubsystem::drive, eventMap, false, driveSubsystem);
+                driveSubsystem::drive, eventMap, true, driveSubsystem);
 
         return builder.fullAuto(pathGroup);
     }

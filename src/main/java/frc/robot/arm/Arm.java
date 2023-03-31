@@ -16,9 +16,11 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.wpilibj.AnalogInput;
+import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -155,7 +157,7 @@ public class Arm extends SubsystemBase {
     private CANSparkMax _intakeMotor;
 
     private Solenoid _wristSolenoid;
-    private Solenoid _intakeSolenoid;
+    private DoubleSolenoid _intakeSolenoid;
 
     // Helps keep track of where we are at and where we want to go
     private ArmPosition _currentArmPos;
@@ -198,7 +200,7 @@ public class Arm extends SubsystemBase {
         _elbowMotor = new WPI_TalonFX(Constants.CanIDs.ARM_ELBOW_MOTOR_ID);
 
         _wristSolenoid = new Solenoid(PneumaticsModuleType.REVPH, Constants.PHPorts.WRIST_SOLENOID_PORT);
-        _intakeSolenoid = new Solenoid(PneumaticsModuleType.REVPH, Constants.PHPorts.INTAKE_SOLENOID_PORT);
+        _intakeSolenoid = new DoubleSolenoid(PneumaticsModuleType.REVPH, Constants.PHPorts.INTAKE_SOLENOID_FORWARD_PORT, Constants.PHPorts.INTAKE_SOLENOID_REVERSE_PORT);
 
         _elbowPotentiometer = new AnalogInput(Constants.AIO.ELBOW_PORT_POT);
         _shoulderPotentiometer = new AnalogInput(Constants.AIO.SHOULDER_PORT_POT);
@@ -580,7 +582,7 @@ public class Arm extends SubsystemBase {
      */
     public void setIntakeMode(IntakeMode mode) {
         this._intakeMode = mode;
-        _intakeSolenoid.set(_intakeMode == IntakeMode.Open);
+        _intakeSolenoid.set((_intakeMode == IntakeMode.Closed) ? Value.kForward : Value.kReverse);
     }
 
     /**

@@ -82,11 +82,10 @@ public class ArmConstants {
                 public static double HIGH_CUBE_ELBOW_POS = 100.0;
 
                 public static double HUMAN_PLAYER_SHOULDER_POS = 113.5;
-                public static double HUMAN_PLAYER_ELBOW_POS = 94.5;
+                public static double HUMAN_PLAYER_ELBOW_POS = 92.5;
 
                 public static double GROUND_PICKUP_SHOULDER_POS = 45.5;
-                public static double GROUND_PICKUP_ELBOW_POS = 2.5
-                ;
+                public static double GROUND_PICKUP_ELBOW_POS = 2.5;
 
                 public static double TIPPED_CONE_SHOULDER_POS = 0; // TODO
                 public static double TIPPED_CONE_ELBOW_POS = 0; // TODO
@@ -209,7 +208,7 @@ public class ArmConstants {
         public static double ELBOW_IS_HITTING_CURRENT = 15.0; // TODO: Find actual value for this (Probably around 10-15 - Mike)
         public static double MAX_MOTOR_VOLTAGE = 11.5; // May want to adjust -Garrett
 
-        public static double INTAKE_HAS_PIECE_CURRENT = 20;
+        public static double INTAKE_HAS_PIECE_CURRENT = 25;
 
         public static IntakeMode INTAKE_MODE_DEFAULT = IntakeMode.Open;
 
