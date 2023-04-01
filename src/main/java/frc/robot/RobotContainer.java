@@ -157,6 +157,10 @@ public class RobotContainer {
                                 Autonomous.generateFullAuto("2PieceAuto", eventMap, 3, 0.75,
                                                 _driveSubsystem));
 
+                _dashboardSubsystem.addAuto("1.5 Piece Cone",
+                                Autonomous.generateFullAuto("1.5PieceAuto", eventMap, 3, 0.75,
+                                                _driveSubsystem));
+
                 _dashboardSubsystem.addAuto("Move a Meter",
                                 Autonomous.generateFullAuto("TEST_Short_Distance", eventMap, 4, 1, _driveSubsystem));
 
@@ -266,10 +270,9 @@ public class RobotContainer {
                                 .unless(() -> !_armSubsystem.canChangeSetpoint()));
 
                 _opButtonSix.onTrue(new GrpMoveArmToPosition(_armSubsystem, ArmPosition.GroundPickUp)
-                                .unless(() -> (!_armSubsystem.canChangeSetpoint()
-                                                )));
-                                                //|| (_armSubsystem.getCurrentArmPosition() != ArmPosition.Stored
-                                                //&& _armSubsystem.getCurrentArmPosition() != ArmPosition.GroundPickUp
+                                .unless(() -> (!_armSubsystem.canChangeSetpoint())));
+                // || (_armSubsystem.getCurrentArmPosition() != ArmPosition.Stored
+                // && _armSubsystem.getCurrentArmPosition() != ArmPosition.GroundPickUp
 
                 _opButtonSeven.onTrue(new GrpEngardeForScoring(_armSubsystem, ArmPosition.High)
                                 .unless(() -> !_armSubsystem.canChangeSetpoint()));
@@ -333,6 +336,7 @@ public class RobotContainer {
                                 new GrpMoveArmToPosition(_armSubsystem, ArmPosition.HighCube)));
                 eventMap.put("ScoreAndStow", new GrpScoreAndStow(_armSubsystem));
                 eventMap.put("Balance", new CmdDriveAutoBalance(_driveSubsystem));
+                eventMap.put("Score", new CmdArmSpit(_armSubsystem, -0.6));
 
                 return eventMap;
         }
