@@ -129,7 +129,6 @@ public class ArmConstants {
                 public static double[][] GROUND_PICKUP_TO_STORED = {{46.2, 7}, {69.6, 35}, {80, 3.5}};
 
                 public static double[][] ENGARDE_TO_GROUND_PICKUP = {{119.7 , 81.0}, {97.7, 76.0}, {80.0, 78.0}, {70.9, 70.0}, {55.8, 69.0}, {49.2, 64.0}};
-                public static double[][] GROUND_PICKUP_TO_ENGARDE = {{ , }};
         } 
         public static class SetPoints2D {
 

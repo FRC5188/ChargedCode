@@ -270,8 +270,9 @@ public class RobotContainer {
                                 .unless(() -> !_armSubsystem.canChangeSetpoint()));
 
                 _opButtonSix.onTrue(new GrpMoveArmToPosition(_armSubsystem, ArmPosition.GroundPickUp)
-                                .unless(() -> (!_armSubsystem.canChangeSetpoint() || (_armSubsystem.getCurrentArmPosition() != ArmPosition.Stored
-                                && _armSubsystem.getCurrentArmPosition() != ArmPosition.EnGarde))));
+                                .unless(() -> (!_armSubsystem.canChangeSetpoint() || (_armSubsystem
+                                                .getCurrentArmPosition() != ArmPosition.Stored
+                                                && _armSubsystem.getCurrentArmPosition() != ArmPosition.EnGarde))));
 
                 _opButtonSeven.onTrue(new GrpEngardeForScoring(_armSubsystem, ArmPosition.High)
                                 .unless(() -> !_armSubsystem.canChangeSetpoint()));
@@ -337,6 +338,9 @@ public class RobotContainer {
                 eventMap.put("EnGardeAndGPCube",
                                 new SequentialCommandGroup(new CmdArmSetMode(_armSubsystem, ArmMode.Cube),
                                                 new GrpMoveArmToPosition(_armSubsystem, ArmPosition.EnGarde),
+                                                new InstantCommand(() -> _armSubsystem
+                                                                .setCurrentPosition(
+                                                                                _armSubsystem.getTargetArmPosition())),
                                                 new GrpMoveArmToPosition(_armSubsystem, ArmPosition.GroundPickUp)));
                 eventMap.put("Balance", new CmdDriveAutoBalance(_driveSubsystem));
                 eventMap.put("Score", new CmdArmSpit(_armSubsystem, -0.6));

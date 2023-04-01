@@ -265,6 +265,7 @@ public class Arm extends SubsystemBase {
     }
 
     public void setCanChangeSetpoint(boolean canChange) {
+        SmartDashboard.putBoolean("Can Change Setpoint", canChange);
         _canChangeSetpoint = canChange;
     }
 
@@ -808,10 +809,6 @@ public class Arm extends SubsystemBase {
                 case Stored:
                     addWaypointsFrom2DArray(intermediatePositions,
                             ArmConstants.IntermediateWaypoints.GROUND_PICKUP_TO_STORED);
-                            break;
-                case EnGarde:
-                    addWaypointsFrom2DArray(intermediatePositions,
-                            ArmConstants.IntermediateWaypoints.GROUND_PICKUP_TO_ENGARDE);
                             break;
                 default:
 
