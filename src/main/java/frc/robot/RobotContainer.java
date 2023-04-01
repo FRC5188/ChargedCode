@@ -158,7 +158,7 @@ public class RobotContainer {
                                                 _driveSubsystem));
 
                 _dashboardSubsystem.addAuto("1.5 Piece Cone",
-                                Autonomous.generateFullAuto("1.5PieceAuto", eventMap, 3, 0.75,
+                                Autonomous.generateFullAuto("1.5PieceAuto", eventMap, 3.5, 1.25,
                                                 _driveSubsystem));
 
                 _dashboardSubsystem.addAuto("Move a Meter",
@@ -270,9 +270,8 @@ public class RobotContainer {
                                 .unless(() -> !_armSubsystem.canChangeSetpoint()));
 
                 _opButtonSix.onTrue(new GrpMoveArmToPosition(_armSubsystem, ArmPosition.GroundPickUp)
-                                .unless(() -> (!_armSubsystem.canChangeSetpoint())));
-                // || (_armSubsystem.getCurrentArmPosition() != ArmPosition.Stored
-                // && _armSubsystem.getCurrentArmPosition() != ArmPosition.GroundPickUp
+                                .unless(() -> (!_armSubsystem.canChangeSetpoint() || (_armSubsystem.getCurrentArmPosition() != ArmPosition.Stored
+                                && _armSubsystem.getCurrentArmPosition() != ArmPosition.EnGarde))));
 
                 _opButtonSeven.onTrue(new GrpEngardeForScoring(_armSubsystem, ArmPosition.High)
                                 .unless(() -> !_armSubsystem.canChangeSetpoint()));
