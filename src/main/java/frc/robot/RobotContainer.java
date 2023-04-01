@@ -335,6 +335,10 @@ public class RobotContainer {
                 eventMap.put("HighCube", new SequentialCommandGroup(new CmdArmSetMode(_armSubsystem, ArmMode.Cube),
                                 new GrpMoveArmToPosition(_armSubsystem, ArmPosition.HighCube)));
                 eventMap.put("ScoreAndStow", new GrpScoreAndStow(_armSubsystem));
+                eventMap.put("EnGardeAndGPCube",
+                                new SequentialCommandGroup(new CmdArmSetMode(_armSubsystem, ArmMode.Cube),
+                                                new GrpMoveArmToPosition(_armSubsystem, ArmPosition.EnGarde),
+                                                new GrpMoveArmToPosition(_armSubsystem, ArmPosition.GroundPickUp)));
                 eventMap.put("Balance", new CmdDriveAutoBalance(_driveSubsystem));
                 eventMap.put("Score", new CmdArmSpit(_armSubsystem, -0.6));
 
