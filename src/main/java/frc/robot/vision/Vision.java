@@ -1,127 +1,173 @@
 package frc.robot.vision;
 
-import java.io.File;
 import java.io.IOException;
+import java.lang.annotation.Target;
 import java.util.Optional;
 
 import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
+import org.photonvision.PhotonUtils;
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
+import org.photonvision.targeting.PhotonTrackedTarget;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
+import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.wpilibj.Timer;
+import frc.robot.drive.Drive;
+import frc.robot.test.console_output.Output;
 
-public abstract class Vision {
+public class Vision {
     private static final String CAMERA_NAME = "photoncamera";
-    /* Assume that you're looking at the robot from above it. In our code we treat the robot like a single point in an XY-Plane. Where the front of the robot is the
-    positive X, and where the left side of the robot is the negative Y. */
-    // How far foward/backward the camera is from robot center. 
-    private static final double CAMERA_X_FROM_ROBOT_CENTER = 0;
-    // How far left/right the camera is from robot center. 
-    private static final double CAMERA_Y_FROM_ROBOT_CENTER = 0;
-    // How far up/down the camera is from center if we look at robot from side in 3D space. 
-    private static final double CAMERA_Z_FROM_ROBOT_CENTER = 0;
+    /*
+     * Assume that you're looking at the robot from above it. In our code we treat
+     * the robot like a single point in an XY-Plane. Where the front of the robot is
+     * the
+     * positive X, and where the left side of the robot is the negative Y.
+     */
+    // How far foward/backward the camera is from robot center.
+    private static final double CAMERA_X_FROM_ROBOT_CENTER = 0.193;
+    // How far left/right the camera is from robot center.
+    private static final double CAMERA_Y_FROM_ROBOT_CENTER = 0.2794;
+    // How far up/down the camera is from center if we look at robot from side in 3D
+    // space.
+    private static final double CAMERA_Z_FROM_ROBOT_CENTER = 0.375;
+
     private static final double CAMERA_ROLL = 0;
     private static final double CAMERA_PITCH = 0;
-    private static final double CAMERA_YAW = 0;
+    private static final double CAMERA_YAW = Math.toRadians(-10.5);
 
-    private static final Transform3d DIFFERENCE_BETWEEN_ROBOT_CAMERA = new Transform3d(
-        new Translation3d(CAMERA_X_FROM_ROBOT_CENTER, CAMERA_Y_FROM_ROBOT_CENTER, CAMERA_Z_FROM_ROBOT_CENTER),
-        new Rotation3d(CAMERA_ROLL, CAMERA_PITCH, CAMERA_YAW)
-    );
+    private static boolean hasTarget;
+    private static boolean isServerConnected;
 
-    private static final PhotonCamera camera = new PhotonCamera(CAMERA_NAME);
+    private static Transform3d cameraPos = new Transform3d(
+            new Translation3d(CAMERA_X_FROM_ROBOT_CENTER, CAMERA_Y_FROM_ROBOT_CENTER, CAMERA_Z_FROM_ROBOT_CENTER),
+            new Rotation3d(CAMERA_ROLL, CAMERA_PITCH, CAMERA_YAW));
+
+    private static AprilTagFieldLayout layout;
+    static {
+        try {layout = AprilTagFields.k2023ChargedUp.loadAprilTagLayoutField();
+        } catch (IOException exception) {Output.warning("Cannot Load Apriltag. Vision Results Cannot Be Used.");}
+    };
+
+    static final PhotonCamera camera = new PhotonCamera(CAMERA_NAME);
     private static final PhotonPoseEstimator poseEstimator = new PhotonPoseEstimator(
-    getApriltagFieldLayout(), 
-    PoseStrategy.AVERAGE_BEST_TARGETS, 
-    camera, 
-    DIFFERENCE_BETWEEN_ROBOT_CAMERA);
+            layout,
+            PoseStrategy.LOWEST_AMBIGUITY,
+            camera,
+            cameraPos);
 
-    private static final String APRIL_TAG_MAP_FILE_NAME = "2023_april_tag_map";
-    
     /**
-     * {@summary} The angle of the apriltag from the robot based off odometry. 
+     * {@summary} The angle of the apriltag from the robot based off odometry.
+     * 
      * @param apriltagID
      * @param odometry
-     * @return Angle in degrees to apriltag from robot. 
+     * @return Angle in degrees to apriltag from robot.
      * @throws Exception
      * @throws IOException
      */
-    public static double getAngleToApriltag(int apriltagID, SwerveDrivePoseEstimator odometry) throws Exception, IOException {
+    public static double getAngleToApriltag(int apriltagID, SwerveDrivePoseEstimator odometry)
+            throws Exception, IOException {
         Pose2d robotPose = odometry.getEstimatedPosition();
-        Pose2d apriltagPose = getApriltagFieldLayout().getTagPose(apriltagID).isPresent() ? (getApriltagFieldLayout().getTagPose(apriltagID).get().toPose2d()) : null;
+        Pose2d apriltagPose = layout.getTagPose(apriltagID).isPresent()
+                ? (layout.getTagPose(apriltagID).get().toPose2d())
+                : null;
 
-        if(apriltagPose == null){
-            System.out.println("Tag couldn't be found. Please ensure that ID for apriltag is correct.");
-            throw new Exception("Tag couldn't be found. Please ensure that ID for apriltag is correct.");
+        if (apriltagPose == null) {
+            Output.warning("Tag Couldn't Be Located. Ensure Apriltag ID is correct. ");
         }
-
+        // System.out.println("Current Robot Angle:" + robotPose.relativeTo(apriltagPose).getRotation().getDegrees());
         return robotPose.relativeTo(apriltagPose).getRotation().getDegrees();
     }
 
     /**
-     * {@summary} Uses Translations to compare the two Pose2d of the apriltag and robot and then find distance between them.
+     * {@summary} Uses Translations to compare the two Pose2d of the apriltag and
+     * robot and then find distance between them.
+     * 
      * @param apriltagID
      * @param odometry
-     * @return Distance to apriltag given an ID. 
+     * @return Distance to apriltag given an ID.
      * @throws Exception
      * @throws IOException
      */
-    public static double getDistanceToApriltag(int apriltagID, SwerveDrivePoseEstimator odometry) throws Exception, IOException {
+    public static double getDistanceToApriltag(int apriltagID, SwerveDrivePoseEstimator odometry)
+            throws Exception, IOException {
         Pose2d robotPose = odometry.getEstimatedPosition();
-        Pose2d apriltagPose = getApriltagFieldLayout().getTagPose(apriltagID).isPresent() ? (getApriltagFieldLayout().getTagPose(apriltagID).get().toPose2d()) : null;
+        Pose2d apriltagPose = layout.getTagPose(apriltagID).isPresent()
+                ? (layout.getTagPose(apriltagID).get().toPose2d())
+                : null;
 
-        // Null check to ensure that we aren't working with a null value. 
-        if(apriltagPose == null){
+        // Null check to ensure that we aren't working with a null value.
+        if (apriltagPose == null) {
             System.out.println("Tag couldn't be found. Please ensure that ID for apriltag is correct.");
             throw new Exception("Tag couldn't be found. Please ensure that ID for apriltag is correct.");
         }
-        // Pretty sure this returns the distance betweeen the robot and the apriltag. 
+        // Pretty sure this returns the distance betweeen the robot and the apriltag.
         return robotPose.relativeTo(apriltagPose).getTranslation().getDistance(apriltagPose.getTranslation());
     }
 
     /**
-     * {@summary} Takes in the pose estimator used for odometry then if there aren't any Apriltags detected just returns it, but if there are some then adjusts
-     * the pose estimation to account for the values it gets from them. 
+     * {@summary} Takes in the pose estimator used for odometry then if there aren't
+     * any Apriltags detected just returns it, but if there are some then adjusts
+     * the pose estimation to account for the values it gets from them.
+     * 
      * @param poseEstimator
      * @return SwerveDrivePoseEstimator from WPILIB
      */
-    public static SwerveDrivePoseEstimator getVisionEstimatedRobotPose(SwerveDrivePoseEstimator poseEstimator){
-        Optional<EstimatedRobotPose> photonResults = getEstimatedRobotGlobalPose(poseEstimator.getEstimatedPosition());
-        if(photonResults.isEmpty()){
+    public static SwerveDrivePoseEstimator getVisionEstimatedRobotPose(SwerveDrivePoseEstimator poseEstimator) {
+        PhotonTrackedTarget target = camera.getLatestResult().getBestTarget();
+        if (target != null) {
+            hasTarget = true;
+            Pose3d robotPose = PhotonUtils.estimateFieldToRobotAprilTag(target.getBestCameraToTarget(),
+                        layout.getTagPose(target.getFiducialId()).get(), cameraPos);
+            poseEstimator.addVisionMeasurement(robotPose.toPose2d(), Timer.getFPGATimestamp());
+            System.out.println("[INFO]: Robot Pose Updated From Vision " + robotPose);
             return poseEstimator;
-        }
-        else {
-            EstimatedRobotPose robotEstimatedPose = photonResults.get();
-            poseEstimator.addVisionMeasurement(robotEstimatedPose.estimatedPose.toPose2d(), Timer.getFPGATimestamp());
+        } else {
+            hasTarget = false;
+            //System.out.println("[WARNING]: Robot Cannot See Apriltag");
             return poseEstimator;
         }
     }
 
     /**
-     * {@summary} Returns an object representing the apriltag location on the game field used for Pose estimation. If path cannot be found returns null. 
-     * @throws IOException
-     * @return AprilTag Field Layout
+     * {@summary} Should be called whenever intializing the odometry system. Uses Apriltag to localize the
+     * robot on the field. <Strong>Note: Needs to be facing an Apriltag or exception thrown.</Strong>
+     * @return Pose of robot in three dimensions. 
+     * @throws NullPointerException Apriltag cannot be found. 
      */
-    private static AprilTagFieldLayout getApriltagFieldLayout() {
+    public static Pose3d getRobotInitialPose() throws NullPointerException{
         try {
-        File apriltagFieldFile = new File(APRIL_TAG_MAP_FILE_NAME);
-        return new AprilTagFieldLayout(apriltagFieldFile.getAbsolutePath());
-        } catch (IOException ioe){
-            System.out.println("[ERROR] CANNOT FIND FILE NAME");
-            return null;
+        PhotonTrackedTarget target = camera.getLatestResult().getBestTarget();
+        Pose3d robotPose = PhotonUtils.estimateFieldToRobotAprilTag(target.getBestCameraToTarget(),
+                        layout.getTagPose(target.getFiducialId()).get(), cameraPos);
+        return robotPose;
+        }
+        catch(Exception exception){
+            throw new NullPointerException("[ERROR] Please Start Robot Facing An Apriltag. Pose Cannot Be Determined.");
         }
     }
 
-    private static Optional<EstimatedRobotPose> getEstimatedRobotGlobalPose(Pose2d previousEstimatedRobotPose){
+    /**
+     * {@summary} Returns an object representing the apriltag location on the game
+     * field used for Pose estimation. If path cannot be found returns null.
+     * 
+     * @throws IOException
+     * @return AprilTag Field Layout
+     */
+    private static Optional<EstimatedRobotPose> getEstimatedRobotGlobalPose(Pose2d previousEstimatedRobotPose) {
         poseEstimator.setReferencePose(previousEstimatedRobotPose);
         return poseEstimator.update();
     }
-}
 
+    public static boolean hasTarget(){
+        return hasTarget;
+    }
+    public static boolean isServerConnected(){return camera != null;}
+}
