@@ -154,7 +154,7 @@ public class RobotContainer {
                                                 _driveSubsystem));
 
                 _dashboardSubsystem.addAuto("2 Piece Cone Then Cube",
-                                Autonomous.generateFullAuto("2PieceAuto", eventMap, 3, 0.75,
+                                Autonomous.generateFullAuto("2PieceAuto", eventMap, 3.5, 1.25,
                                                 _driveSubsystem));
 
                 _dashboardSubsystem.addAuto("1.5 Piece Cone",
