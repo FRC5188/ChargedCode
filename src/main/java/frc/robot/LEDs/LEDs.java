@@ -176,7 +176,7 @@ public class LEDs extends SubsystemBase {
 
         switch(color) {
             case Pink: 
-                _candle.setLEDs(210, 55, 120); 
+                _candle.setLEDs(255, 150, 200); 
                 this._currentColor = LEDColors.Pink;
                 break;
 
@@ -191,7 +191,7 @@ public class LEDs extends SubsystemBase {
                 break;
 
             case Purple:
-                _candle.setLEDs(165, 0, 215);
+                _candle.setLEDs(120, 0, 255);
                 this._currentColor = LEDColors.Purple;
                 break;
             
@@ -281,11 +281,13 @@ public class LEDs extends SubsystemBase {
                 break;
 
             case Mid:
+                this._candle.setLEDs(0, 0, 0);
                 this._candle.setLEDs(210, 55, 120, 100, 0, LEDCount/3);
                 this._candle.setLEDs(210, 55, 120, 100, LEDCount*2/3, LEDCount/3);
                 break;
 
             case Low:
+                this._candle.setLEDs(0, 0, 0);
                 // TODO: Should I fix white value? I put in an arbitrary value, but will it count for an RGB strip? -KtH 2023/3/28
                 this._candle.setLEDs(210, 55, 120, 100, 8, LEDCount/6);
                 this._candle.setLEDs(210, 55, 120, 100, (LEDCount*5/6) + 8, LEDCount/6);
