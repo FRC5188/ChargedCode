@@ -81,6 +81,14 @@ public abstract class Autonomous {
         RIGHT_SIDE_INTERMEDIATE_AUTO_CLOSEST,
         RIGHT_SIDE_INTERMEDIATE_AUTO_SECOND_CLOSEST,
         RIGHT_SIDE_INTERMEDIATE_AUTO_THIRD_CLOSEST,
+
+        // Reference points on field for smooth path so that
+        // robot doesn't do something dumb like drive over a wall.
+        LEFT_SIDE_STARTING_POINT_SECOND_CLOSEST,
+        LEFT_SIDE_STARTING_POINT_CLOSEST,
+        
+        RIGHT_SIDE_STARTING_POINT_SECOND_CLOSEST,
+        RIGHT_SIDE_STARTING_POINT_CLOSEST
     }
 
     /**
@@ -89,9 +97,8 @@ public abstract class Autonomous {
      */
     private static final HashMap<FIELD_POSITIONS, PathPoint> fieldPositionsCoordinateMap = new HashMap<FIELD_POSITIONS, PathPoint>() {
         {
-            // Creates the map for the field positions.
-
-            // this(0.0, 0.0);
+            // Sets each field position enumeration to a location on the field used to generate a path for
+            // robot to take.
             put(FIELD_POSITIONS.SINGLE_SUBSTRATION_LEFT,
                     new PathPoint(new Translation2d(2.6, 7.0), new Rotation2d(90)));
             put(FIELD_POSITIONS.SINGLE_SUBSTRATION_RIGHT,
@@ -169,7 +176,7 @@ public abstract class Autonomous {
         }
     };
 
-    private static HashMap<String, Command> eventMap = new HashMap<String, Command>() {
+    private static HashMap<String, Command> robotCommandMap = new HashMap<String, Command>() {
         {
             // put("Balance", new CmdAutoBalance());
         }
@@ -221,7 +228,7 @@ public abstract class Autonomous {
                 translationPID,
                 rotationPID,
                 chassisSpeed,
-                driveSubsystem)), path.getMarkers(), eventMap);
+                driveSubsystem)), path.getMarkers(), robotCommandMap);
     }
 
     public static Command generateFullAuto(String autoName, HashMap<String, Command> eventMap, double maxVel,
