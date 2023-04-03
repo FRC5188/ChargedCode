@@ -240,7 +240,7 @@ public abstract class Autonomous {
                 driveSubsystem::resetPose,
                 translationPIDConstants,
                 rotationPIDConstants,
-                driveSubsystem::drive, eventMap, true, driveSubsystem);
+                driveSubsystem::drive, robotCommandMap, true, driveSubsystem);
 
         return builder.fullAuto(pathGroup);
     }
