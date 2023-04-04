@@ -175,6 +175,7 @@ public class Arm extends SubsystemBase {
     private ArmMode _armMode;
 
     private boolean _hasGamepiece = true;
+    private boolean _intakeHasPiece;
     private IntakeMode _intakeMode;
 
     // If true, we can change where the arm is moving to
@@ -295,6 +296,7 @@ public class Arm extends SubsystemBase {
     }
 
     private void updateShuffleBoard() {
+        SmartDashboard.putBoolean("Intake Has Piece", this._intakeHasPiece);
         SmartDashboard.putNumber("Elbow Angle Relative to Ground", this.getElbowJointAngleRelativeToGround());
         SmartDashboard.putNumber("Elbow Angle Relative to Shoulder", this.getElbowJointAngleRelativeToShoulder());
         SmartDashboard.putNumber("Shoulder Angle", this.getShoulderJointAngle());
@@ -565,8 +567,11 @@ public class Arm extends SubsystemBase {
      * @param speed between -1.0 and 1.0
      */
     public void setIntakeMotorSpeed(double speed) {
-        if (speed > 0.0) {
+        if (speed >= 0.0) {
             _hasGamepiece = false;
+            _intakeHasPiece = this.intakeHasPiece();
+        } else {
+            _intakeHasPiece = false;
         }
         _intakeMotor.set(speed);
     }
