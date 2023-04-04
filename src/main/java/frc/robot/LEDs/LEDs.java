@@ -37,7 +37,7 @@ public class LEDs extends SubsystemBase {
         ScoreHigh,
         ScoreMid,
         ScoreLow,
-        LostComms,
+        LostGamepiece,
         PartyMode,
         Off
     }
@@ -49,7 +49,8 @@ public class LEDs extends SubsystemBase {
         PinkStrobe,
 
         TealStrobe,
-        TealTwinkle
+        TealTwinkle,
+        PinkPartyMode
     }
 
     public enum LEDCustomAnimations {
@@ -106,9 +107,9 @@ public class LEDs extends SubsystemBase {
 
         switch(mode) {
 
-            case LostComms:
+            case LostGamepiece:
                 setColor(LEDColors.Red);
-                this._currentMode = LEDModes.LostComms;
+                this._currentMode = LEDModes.LostGamepiece;
                 break;
 
             case Cone:
@@ -236,8 +237,6 @@ public class LEDs extends SubsystemBase {
 
     public void setAnimation(LEDAnimations animation) {
 
-        this._currentAnimation = animation;
-
         switch(animation) {
 
             case PinkStrobe: 
@@ -260,6 +259,10 @@ public class LEDs extends SubsystemBase {
                 this._storedAnimation = new TwinkleAnimation(2, 153, 138, 0, 0.4, LEDCount, TwinklePercent.Percent6);
                 break;
 
+            case PinkPartyMode:
+                //this._storedAnimation = new TwinkleAnimation(LEDCount, LEDCount, LEDCount, LEDCount, LEDCount, LEDCount, null)
+                break;
+
             default:
                 this._storedAnimation = null;
                 break;
@@ -270,6 +273,8 @@ public class LEDs extends SubsystemBase {
 
         // Use this print statement for testing/debugging:
         //System.out.println("Current animation: " + _storedAnimation.toString());
+
+        this._currentAnimation = animation;
     }
 
     public void setCustomAnimation(LEDCustomAnimations customAnimation) {
@@ -290,6 +295,7 @@ public class LEDs extends SubsystemBase {
                 this._candle.setLEDs(210, 55, 120, 100, 8, LEDCount/6);
                 this._candle.setLEDs(210, 55, 120, 100, (LEDCount*5/6) + 8, LEDCount/6);
                 break;
+
         }
     }
 

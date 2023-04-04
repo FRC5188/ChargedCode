@@ -2,6 +2,7 @@ package frc.robot.LEDs.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.LEDs.LEDs;
+//import frc.robot.LEDs.LEDs.LEDAnimations;
 //import frc.robot.LEDs.LEDs.LEDCustomAnimations;
 import frc.robot.LEDs.LEDs.LEDModes;
 import frc.robot.arm.Arm;
@@ -13,7 +14,7 @@ public class CmdLEDDefault extends CommandBase {
     private LEDs _leds;
     private ArmMode armMode;
     private ArmPosition armPosition;
-    private int counter;
+    private int gamepieceCounter;
     private Double currentTemperature;
     //private ArmPosition _finalArmPosition;
 
@@ -21,13 +22,14 @@ public class CmdLEDDefault extends CommandBase {
     public CmdLEDDefault(LEDs leds, Arm armSubsystem) {
         _armSubsystem = armSubsystem;
         _leds = leds;
-        this.counter = 0;
+        this.gamepieceCounter = 0;
     }
 
     @Override
     public void initialize() {    
 
         System.out.println("LEDs Off (initializing)");
+        this._leds.setLEDMode(LEDModes.Off);
     }
 
     @Override
@@ -42,33 +44,43 @@ public class CmdLEDDefault extends CommandBase {
         if (_leds.getShouldRunGamepieceAnimation()) {
             // Code runs 50 times per second.
             // This counter should count down for one second.
-            this.counter = 50;
+            this.gamepieceCounter = 50;
             _leds.setShouldRunGamepieceAnimation(false);
         }
 
         // This is an "if" instead of an "elif."
         // Otherwise, we would skip over it when the counter is first set to 50.
-        if (this.counter > 0) {
+        if (this.gamepieceCounter > 0) {
             //System.out.println("STILL RUNNING GAME PIECE ANIMATION. Counter: " + counter);
-            this.counter -= 1;
+            this.gamepieceCounter -= 1;
             this._leds.setLEDMode(LEDModes.HasGamepiece);
         }
         
         else {
+            System.out.println("*********Else*********");
             this._leds._candle.clearAnimation(0);
-            this._leds._currentAnimation = null;
+            //this._leds._currentAnimation = null;
 
             if (armPosition == ArmPosition.Stored || armPosition == ArmPosition.LoadStationPickUp || armPosition == ArmPosition.GroundPickUp || armPosition == ArmPosition.EnGarde) {
                 switch (armMode) {
+
                     case Cone:
                         this._leds.setLEDMode(LEDModes.Cone);
                         break;
 
                     case Cube:
+                        //System.out.println("Running PartyMode");
                         this._leds.setLEDMode(LEDModes.Cube);
+                        // if (this._leds._currentAnimation == LEDAnimations.TealTwinkle) {
+                        //     this._leds._candle.clearAnimation(0);
+                        //     return;
+                        // }
+                        // else {
+                        //     this._leds.setAnimation(LEDAnimations.TealTwinkle); 
+                        // }
                         break;
                 }
-            }
+            //}
 
             // else {
             //     switch (_finalArmPosition) {
@@ -89,6 +101,7 @@ public class CmdLEDDefault extends CommandBase {
 
             //     }
             // } 
+            }
         }
     }
 
