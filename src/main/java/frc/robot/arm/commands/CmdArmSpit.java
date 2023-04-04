@@ -31,7 +31,8 @@ public class CmdArmSpit extends CommandBase {
         // Unless we are in stowed, in which case we are spitting with wheels so we can
         // launch
         // out of the robot's perimeter
-        if (_armSubsystem.getArmMode() == ArmMode.Cone && _armSubsystem.getCurrentArmPosition() != ArmPosition.Stored) {
+        if (_armSubsystem.getArmMode() == ArmMode.Cone && (_armSubsystem.getCurrentArmPosition() != ArmPosition.Stored
+                && _armSubsystem.getCurrentArmPosition() != ArmPosition.LowScore)) {
             _armSubsystem.setIntakeMode(IntakeMode.Open);
             System.out.println("ACTUATE");
         } else {
@@ -52,6 +53,8 @@ public class CmdArmSpit extends CommandBase {
         // If we are dropping a cone, stop immediately
         // If it is a cube, run the wheels for a bit
         return (_armSubsystem.getArmMode() == ArmMode.Cone
-                && _armSubsystem.getCurrentArmPosition() != ArmPosition.Stored) || _counter >= 25;
+                && (_armSubsystem.getCurrentArmPosition() != ArmPosition.Stored
+                        && _armSubsystem.getCurrentArmPosition() != ArmPosition.LowScore))
+                || _counter >= 25;
     }
 }

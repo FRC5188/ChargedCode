@@ -60,6 +60,9 @@ public class ArmConstants {
                 public static double STORED_SHOULDER_POS = 81.7;
                 public static double STORED_ELBOW_POS = 1;
 
+                public static double LOW_SHOULDER_POS = 95;
+                public static double LOW_ELBOW_POS = 18;
+
                 public static double MID_CONE_SHOULDER_POS = 83; //WAS: 78.1 Should be at 80, moving back for ??? - Mike
                 public static double MID_CONE_ELBOW_POS = 95; //WAS: 91.6
 
@@ -111,13 +114,14 @@ public class ArmConstants {
                 public static final double ENGARDE_TO_HIGH_CONE_SPEED = 75;
                 public static final double ENGARDE_TO_GROUND_PICKUP_SPEED = 50;
                 public static final double STORED_TO_GROUND_PICKUP_SPEED = 50;
+                public static final double GROUND_PICKUP_TO_STORED_SPEED = 45;
         }
 
         public static class IntermediateWaypoints {
                 // Add waypoints for trajectories here
                 // Each inner array is a waypoint with 2 numbers; First is the shoulder angle,
                 // and second is the elbow angle
-                public static double[][] STORED_TO_SCORING = { { 95, 31 } };
+                public static double[][] STORED_TO_HUMAN_PLAYER = { { 105, 31 } };
                 public static double[][] STORED_TO_ENGARDE = { { 97, 14 }, { 113.2, 30 }, { 126.6, 46 },
                                 { 136.2, 59.2 } };
                 public static double[][] ENGARDE_TO_STORED = { { 131, 63.7 }, { 113.5, 39.3 }, { 97.7, 30 },

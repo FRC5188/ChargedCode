@@ -115,6 +115,7 @@ public class RobotContainer {
         private JoystickButton _op2ButtonThree = new JoystickButton(_operatorController2, 3);
         private JoystickButton _op2ButtonFour = new JoystickButton(_operatorController2, 4);
         private JoystickButton _op2ButtonFive = new JoystickButton(_operatorController2, 5);
+        private JoystickButton _op2ButtonSix = new JoystickButton(_operatorController2, 6);
 
         public final Joystick _sliderJoystick = new Joystick(2);
         private JoystickButton _opButtonThirteen = new JoystickButton(_operatorController1, 13);
@@ -269,8 +270,8 @@ public class RobotContainer {
                 _opButtonEight.onTrue(new GrpEngardeForScoring(_armSubsystem, ArmPosition.Middle)
                                 .unless(() -> !_armSubsystem.canChangeSetpoint()));
 
-                _opButtonNine.whileTrue(new InstantCommand(() -> _armSubsystem.setCanChangeSetpoint(true)));
-                _opButtonNine.whileFalse(new InstantCommand(() -> _armSubsystem.setCanChangeSetpoint(false)));
+                _opButtonNine.onTrue(new GrpMoveArmToPosition(_armSubsystem, ArmPosition.LowScore)
+                                .unless(() -> !_armSubsystem.canChangeSetpoint()));
 
                 _opButtonTen.onTrue(new CmdArmSetMode(_armSubsystem, ArmMode.Cone));
                 _opButtonTen.onFalse(new CmdArmSetMode(_armSubsystem, ArmMode.Cube));
@@ -295,6 +296,9 @@ public class RobotContainer {
                 _op2ButtonFive.onTrue(
                                 new InstantCommand(() -> _armSubsystem
                                                 .setCurrentPosition(_armSubsystem.getTargetArmPosition())));
+
+                _opButtonSix.whileTrue(new InstantCommand(() -> _armSubsystem.setCanChangeSetpoint(true)));
+                _opButtonSix.whileFalse(new InstantCommand(() -> _armSubsystem.setCanChangeSetpoint(false)));
 
                 // this currently infinitely adds to the current setpoint while button is held
                 // _opButtonOne.whileTrue(Commands.parallel(
