@@ -45,10 +45,14 @@ public class CmdArmRunIntake extends CommandBase {
         // Once the intake has a piece, stop the motors and close the intake
         System.out.println("Intake has piece");
         _armSubsystem.setIntakeMotorSpeed(0);
+        
+        //TODO: Please check on this to make sure I've implemented this correctly. -KtH 2023/4/3
+        _armSubsystem.setHasGamepiece(true);
     }
 
     @Override
     public boolean isFinished() {
         return _armSubsystem.intakeHasPiece() && _counter > 10;
+        
     }
 }

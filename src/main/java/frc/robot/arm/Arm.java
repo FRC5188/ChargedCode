@@ -613,6 +613,10 @@ public class Arm extends SubsystemBase {
         return _hasGamepiece;
     }
 
+    public void setHasGamepiece(boolean hasGamepiece) {
+        _hasGamepiece = hasGamepiece;
+    }
+
     public boolean elbowIsHittingObject() {
         return (_elbowMotor.getStatorCurrent() > ArmConstants.ELBOW_IS_HITTING_CURRENT);
         // TODO: Check if .getStatorCurrent() is right
