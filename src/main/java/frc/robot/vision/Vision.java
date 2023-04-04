@@ -142,7 +142,7 @@ public class Vision {
      * @return Pose of robot in three dimensions. 
      * @throws NullPointerException Apriltag cannot be found. 
      */
-    public static Pose3d getRobotInitialPose() throws NullPointerException{
+    public static Pose3d getRobotInitialPose() {
         try {
         PhotonTrackedTarget target = camera.getLatestResult().getBestTarget();
         Pose3d robotPose = PhotonUtils.estimateFieldToRobotAprilTag(target.getBestCameraToTarget(),
@@ -150,7 +150,8 @@ public class Vision {
         return robotPose;
         }
         catch(Exception exception){
-            throw new NullPointerException("[ERROR] Please Start Robot Facing An Apriltag. Pose Cannot Be Determined.");
+            Output.error("Cannot Determine Initial Pose of Robot. Default 0 Pose Set.");
+            return new Pose3d(0, 0, 0, new Rotation3d());
         }
     }
 
