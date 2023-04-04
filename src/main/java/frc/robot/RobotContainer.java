@@ -176,17 +176,6 @@ public class RobotContainer {
         // (_operatorController.getZ()) : (0));
         // }
 
-        private enum InEnGarde {
-                Yes,
-                No
-        }
-
-        private InEnGarde getInEnGarde() {
-                return ((_armSubsystem.getCurrentArmPosition() == ArmPosition.EnGarde)
-                                || (_armSubsystem.getTargetArmPosition() == ArmPosition.EnGarde)) ? InEnGarde.Yes
-                                                : InEnGarde.No;
-        }
-
         /**
          * Use this method to define your button->command mappings. Buttons can be
          * created by
@@ -245,12 +234,12 @@ public class RobotContainer {
                 _driverButtonLB.onTrue(new SelectCommand(
                                 // Maps selector values to commands
                                 Map.ofEntries(
-                                                Map.entry(InEnGarde.No, new CmdArmSpit(_armSubsystem, -0.6)),
-                                                Map.entry(InEnGarde.Yes,
+                                                Map.entry(false, new CmdArmSpit(_armSubsystem, -0.6)),
+                                                Map.entry(true,
                                                                 new CmdArmUpdateToFinalPosition(_armSubsystem)
                                                                                 .unless(() -> !_armSubsystem
                                                                                                 .canChangeSetpoint()))),
-                                () -> getInEnGarde()));
+                                () -> _armSubsystem.getTargetArmPosition() == ArmPosition.EnGarde));
 
                 // -- Operator Controls --
                 _opButtonOne.onTrue(new GrpMoveArmToPosition(_armSubsystem, ArmPosition.EnGarde)

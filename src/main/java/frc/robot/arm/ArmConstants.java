@@ -108,8 +108,9 @@ public class ArmConstants {
 
         public static class TrajectorySpeeds{
                 public static final double HUMAN_PLAYER_TO_STORED_SPEED = 50;
-                public static final double ENGARDE_TO_HIGH_CONE_SPEED = 60;
+                public static final double ENGARDE_TO_HIGH_CONE_SPEED = 75;
                 public static final double ENGARDE_TO_GROUND_PICKUP_SPEED = 50;
+                public static final double STORED_TO_GROUND_PICKUP_SPEED = 50;
         }
 
         public static class IntermediateWaypoints {
@@ -121,7 +122,7 @@ public class ArmConstants {
                                 { 136.2, 59.2 } };
                 public static double[][] ENGARDE_TO_STORED = { { 131, 63.7 }, { 113.5, 39.3 }, { 97.7, 30 },
                                 { 87.1, 30 }, { 84.1, 29 }, { 81.7, 29 }};
-                public static double[][] STORED_TO_GROUND_PICKUP = { { 114, 30 }, { 103.2, 40.3 }, { 92.3, 55.5 }, { 49, 50 } };
+                public static double[][] STORED_TO_GROUND_PICKUP = { { 114, 30 },{ 108, 35 }, { 103.2, 40.3 }, { 92.3, 55.5 }, { 49, 50 } };
                 public static double[][] ENGARDE_TO_HIGH_CONE = { { 130, 100 }, { 128, 120 }, { 105, 160 }, { 85, 173 }, { 75, 178 }, { 65, 178 }, { 55, 178 }, { 45, 178 } };
                 public static double[][] ENGUARD_TO_MID_CONE = { {115, 130 }, {100, 135 }, {94, 135 } };
                 // static double [][] ENGARDE_TO_HIGH_CONE = { { 104, 89 }, { 80, 95}, {45, 120}};
@@ -216,7 +217,7 @@ public class ArmConstants {
         // private final double SHOULDER_MOTOR_KD = 0.0005;
         public static double SHOULDER_MOTOR_KP = 0.015;
         public static double SHOULDER_MOTOR_KI = 0.0005;
-        public static double SHOULDER_MOTOR_KD = 0.0005;
+        public static double SHOULDER_MOTOR_KD = 0.001;
         public static double SHOULDER_MOTOR_TOLERANCE = 8.0;
 
         // shoulder motion profile constraints
@@ -232,7 +233,7 @@ public class ArmConstants {
         // private final double ELBOW_MOTOR_KD = 0.0005;
         public static double ELBOW_MOTOR_KP = 0.0175;
         public static double ELBOW_MOTOR_KI = 0.0005;
-        public static double ELBOW_MOTOR_KD = 0.0005;
+        public static double ELBOW_MOTOR_KD = 0.001;
         public static double ELBOW_MOTOR_TOLERANCE = 7.0;
 
         // shoulder motion profile constraints
