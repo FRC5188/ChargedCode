@@ -786,7 +786,6 @@ public class Arm extends SubsystemBase {
         System.out.println("Current Position: " + _currentArmPos + "\nNext Position: " + position);
         if (_currentArmPos == ArmPosition.Stored) {
             switch (position) {
-                case LowScore:
                 case GroundPickUp:
                     addWaypointsFrom2DArray(intermediatePositions,
                             ArmConstants.IntermediateWaypoints.STORED_TO_GROUND_PICKUP);
@@ -797,23 +796,24 @@ public class Arm extends SubsystemBase {
                     addWaypointsFrom2DArray(intermediatePositions,
                             ArmConstants.IntermediateWaypoints.STORED_TO_ENGARDE);
                     break;
-                default:
+                case LoadStationPickUp:
                     addWaypointsFrom2DArray(intermediatePositions,
-                            ArmConstants.IntermediateWaypoints.STORED_TO_SCORING);
+                            ArmConstants.IntermediateWaypoints.STORED_TO_HUMAN_PLAYER);
+                    break;
+                default:
                     break;
             }
-        } else if (_currentArmPos == ArmPosition.GroundPickUp || _currentArmPos == ArmPosition.LowScore) {
+        } else if (_currentArmPos == ArmPosition.GroundPickUp) {
             // We only want to run these intermediate positions if we are going somewhere
             // from ground pickup
             // System.out.println("Goofy Ground Position");
             switch (position) {
-                case LowScore:
                 case GroundPickUp:
                     break;
                 case Stored:
                     addWaypointsFrom2DArray(intermediatePositions,
                             ArmConstants.IntermediateWaypoints.GROUND_PICKUP_TO_STORED);
-                            break;
+                    break;
                 default:
 
                     break;
@@ -949,6 +949,8 @@ public class Arm extends SubsystemBase {
             speed = TrajectorySpeeds.ENGARDE_TO_GROUND_PICKUP_SPEED;
         } else if (this._currentArmPos == ArmPosition.Stored && position == ArmPosition.GroundPickUp) {
             speed = TrajectorySpeeds.STORED_TO_GROUND_PICKUP_SPEED;
+        } else if (this._currentArmPos == ArmPosition.GroundPickUp && position == ArmPosition.Stored) {
+            speed = TrajectorySpeeds.GROUND_PICKUP_TO_STORED_SPEED;
         }
 
         _trajectory = new ArmTrajectory(waypoints, speed);
@@ -1006,8 +1008,8 @@ public class Arm extends SubsystemBase {
                 elbowPos = ArmConstants.AngleSetpoints.HUMAN_PLAYER_ELBOW_POS;
                 break;
             case LowScore:
-                shoulderPos = ArmConstants.AngleSetpoints.GROUND_PICKUP_SHOULDER_POS;
-                elbowPos = ArmConstants.AngleSetpoints.GROUND_PICKUP_ELBOW_POS;
+                shoulderPos = ArmConstants.AngleSetpoints.LOW_SHOULDER_POS;
+                elbowPos = ArmConstants.AngleSetpoints.LOW_ELBOW_POS;
                 break;
             case MiddleCone:
                 shoulderPos = ArmConstants.AngleSetpoints.MID_CONE_SHOULDER_POS;
