@@ -156,8 +156,8 @@ public class RobotContainer {
                                 Autonomous.generateFullAuto("HighCubeMobilityBalance", eventMap, 3, 0.75,
                                                 _driveSubsystem));
 
-                _dashboardSubsystem.addAuto("2 Piece Cone Then Cube",
-                                Autonomous.generateFullAuto("2PieceAuto", eventMap, 3, 0.75,
+                _dashboardSubsystem.addAuto("2.5 Piece Cubes",
+                                Autonomous.generateFullAuto("2.5PieceWithPassive", eventMap, 3.5, 1.5,
                                                 _driveSubsystem));
 
                 _dashboardSubsystem.addAuto("1.5 Piece Cone",
@@ -337,6 +337,13 @@ public class RobotContainer {
                                                                 .setCurrentPosition(
                                                                                 _armSubsystem.getTargetArmPosition())),
                                                 new GrpMoveArmToPosition(_armSubsystem, ArmPosition.GroundPickUp)));
+                eventMap.put("EnGardeAndHighCube",
+                                new SequentialCommandGroup(new CmdArmSetMode(_armSubsystem, ArmMode.Cube),
+                                                new GrpMoveArmToPosition(_armSubsystem, ArmPosition.EnGarde),
+                                                new InstantCommand(() -> _armSubsystem
+                                                                .setCurrentPosition(
+                                                                                _armSubsystem.getTargetArmPosition())),
+                                                new GrpMoveArmToPosition(_armSubsystem, ArmPosition.HighCube)));
                 eventMap.put("Balance", new CmdDriveAutoBalance(_driveSubsystem));
                 eventMap.put("Score", new CmdArmSpit(_armSubsystem, -0.6));
 

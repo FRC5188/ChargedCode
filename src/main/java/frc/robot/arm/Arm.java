@@ -956,6 +956,8 @@ public class Arm extends SubsystemBase {
             speed = TrajectorySpeeds.STORED_TO_GROUND_PICKUP_SPEED;
         } else if (this._currentArmPos == ArmPosition.GroundPickUp && position == ArmPosition.Stored) {
             speed = TrajectorySpeeds.GROUND_PICKUP_TO_STORED_SPEED;
+        } else if (this._currentArmPos == ArmPosition.Stored && position == ArmPosition.HighCube) {
+            speed = TrajectorySpeeds.STORED_TO_HIGH_CUBE_SPEED;
         }
 
         _trajectory = new ArmTrajectory(waypoints, speed);
