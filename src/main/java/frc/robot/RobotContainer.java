@@ -133,6 +133,8 @@ public class RobotContainer {
                 Trigger hasGamePieceTrigger = new Trigger(() -> (_armSubsystem.checkGamepiece()));
                 hasGamePieceTrigger.onTrue(new CmdLEDPieceCollected(_leds));
 
+                _leds.setDefaultCommand(new CmdLEDDefault(_leds, _armSubsystem));
+
                 // Driver Configuration
                 _driveSubsystem.setDefaultCommand(new DefaultDriveCommand(
                                 _driveSubsystem,
@@ -370,6 +372,11 @@ public class RobotContainer {
                 System.out.println("Cmd UpdateLEDs");
                 return new CmdLEDDefault(_leds, _armSubsystem);
         }
+
+        // public Command updateDisabledLEDs() {
+        //         System.out.println("Cmd UpdateLEDs");
+        //         return new CmdLEDDefault(_leds);
+        // }
 
         public void setTestMode(boolean inTest) {
                 _armSubsystem.setTestMode(inTest);

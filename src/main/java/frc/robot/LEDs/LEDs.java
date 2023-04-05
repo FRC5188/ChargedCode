@@ -13,6 +13,7 @@ import com.ctre.phoenix.led.StrobeAnimation;
 import com.ctre.phoenix.led.RainbowAnimation;
 import com.ctre.phoenix.led.FireAnimation;
 import com.ctre.phoenix.led.TwinkleAnimation;
+//import com.ctre.phoenix.led.SingleFadeAnimation;
 
 public class LEDs extends SubsystemBase {
 
@@ -59,10 +60,26 @@ public class LEDs extends SubsystemBase {
         Low
     }
 
-    // TODO: Change to length of LED strips. Only necessary for animations, so it's working for now. -KtH 2023/3/27
-    // TODO: Find out if the length includes the 8 LEDs on the Candle. If so, include in a comment. -KtH 2023/3/27
-
+    // Includes the 8 LEDs on the Candle and 28 in each LED strip.
     private final int LEDCount = 64;
+
+    private final int PinkRValue = 255;
+    private final int PinkGValue = 150;
+    private final int PinkBValue = 220;
+
+    private final int WhiteRValue = 255;
+    private final int WhiteGValue = 255;
+    private final int WhiteBValue = 255; 
+
+    private final int numCycles = 50;
+
+    private int PinkToWhiteRIncrement = (WhiteRValue - PinkRValue)/numCycles*-1;
+    private int PinkToWhiteGIncrement = (WhiteGValue - PinkGValue)/numCycles*-1;
+    private int PinkToWhiteBIncrement = (WhiteBValue - PinkBValue)/numCycles*-1;
+
+    public int _currentRValue = 255;
+    public int _currentGValue = 150;
+    public int _currentBValue = 220;
 
     public CANdle _candle = new CANdle(Constants.CanIDs.CANDLE_ID, "rio");
     public Boolean _shouldRunHasGamepieceAnimation = false;
@@ -104,6 +121,8 @@ public class LEDs extends SubsystemBase {
      */
 
     public void setLEDMode(LEDModes mode) {
+
+        this._candle.configBrightnessScalar(0.5);
 
         switch(mode) {
 
@@ -151,7 +170,7 @@ public class LEDs extends SubsystemBase {
                 break;
 
             case PartyMode:
-                setAnimation(LEDAnimations.Rainbow);
+                setAnimation(LEDAnimations.PinkPartyMode);
                 this._currentMode = LEDModes.PartyMode;
                 break;
 
@@ -237,6 +256,8 @@ public class LEDs extends SubsystemBase {
 
     public void setAnimation(LEDAnimations animation) {
 
+        this._candle.clearAnimation(0);
+
         switch(animation) {
 
             case PinkStrobe: 
@@ -260,7 +281,23 @@ public class LEDs extends SubsystemBase {
                 break;
 
             case PinkPartyMode:
-                //this._storedAnimation = new TwinkleAnimation(LEDCount, LEDCount, LEDCount, LEDCount, LEDCount, LEDCount, null)
+                this._storedAnimation = new TwinkleAnimation(_currentRValue, _currentGValue, _currentBValue, 100, 0.6, LEDCount, TwinklePercent.Percent64);
+
+                if (_currentRValue == WhiteRValue && _currentGValue == WhiteGValue && _currentBValue == WhiteBValue) {
+                    PinkToWhiteRIncrement *= -1;
+                    PinkToWhiteGIncrement *= -1;
+                    PinkToWhiteBIncrement *= -1;
+                }
+
+                else if (_currentRValue == PinkRValue && _currentGValue == PinkGValue && _currentBValue == PinkBValue) {
+                    PinkToWhiteRIncrement *= -1;
+                    PinkToWhiteGIncrement *= -1;
+                    PinkToWhiteBIncrement *= -1;
+                }
+
+                _currentRValue += PinkToWhiteRIncrement;
+                _currentGValue += PinkToWhiteGIncrement;
+                _currentBValue += PinkToWhiteBIncrement;
                 break;
 
             default:
