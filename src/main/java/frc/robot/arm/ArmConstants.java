@@ -115,6 +115,7 @@ public class ArmConstants {
                 public static final double ENGARDE_TO_GROUND_PICKUP_SPEED = 50;
                 public static final double STORED_TO_GROUND_PICKUP_SPEED = 50;
                 public static final double GROUND_PICKUP_TO_STORED_SPEED = 45;
+                public static final double STORED_TO_HIGH_CUBE_SPEED = 50;
         }
 
         public static class IntermediateWaypoints {

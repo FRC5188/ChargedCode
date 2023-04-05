@@ -290,10 +290,6 @@ public class Drive extends SubsystemBase {
 
     @Override
     public void periodic() {
-        SmartDashboard.putNumber("Front Left TalonFX Motor Current", _frontLeftModule.getDriveController().getStateCurrent());
-        SmartDashboard.putNumber("Front Right TalonFX Motor Current", _frontRightModule.getDriveController().getStateCurrent());
-        SmartDashboard.putNumber("Back Left TalonFX Motor Current", _backLeftModule.getDriveController().getStateCurrent());
-        SmartDashboard.putNumber("Back Right TalonFX Motor Current", _backRightModule.getDriveController().getStateCurrent());
         // Convert the drive base vector into module vectors
         SwerveModuleState[] states = _kinematics.toSwerveModuleStates(_chassisSpeeds, _centerOfRotation);
         // Normalize the wheel speeds so we aren't trying to set above the max
@@ -307,9 +303,6 @@ public class Drive extends SubsystemBase {
                 _frontLeftModule.getModulePosition(), _frontRightModule.getModulePosition(),
                 _backLeftModule.getModulePosition(), _backRightModule.getModulePosition()
         });
-
-        //System.out.println("Odometry: " + _odometry.getEstimatedPosition());
-        SmartDashboard.putString("Odometry", _odometry.getEstimatedPosition().toString());
 
         // Set each module's speed and angle
         _frontLeftModule.set(states[0].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE,

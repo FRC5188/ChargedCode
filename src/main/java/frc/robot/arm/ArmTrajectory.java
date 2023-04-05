@@ -3,10 +3,7 @@ package frc.robot.arm;
 import java.util.ArrayList;
 
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.arm.Arm.Arm2DPosition;
 import frc.robot.arm.Arm.ArmJointAngles;
 
 /**
@@ -46,16 +43,6 @@ public class ArmTrajectory {
             m_waypointTimes.add(m_waypointTimes.get(i - 1) + deltaTime);
         }
 
-        SmartDashboard.putString("Waypoints", m_waypoints.toString());
-        SmartDashboard.putString("WaypointDistances", m_waypointDists.toString());
-        SmartDashboard.putString("WaypointTimes", m_waypointTimes.toString());
-        SmartDashboard.putNumber("TotalTime", m_totalTime);
-        SmartDashboard.putNumber("TotalLength", m_totalLength);
-        System.out.println("SPEED: " + m_maxTranslationalSpeed);
-        System.out.println("WAYPOINTS");
-        for(ArmJointAngles w : m_waypoints) {
-            System.out.println("Shoulder: " + w.getShoulderJointAngle() + " Elbow: " + w.getElbowJointAngle());
-        }
     }
 
     /**

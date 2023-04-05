@@ -19,15 +19,11 @@ public abstract class FeedForward {
             shoulderJoint, elbowJoint);
 
     public static double shoulder(double upperSetpoint, double lowerSetpoint) {
-        double ff = (calculate(upperSetpoint, lowerSetpoint).get(0, 0)) / 12.0;
-        SmartDashboard.putNumber("Shoulder FF", ff);
-        return ff;
+        return (calculate(upperSetpoint, lowerSetpoint).get(0, 0)) / 12.0;
     }
 
     public static double elbow(double upperSetpoint, double lowerSetpoint) {
-        double ff = (calculate(upperSetpoint, lowerSetpoint).get(1, 0)) / 12.0;
-        SmartDashboard.putNumber("Elbow FF", ff);
-        return ff;
+        return (calculate(upperSetpoint, lowerSetpoint).get(1, 0)) / 12.0;
     }
 
     private static Vector<N2> calculate(double upperSetpoint, double lowerSetpoint) {
