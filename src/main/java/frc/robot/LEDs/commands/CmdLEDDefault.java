@@ -25,7 +25,7 @@ public class CmdLEDDefault extends CommandBase {
         _armSubsystem = armSubsystem;
         _leds = leds;
         this.gamepieceCounter = 0;
-        addRequirements(_leds);
+        //addRequirements(_leds);
     }
 
     @Override
@@ -75,9 +75,10 @@ public class CmdLEDDefault extends CommandBase {
         else {
             //System.out.println("*********Else*********");
             this._leds._candle.clearAnimation(0);
+            this._leds._candle.configBrightnessScalar(0.5);
             //this._leds._currentAnimation = null;
 
-            if (armPosition == ArmPosition.Stored || armPosition == ArmPosition.LoadStationPickUp || armPosition == ArmPosition.GroundPickUp || armPosition == ArmPosition.EnGarde) {
+            //if (armPosition == ArmPosition.Stored || armPosition == ArmPosition.LoadStationPickUp || armPosition == ArmPosition.GroundPickUp || armPosition == ArmPosition.EnGarde) {
                 switch (armMode) {
 
                     case Cone:
@@ -119,7 +120,7 @@ public class CmdLEDDefault extends CommandBase {
 
             //     }
             // } 
-            }
+            //}
 
             
         }

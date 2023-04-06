@@ -13,7 +13,7 @@ import com.ctre.phoenix.led.StrobeAnimation;
 import com.ctre.phoenix.led.RainbowAnimation;
 import com.ctre.phoenix.led.FireAnimation;
 import com.ctre.phoenix.led.TwinkleAnimation;
-//import com.ctre.phoenix.led.SingleFadeAnimation;
+import com.ctre.phoenix.led.SingleFadeAnimation;
 
 public class LEDs extends SubsystemBase {
 
@@ -40,6 +40,7 @@ public class LEDs extends SubsystemBase {
         ScoreLow,
         LostGamepiece,
         PartyMode,
+        Disabled,
         Off
     }
 
@@ -51,7 +52,8 @@ public class LEDs extends SubsystemBase {
 
         TealStrobe,
         TealTwinkle,
-        PinkPartyMode
+        PinkPartyMode,
+        PinkDisabledMode
     }
 
     public enum LEDCustomAnimations {
@@ -172,6 +174,11 @@ public class LEDs extends SubsystemBase {
             case PartyMode:
                 setAnimation(LEDAnimations.PinkPartyMode);
                 this._currentMode = LEDModes.PartyMode;
+                break;
+
+            case Disabled:
+                setAnimation(LEDAnimations.PinkDisabledMode);
+                this._currentMode = LEDModes.Disabled;
                 break;
 
             case Off:
@@ -299,6 +306,9 @@ public class LEDs extends SubsystemBase {
                 _currentGValue += PinkToWhiteGIncrement;
                 _currentBValue += PinkToWhiteBIncrement;
                 break;
+
+            case PinkDisabledMode:
+                this._storedAnimation = new  SingleFadeAnimation(LEDCount, LEDCount, LEDCount, LEDCount, LEDCount, LEDCount, LEDCount);
 
             default:
                 this._storedAnimation = null;
