@@ -64,7 +64,8 @@ public class Robot extends TimedRobot {
     /** This function is called once each time the robot enters Disabled mode. */
     @Override
     public void disabledInit() {
-        m_robotContainer.updateLEDs().schedule();
+        //CommandScheduler.getInstance().cancelAll();
+        //m_robotContainer.updateLEDs().schedule();
     }
 
     @Override
@@ -80,7 +81,7 @@ public class Robot extends TimedRobot {
         m_autonomousCommand = m_robotContainer.getAutonomousCommand();
         m_robotContainer.getPIDCommand().schedule();
         m_robotContainer.getInitialArmPosCommand().schedule();
-        m_robotContainer.updateLEDs().schedule();
+        //m_robotContainer.updateLEDs().schedule();
         m_robotContainer.setTestMode(false);
 
         if (m_autonomousCommand != null) {
@@ -103,7 +104,7 @@ public class Robot extends TimedRobot {
             m_autonomousCommand.cancel();
         }
 
-        m_robotContainer.updateLEDs().schedule();
+        //m_robotContainer.updateLEDs().schedule();
         m_robotContainer.getPIDCommand().schedule();
         m_robotContainer.getInitialArmPosCommand().schedule();
         m_robotContainer.setTestMode(false);

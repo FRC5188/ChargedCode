@@ -3,11 +3,13 @@ package frc.robot.LEDs.commands;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.LEDs.LEDs;
 //import frc.robot.LEDs.LEDs.LEDAnimations;
+//import frc.robot.LEDs.LEDs.LEDAnimations;
 //import frc.robot.LEDs.LEDs.LEDCustomAnimations;
 import frc.robot.LEDs.LEDs.LEDModes;
 import frc.robot.arm.Arm;
 import frc.robot.arm.Arm.ArmMode;
 import frc.robot.arm.Arm.ArmPosition;
+import edu.wpi.first.wpilibj.DriverStation;
 
 public class CmdLEDDefault extends CommandBase {
     private Arm _armSubsystem;
@@ -23,18 +25,32 @@ public class CmdLEDDefault extends CommandBase {
         _armSubsystem = armSubsystem;
         _leds = leds;
         this.gamepieceCounter = 0;
+        //addRequirements(_leds);
     }
 
     @Override
     public void initialize() {    
 
-        System.out.println("LEDs Off (initializing)");
-        this._leds.setLEDMode(LEDModes.Off);
+        //System.out.println("LEDs Off (initializing)");
+        this._leds.setLEDMode(LEDModes.LostGamepiece);
+    }
+
+    @Override
+    public boolean runsWhenDisabled() {
+        return true;
     }
 
     @Override
     public void execute() {
         
+        if (DriverStation.isDisabled()) {
+            _leds.setLEDMode(LEDModes.PartyMode);
+            //_leds._candle.setLEDs(255, 0, 0);
+            _leds._candle.configBrightnessScalar(0.1);
+            //System.out.println("########## Disabled! Activate rainbow. ##########");
+            return;
+        }
+
         this.armMode = this._armSubsystem.getArmMode();
         this.armPosition = this._armSubsystem.getCurrentArmPosition();
         this.currentTemperature = this._leds.getLEDTemperature();
@@ -57,11 +73,12 @@ public class CmdLEDDefault extends CommandBase {
         }
         
         else {
-            System.out.println("*********Else*********");
+            //System.out.println("*********Else*********");
             this._leds._candle.clearAnimation(0);
+            this._leds._candle.configBrightnessScalar(0.5);
             //this._leds._currentAnimation = null;
 
-            if (armPosition == ArmPosition.Stored || armPosition == ArmPosition.LoadStationPickUp || armPosition == ArmPosition.GroundPickUp || armPosition == ArmPosition.EnGarde) {
+            //if (armPosition == ArmPosition.Stored || armPosition == ArmPosition.LoadStationPickUp || armPosition == ArmPosition.GroundPickUp || armPosition == ArmPosition.EnGarde) {
                 switch (armMode) {
 
                     case Cone:
@@ -80,6 +97,8 @@ public class CmdLEDDefault extends CommandBase {
                         // }
                         break;
                 }
+            
+        
             //}
 
             // else {
@@ -101,8 +120,12 @@ public class CmdLEDDefault extends CommandBase {
 
             //     }
             // } 
-            }
+            //}
+
+            
         }
+
+        _leds.setLEDMode(LEDModes.Off);
     }
 
     @Override
