@@ -14,7 +14,7 @@ import java.lang.Math;
 public class Limelight extends SubsystemBase {
   /** Creates a new Limelight. */
   // CONSTANTS
-  double LIMELIGHT_HEIGHT = 0.0;
+  double LIMELIGHT_HEIGHT = 0.00;
   double LIMELIGHT_TO_CENTER_X_OFFSET = 0.0;
   double tolerance = 1.0;
 
@@ -22,11 +22,8 @@ public class Limelight extends SubsystemBase {
   NetworkTable table;
   double tx;
   double ty;
-  double tv;
-  long tclass;
   
   public Limelight() {
-    NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight");
   }
 
   private double getDistanceAway(){
@@ -41,12 +38,19 @@ public class Limelight extends SubsystemBase {
     double offset = LIMELIGHT_TO_CENTER_X_OFFSET - getLimelightToCubeHorizontal();
     return (Math.abs(offset) < tolerance);
   }
-
+  public double getTx(){
+    return this.tx;
+  }
   @Override
   public void periodic() {
-    tx = table.getValue("tx").getDouble();
-    ty = table.getValue("ty").getDouble();
-    tv = table.getValue("tv").getDouble();
-    tclass = table.getValue("tclass").getInteger();
+    tx = NetworkTableInstance.getDefault().getTable("limelight").getValue("tx").getDouble();
+    ty = NetworkTableInstance.getDefault().getTable("limelight").getValue("ty").getDouble();
+
+    System.out.println("Distance: " + getDistanceAway());
+
+
+    SmartDashboard.putBoolean("Is robot aligned?", isRobotAligned());
+    SmartDashboard.putNumber("Distance to cube", getDistanceAway());
+    SmartDashboard.putNumber("Get horizontal distance to cube", getLimelightToCubeHorizontal());
   }
 }

@@ -48,6 +48,7 @@ import frc.robot.arm.commands.CmdArmMoveElbowManual;
 import frc.robot.arm.commands.CmdArmMoveShoulderManual;
 import frc.robot.dashboard.Dashboard;
 import frc.robot.drive.Drive;
+import frc.robot.vision.Limelight;
 import frc.robot.drive.commands.CmdDriveAutoBalance;
 import frc.robot.drive.commands.CmdDriveAutoRotate;
 import frc.robot.drive.commands.CmdDriveChangeCoR;
@@ -66,10 +67,11 @@ import frc.robot.drive.commands.DefaultDriveCommand;
  */
 public class RobotContainer {
         // The robot's subsystems and commands are defined here...
-        private final Drive _driveSubsystem = new Drive();
+        public final Drive _driveSubsystem = new Drive();
         private final Arm _armSubsystem = new Arm();
         private final Dashboard _dashboardSubsystem = new Dashboard(_armSubsystem, _driveSubsystem);
         private final LEDs _leds = new LEDs();
+        public final Limelight _limelightSubystem = new Limelight();
 
         private final XboxController _driverController = new XboxController(0);
 
