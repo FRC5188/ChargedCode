@@ -84,6 +84,7 @@ public class LEDs extends SubsystemBase {
     public int _currentBValue = 220;
 
     public CANdle _candle = new CANdle(Constants.CanIDs.CANDLE_ID, "rio");
+    public Boolean _shouldStartPartyModeAnimation = false;
     public Boolean _shouldRunHasGamepieceAnimation = false;
     private Animation _storedAnimation;
 
@@ -114,6 +115,14 @@ public class LEDs extends SubsystemBase {
 
     public void setShouldRunGamepieceAnimation(Boolean shouldRunHasGamepieceAnimation) {
         _shouldRunHasGamepieceAnimation = shouldRunHasGamepieceAnimation;
+    }
+
+    public Boolean getShouldStartPartyModeAnimation() {
+        return _shouldStartPartyModeAnimation;
+    }
+
+    public void setShouldStartPartyModeAnimation(Boolean shouldStartPartyModeAnimation) {
+        _shouldStartPartyModeAnimation = shouldStartPartyModeAnimation;
     }
     
     /**

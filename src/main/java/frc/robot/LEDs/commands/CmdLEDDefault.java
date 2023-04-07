@@ -32,7 +32,7 @@ public class CmdLEDDefault extends CommandBase {
     public void initialize() {    
 
         //System.out.println("LEDs Off (initializing)");
-        this._leds.setLEDMode(LEDModes.LostGamepiece);
+        //this._leds.setLEDMode(LEDModes.LostGamepiece);
     }
 
     @Override
@@ -63,10 +63,14 @@ public class CmdLEDDefault extends CommandBase {
             _leds.setShouldRunGamepieceAnimation(false);
         }
 
+        if (_leds.getShouldStartPartyModeAnimation()) {
+            _leds.setLEDMode(LEDModes.PartyMode);
+            return;
+        }
+
         // This is an "if" instead of an "elif."
         // Otherwise, we would skip over it when the counter is first set to 50.
         if (this.gamepieceCounter > 0) {
-            //System.out.println("STILL RUNNING GAME PIECE ANIMATION. Counter: " + counter);
             this.gamepieceCounter -= 1;
             this._leds.setLEDMode(LEDModes.HasGamepiece);
         }
@@ -75,7 +79,6 @@ public class CmdLEDDefault extends CommandBase {
             //System.out.println("*********Else*********");
             this._leds._candle.clearAnimation(0);
             //this._leds._candle.configBrightnessScalar(0.5);
-            //this._leds._currentAnimation = null;
 
             //if (armPosition == ArmPosition.Stored || armPosition == ArmPosition.LoadStationPickUp || armPosition == ArmPosition.GroundPickUp || armPosition == ArmPosition.EnGarde) {
                 switch (armMode) {
