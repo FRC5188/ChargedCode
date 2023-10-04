@@ -71,7 +71,6 @@ public class RobotContainer {
         private final Arm _armSubsystem = new Arm();
         private final Dashboard _dashboardSubsystem = new Dashboard(_armSubsystem, _driveSubsystem);
         private final LEDs _leds = new LEDs();
-        public final Limelight _limelightSubystem = new Limelight();
 
         private final XboxController _driverController = new XboxController(0);
 
@@ -118,6 +117,8 @@ public class RobotContainer {
         private JoystickButton _op2ButtonFour = new JoystickButton(_operatorController2, 4);
         private JoystickButton _op2ButtonFive = new JoystickButton(_operatorController2, 5);
         private JoystickButton _op2ButtonSix = new JoystickButton(_operatorController2, 6);
+        private JoystickButton _op2ButtonNine = new JoystickButton(_operatorController2, 9);
+
 
         public final Joystick _sliderJoystick = new Joystick(2);
         private JoystickButton _opButtonThirteen = new JoystickButton(_operatorController1, 13);
@@ -158,8 +159,12 @@ public class RobotContainer {
                                 Autonomous.generateFullAuto("HighCubeMobilityBalance", eventMap, 3, 0.75,
                                                 _driveSubsystem));
 
-                _dashboardSubsystem.addAuto("2.5 Piece Cubes",
-                                Autonomous.generateFullAuto("2.5PieceWithPassive", eventMap, 3.5, 1.5,
+                _dashboardSubsystem.addAuto("2.5 Piece Cubes No Bump",
+                                Autonomous.generateFullAuto("2.5PieceWithPassiveNoBump", eventMap, 3.5, 1.5,
+                                                _driveSubsystem));
+
+                _dashboardSubsystem.addAuto("2.5 Piece Cubes With Bump",
+                                Autonomous.generateFullAuto("2.5PieceWithPassiveBump", eventMap, 3.5, 1.5,
                                                 _driveSubsystem));
 
                 _dashboardSubsystem.addAuto("1.5 Piece Cone",
@@ -284,8 +289,8 @@ public class RobotContainer {
                 _opButtonOne.whileFalse(new CmdArmDisablePID(_armSubsystem));
 
                 // Move arm to position manual
-                double elbowUpAmount = 5.0;
-                double elbowDownAmount = -5.0;
+                double elbowUpAmount = 3.0;
+                double elbowDownAmount = -3.0;
                 double shoulderUpAmount = 3.0;
                 double shoulderDownAmount = -3.0;
 
@@ -301,8 +306,8 @@ public class RobotContainer {
                                 new InstantCommand(() -> _armSubsystem
                                                 .setCurrentPosition(_armSubsystem.getTargetArmPosition())));
 
-                _opButtonSix.whileTrue(new InstantCommand(() -> _armSubsystem.setCanChangeSetpoint(true)));
-                _opButtonSix.whileFalse(new InstantCommand(() -> _armSubsystem.setCanChangeSetpoint(false)));
+                _op2ButtonNine.whileTrue(new InstantCommand(() -> _armSubsystem.setCanChangeSetpoint(true)));
+                _op2ButtonNine.whileFalse(new InstantCommand(() -> _armSubsystem.setCanChangeSetpoint(false)));
 
                 // this currently infinitely adds to the current setpoint while button is held
                 // _opButtonOne.whileTrue(Commands.parallel(
@@ -389,6 +394,10 @@ public class RobotContainer {
 
         public void setTestMode(boolean inTest) {
                 _armSubsystem.setTestMode(inTest);
+        }
+
+        public void setAutoMode(boolean inAuto) {
+                _armSubsystem.setAutonomousMode(inAuto);
         }
 
         private static double deadband(double value, double deadband) {

@@ -57,13 +57,15 @@ public class CmdLEDDefault extends CommandBase {
         //this._finalArmPosition = this._armSubsystem.getFinalPosition();
 
         if (_leds.getShouldRunGamepieceAnimation()) {
+            System.out.println("Start HasGamepiece");
             // Code runs 50 times per second.
             // This counter should count down for one second.
             this.gamepieceCounter = 50;
             _leds.setShouldRunGamepieceAnimation(false);
         }
 
-        if (_leds.getShouldStartPartyModeAnimation()) {
+        else if (_leds.getShouldStartPartyModeAnimation()) {
+            System.out.println("Starty Party");
             _leds.setLEDMode(LEDModes.PartyMode);
             return;
         }
@@ -71,6 +73,7 @@ public class CmdLEDDefault extends CommandBase {
         // This is an "if" instead of an "elif."
         // Otherwise, we would skip over it when the counter is first set to 50.
         if (this.gamepieceCounter > 0) {
+            System.out.println("Running HasGamepiece Animation");
             this.gamepieceCounter -= 1;
             this._leds.setLEDMode(LEDModes.HasGamepiece);
         }
@@ -81,24 +84,24 @@ public class CmdLEDDefault extends CommandBase {
             //this._leds._candle.configBrightnessScalar(0.5);
 
             //if (armPosition == ArmPosition.Stored || armPosition == ArmPosition.LoadStationPickUp || armPosition == ArmPosition.GroundPickUp || armPosition == ArmPosition.EnGarde) {
-                switch (armMode) {
+            switch (armMode) {
 
-                    case Cone:
-                        this._leds.setLEDMode(LEDModes.Cone);
-                        break;
+                case Cone:
+                    this._leds.setLEDMode(LEDModes.Cone);
+                    break;
 
-                    case Cube:
-                        //System.out.println("Running PartyMode");
-                        this._leds.setLEDMode(LEDModes.Cube);
-                        // if (this._leds._currentAnimation == LEDAnimations.TealTwinkle) {
-                        //     this._leds._candle.clearAnimation(0);
-                        //     return;
-                        // }
-                        // else {
-                        //     this._leds.setAnimation(LEDAnimations.TealTwinkle); 
-                        // }
-                        break;
-                }
+                case Cube:
+                    //System.out.println("Running PartyMode");
+                    this._leds.setLEDMode(LEDModes.Cube);
+                    // if (this._leds._currentAnimation == LEDAnimations.TealTwinkle) {
+                    //     this._leds._candle.clearAnimation(0);
+                    //     return;
+                    // }
+                    // else {
+                    //     this._leds.setAnimation(LEDAnimations.TealTwinkle); 
+                    // }
+                    break;
+            }
             
         
             //}

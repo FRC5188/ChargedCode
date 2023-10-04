@@ -6,6 +6,7 @@ package frc.robot.arm;
 
 import java.util.ArrayList;
 
+import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
@@ -14,14 +15,13 @@ import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
+import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -166,7 +166,8 @@ public class Arm extends SubsystemBase {
 
     /** Arm elbow and wrist potentionmeters. Measures arm angle **/
     private AnalogInput _elbowPotentiometer;
-    private AnalogInput _shoulderPotentiometer;
+    //private AnalogInput _shoulderPotentiometer;
+    private DutyCycleEncoder _shoulderEncoder;
 
     // Arm PID controllers
     private PIDController _shoulderMotorPID;
@@ -186,6 +187,7 @@ public class Arm extends SubsystemBase {
     // POSITION
     // setCurrentPosition isn't updated
     private boolean _inSetpointTestingMode = false;
+    public boolean _inAutonomousMode = false;
 
     private boolean _pidEnable;
 
@@ -205,15 +207,17 @@ public class Arm extends SubsystemBase {
                 Constants.PHPorts.INTAKE_SOLENOID_REVERSE_PORT);
 
         _elbowPotentiometer = new AnalogInput(Constants.AIO.ELBOW_PORT_POT);
-        _shoulderPotentiometer = new AnalogInput(Constants.AIO.SHOULDER_PORT_POT);
+        //_shoulderPotentiometer = new AnalogInput(Constants.AIO.SHOULDER_PORT_POT);
+        _shoulderEncoder = new DutyCycleEncoder(0);
         _elbowPotentiometer.setAverageBits(2);
         _elbowPotentiometer.setOversampleBits(0);
-        _shoulderPotentiometer.setAverageBits(2);
-        _shoulderPotentiometer.setOversampleBits(0);
+        // _shoulderPotentiometer.setAverageBits(2);
+        // _shoulderPotentiometer.setOversampleBits(0);
 
         // Set the motors to adjust their output based on battery voltage
         _shoulderMotor.configVoltageCompSaturation(ArmConstants.MAX_MOTOR_VOLTAGE);
         _shoulderMotor.enableVoltageCompensation(true);
+        _shoulderMotor.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor);
         _elbowMotor.configVoltageCompSaturation(ArmConstants.MAX_MOTOR_VOLTAGE);
         _elbowMotor.enableVoltageCompensation(true);
 
@@ -261,6 +265,10 @@ public class Arm extends SubsystemBase {
         _inSetpointTestingMode = inTest;
     }
 
+    public void setAutonomousMode(boolean inAuto) {
+        _inAutonomousMode = inAuto;
+    }
+
     public boolean canChangeSetpoint() {
         return _canChangeSetpoint;
     }
@@ -302,6 +310,7 @@ public class Arm extends SubsystemBase {
         SmartDashboard.putNumber("Shoulder Angle", this.getShoulderJointAngle());
         SmartDashboard.putNumber("Sholder Angle Setpoint", this.getShoulderSetpoint());
         SmartDashboard.putNumber("Elbow Angle Setpoint", this.getElbowSetpoint());
+        SmartDashboard.putNumber("Shoulder Pot", this.getShoulderPotPos());
         SmartDashboard.putNumber("Elbow Pot", this.getElbowPotPos());
         SmartDashboard.putNumber("Elbow Motor Output", this._elbowMotor.get());
         SmartDashboard.putNumber("Shoulder Motor Output", this._shoulderMotor.get());
@@ -553,8 +562,11 @@ public class Arm extends SubsystemBase {
             _elbowMotor.set(speed);
     }
 
-    public int getShoulderPotPos() {
-        return _shoulderPotentiometer.getAverageValue();
+    public double getShoulderPotPos() {
+        //return _shoulderMotor.getSelectedSensorPosition() / 12;
+
+        //return _shoulderPotentiometer.getAverageValue();
+        return _shoulderEncoder.getAbsolutePosition();
     }
 
     public int getElbowPotPos() {
@@ -958,7 +970,9 @@ public class Arm extends SubsystemBase {
             speed = TrajectorySpeeds.GROUND_PICKUP_TO_STORED_SPEED;
         } else if (this._currentArmPos == ArmPosition.Stored && position == ArmPosition.HighCube) {
             speed = TrajectorySpeeds.STORED_TO_HIGH_CUBE_SPEED;
-        }
+        }  else if (this._currentArmPos == ArmPosition.Stored && position == ArmPosition.EnGarde && _inAutonomousMode) {
+            speed = TrajectorySpeeds.STORED_TO_ENGARDE_AUTO_SPEED;
+        } 
 
         _trajectory = new ArmTrajectory(waypoints, speed);
     }

@@ -8,10 +8,10 @@ import frc.robot.arm.Arm.IntakeMode;
 
 public class ArmConstants {
 
-        public static double SHOULDER_0_DEGREE_POT_OFFSET = 2217;
-        public static double SHOULDER_90_DEGREE_POT_OFFSET = 1868;
-        public static double ELBOW_90_DEGREE_POT_OFFSET = 1630;
-        public static double ELBOW_0_DEGREE_POT_OFFSET = 1981;
+        public static double SHOULDER_0_DEGREE_POT_OFFSET = 0.8470; //0.8293
+        public static double SHOULDER_90_DEGREE_POT_OFFSET = 0.6059; //0.6073
+        public static double ELBOW_90_DEGREE_POT_OFFSET = 1625; //1627
+        public static double ELBOW_0_DEGREE_POT_OFFSET = 1976; //1977
 
         // All in degrees
         public static double SHOULDER_UPPER_SOFT_STOP = 150;
@@ -64,25 +64,25 @@ public class ArmConstants {
                 public static double LOW_ELBOW_POS = 18;
 
                 public static double MID_CONE_SHOULDER_POS = 83; //WAS: 78.1 Should be at 80, moving back for ??? - Mike
-                public static double MID_CONE_ELBOW_POS = 95; //WAS: 91.6
+                public static double MID_CONE_ELBOW_POS = 97; //WAS: 91.6
 
                 public static double MID_CONE_SHOULDER_PLACE_POS = 84; //WAS: 78.1 Should be at 80, moving back for ??? - Mike
-                public static double MID_CONE_ELBOW_PLACE_POS = 95; //WAS 67.1 
+                public static double MID_CONE_ELBOW_PLACE_POS = 97; //WAS 67.1 
 
                 public static double MID_CUBE_SHOULDER_POS = 107.8;
-                public static double MID_CUBE_ELBOW_POS = 80.7;
+                public static double MID_CUBE_ELBOW_POS = 85.7;
                 //shoul 40.2, elbow 110
                 public static double HIGH_CONE_SPIT_SHOULDER_POS = 42; //WAS: 35
-                public static double HIGH_CONE_SPIT_ELBOW_POS = 125; //WAS: 125
+                public static double HIGH_CONE_SPIT_ELBOW_POS = 127; //WAS: 125
 
                 // this is set to be the height prior to dropping. ignore the name.
                 // needs refactored
                 // shol 44.7, elbow 121.5
                 public static double HIGH_CONE_DROP_SHOULDER_POS = 42; //WAS: 35
-                public static double HIGH_CONE_DROP_ELBOW_POS = 125; //WAS: 125
+                public static double HIGH_CONE_DROP_ELBOW_POS = 127; //WAS: 125
 
                 public static double HIGH_CUBE_SHOULDER_POS = 77.3;
-                public static double HIGH_CUBE_ELBOW_POS = 100.0;
+                public static double HIGH_CUBE_ELBOW_POS = 102.0;
 
                 public static double HUMAN_PLAYER_SHOULDER_POS = 113.5;
                 public static double HUMAN_PLAYER_ELBOW_POS = 92.5;
@@ -116,6 +116,9 @@ public class ArmConstants {
                 public static final double STORED_TO_GROUND_PICKUP_SPEED = 50;
                 public static final double GROUND_PICKUP_TO_STORED_SPEED = 45;
                 public static final double STORED_TO_HIGH_CUBE_SPEED = 50;
+                public static final double STORED_TO_ENGARDE_AUTO_SPEED = 15;
+
+
         }
 
         public static class IntermediateWaypoints {
@@ -133,6 +136,7 @@ public class ArmConstants {
                 // static double [][] ENGARDE_TO_HIGH_CONE = { { 104, 89 }, { 80, 95}, {45, 120}};
                 public static double[][] ENGARDE_TO_HIGH_CUBE = { {121.46, 120}, {116.80, 130}, {110.80, 130}, {105.80, 130}, {99.80, 130}, {94.80, 130}, {89.80, 130}, {78.80, 130} };
                 public static double[][] GROUND_PICKUP_TO_STORED = {{46.2, 7}, {69.6, 35}, {80, 3.5}};
+
 
                 public static double[][] ENGARDE_TO_GROUND_PICKUP = {{119.7 , 81.0}, {97.7, 76.0}, {80.0, 78.0}, {70.9, 70.0}, {55.8, 69.0}, {49.2, 64.0}};
         } 

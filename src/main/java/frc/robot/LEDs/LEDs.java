@@ -181,6 +181,8 @@ public class LEDs extends SubsystemBase {
                 break;
 
             case PartyMode:
+            this._candle.setLEDs(0, 0, 0);
+            this._candle.clearAnimation(0);
                 setAnimation(LEDAnimations.PinkPartyMode);
                 this._currentMode = LEDModes.PartyMode;
                 break;
@@ -299,13 +301,13 @@ public class LEDs extends SubsystemBase {
             case PinkPartyMode:
                 this._storedAnimation = new TwinkleAnimation(_currentRValue, _currentGValue, _currentBValue, 100, 0.6, LEDCount, TwinklePercent.Percent64);
 
-                if (_currentRValue == WhiteRValue && _currentGValue == WhiteGValue && _currentBValue == WhiteBValue) {
+                if (_currentRValue >= WhiteRValue && _currentGValue >= WhiteGValue && _currentBValue >= WhiteBValue) {
                     PinkToWhiteRIncrement *= -1;
                     PinkToWhiteGIncrement *= -1;
                     PinkToWhiteBIncrement *= -1;
                 }
 
-                else if (_currentRValue == PinkRValue && _currentGValue == PinkGValue && _currentBValue == PinkBValue) {
+                else if (_currentRValue <= PinkRValue && _currentGValue <= PinkGValue && _currentBValue <= PinkBValue) {
                     PinkToWhiteRIncrement *= -1;
                     PinkToWhiteGIncrement *= -1;
                     PinkToWhiteBIncrement *= -1;

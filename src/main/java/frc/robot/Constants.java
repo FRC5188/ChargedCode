@@ -108,7 +108,7 @@ public final class Constants {
 
     public static class AIO {
         public final static int ELBOW_PORT_POT = 0;
-        public final static int SHOULDER_PORT_POT = 1;
+        public final static int SHOULDER_PORT_POT = 2;
     }
 
     public static class CanIDs {

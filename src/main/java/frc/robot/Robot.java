@@ -83,6 +83,7 @@ public class Robot extends TimedRobot {
         m_robotContainer.getInitialArmPosCommand().schedule();
         //m_robotContainer.updateLEDs().schedule();
         m_robotContainer.setTestMode(false);
+        m_robotContainer.setAutoMode(true);
 
         if (m_autonomousCommand != null) {
             m_autonomousCommand.schedule();
@@ -103,8 +104,10 @@ public class Robot extends TimedRobot {
         if (m_autonomousCommand != null) {
             m_autonomousCommand.cancel();
         }
+        m_robotContainer.setAutoMode(false);
 
-        //m_robotContainer.updateLEDs().schedule();
+
+        m_robotContainer.updateLEDs().schedule();
         m_robotContainer.getPIDCommand().schedule();
         m_robotContainer.getInitialArmPosCommand().schedule();
         m_robotContainer.setTestMode(false);
@@ -120,6 +123,8 @@ public class Robot extends TimedRobot {
         // Cancels all running commands at the start of test mode.
         CommandScheduler.getInstance().cancelAll();
         m_robotContainer.setTestMode(true);
+        m_robotContainer.setAutoMode(true);
+
     }
 
     /** This function is called periodically during test mode. */
