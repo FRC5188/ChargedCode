@@ -297,24 +297,25 @@ public class LEDs extends SubsystemBase {
                 break;
 
             case PinkPartyMode:
-                this._storedAnimation = new TwinkleAnimation(_currentRValue, _currentGValue, _currentBValue, 100, 0.6, LEDCount, TwinklePercent.Percent64);
+                setAnimation(LEDAnimations.Rainbow);
+                // this._storedAnimation = new TwinkleAnimation(_currentRValue, _currentGValue, _currentBValue, 100, 0.6, LEDCount, TwinklePercent.Percent64);
 
-                if (_currentRValue == WhiteRValue && _currentGValue == WhiteGValue && _currentBValue == WhiteBValue) {
-                    PinkToWhiteRIncrement *= -1;
-                    PinkToWhiteGIncrement *= -1;
-                    PinkToWhiteBIncrement *= -1;
-                }
+                // if (_currentRValue == WhiteRValue && _currentGValue == WhiteGValue && _currentBValue == WhiteBValue) {
+                //     PinkToWhiteRIncrement *= -1;
+                //     PinkToWhiteGIncrement *= -1;
+                //     PinkToWhiteBIncrement *= -1;
+                // }
 
-                else if (_currentRValue == PinkRValue && _currentGValue == PinkGValue && _currentBValue == PinkBValue) {
-                    PinkToWhiteRIncrement *= -1;
-                    PinkToWhiteGIncrement *= -1;
-                    PinkToWhiteBIncrement *= -1;
-                }
+                // else if (_currentRValue == PinkRValue && _currentGValue == PinkGValue && _currentBValue == PinkBValue) {
+                //     PinkToWhiteRIncrement *= -1;
+                //     PinkToWhiteGIncrement *= -1;
+                //     PinkToWhiteBIncrement *= -1;
+                // }
 
-                _currentRValue += PinkToWhiteRIncrement;
-                _currentGValue += PinkToWhiteGIncrement;
-                _currentBValue += PinkToWhiteBIncrement;
-                break;
+                // _currentRValue += PinkToWhiteRIncrement;
+                // _currentGValue += PinkToWhiteGIncrement;
+                // _currentBValue += PinkToWhiteBIncrement;
+                // break;
 
             case PinkDisabledMode:
                 this._storedAnimation = new  SingleFadeAnimation(LEDCount, LEDCount, LEDCount, LEDCount, LEDCount, LEDCount, LEDCount);
