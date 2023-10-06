@@ -181,9 +181,11 @@ public class LEDs extends SubsystemBase {
                 break;
 
             case PartyMode:
-            this._candle.setLEDs(0, 0, 0);
-            this._candle.clearAnimation(0);
-                setAnimation(LEDAnimations.PinkPartyMode);
+                this._candle.setLEDs(0, 0, 0);
+                this._candle.clearAnimation(0);
+            // setColor(LEDColors.Pink);
+                setAnimation(LEDAnimations.Rainbow);
+            
                 this._currentMode = LEDModes.PartyMode;
                 break;
 
@@ -211,7 +213,7 @@ public class LEDs extends SubsystemBase {
      */
 
     public void setColor(LEDColors color) {
-
+        //ANIMATION = NULL
         switch(color) {
             case Pink: 
                 _candle.setLEDs(210, 55, 120); 
@@ -274,7 +276,7 @@ public class LEDs extends SubsystemBase {
 
     public void setAnimation(LEDAnimations animation) {
 
-        this._candle.clearAnimation(0);
+        //this._candle.clearAnimation(0);
 
         switch(animation) {
 
@@ -328,7 +330,7 @@ public class LEDs extends SubsystemBase {
 
         }
 
-        this._candle.animate(this._storedAnimation, 0);
+        // this._candle.animate(this._storedAnimation, 0);
 
         // Use this print statement for testing/debugging:
         //System.out.println("Current animation: " + _storedAnimation.toString());
@@ -410,5 +412,12 @@ public class LEDs extends SubsystemBase {
             this._candle.setLEDs(0, 0, 0);
             this._candle.configBrightnessScalar(0.0);
         }
+    }
+
+    @Override
+    public void periodic(){
+
+         this._candle.animate(this._storedAnimation, 0);
+
     }
 }

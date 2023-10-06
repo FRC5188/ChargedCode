@@ -21,6 +21,7 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.ButtonMappings;
 import frc.robot.LEDs.LEDs;
+import frc.robot.LEDs.commands.CmdLEDAnimation;
 import frc.robot.LEDs.commands.CmdLEDDefault;
 import frc.robot.LEDs.commands.CmdLEDPieceCollected;
 import frc.robot.arm.Arm;
@@ -70,7 +71,7 @@ public class RobotContainer {
         public final Drive _driveSubsystem = new Drive();
         private final Arm _armSubsystem = new Arm();
         private final Dashboard _dashboardSubsystem = new Dashboard(_armSubsystem, _driveSubsystem);
-        private final LEDs _leds = new LEDs();
+        public final LEDs _leds = new LEDs();
 
         private final XboxController _driverController = new XboxController(0);
 
@@ -385,6 +386,12 @@ public class RobotContainer {
         public Command updateLEDs() {
                 System.out.println("Cmd UpdateLEDs");
                 return new CmdLEDDefault(_leds, _armSubsystem);
+        }
+
+        public Command setLEDAnim(){
+                System.out.println("Cmd UpdateLEDANIM");
+                new CmdLEDAnimation(_leds);
+                return new CmdLEDAnimation(_leds);
         }
 
         // public Command updateDisabledLEDs() {

@@ -45,11 +45,11 @@ public class CmdLEDDefault extends CommandBase {
         
         if (DriverStation.isDisabled()) {
             _leds.setLEDMode(LEDModes.PartyMode);
-            _leds._candle.configBrightnessScalar(0.1);
+            //_leds._candle.configBrightnessScalar(0.1);
             System.out.println("########## Disabled! Activate rainbow. ##########");
             return;
         }
-
+        
         this.armMode = this._armSubsystem.getArmMode();
         //this.armPosition = this._armSubsystem.getCurrentArmPosition();
         this.currentTemperature = this._leds.getLEDTemperature();
@@ -66,7 +66,7 @@ public class CmdLEDDefault extends CommandBase {
 
         else if (_leds.getShouldStartPartyModeAnimation()) {
             System.out.println("Starty Party");
-            _leds.setLEDMode(LEDModes.PartyMode);
+            _leds.setLEDMode(LEDModes.Cone);
             return;
         }
 
