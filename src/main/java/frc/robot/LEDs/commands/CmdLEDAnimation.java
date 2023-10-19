@@ -14,7 +14,7 @@ public class CmdLEDAnimation extends CommandBase {
 
     @Override
     public void initialize() {
-               _leds.setAnimation(LEDAnimations.Rainbow);
+               _leds.setAnimation(LEDAnimations.Rainbow, -1);
 
         System.out.println("SETTING CANDLE LED TO TEAL FOR GAME PIECE");
     }

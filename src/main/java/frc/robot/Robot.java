@@ -67,7 +67,7 @@ public class Robot extends TimedRobot {
     public void disabledInit() {
         CommandScheduler.getInstance().cancelAll();
         //  m_robotContainer.updateLEDs().schedule();
-            m_robotContainer._leds.setAnimation(LEDAnimations.Rainbow);
+            m_robotContainer._leds.setAnimation(LEDAnimations.Rainbow, -1);
     }
 
     @Override
