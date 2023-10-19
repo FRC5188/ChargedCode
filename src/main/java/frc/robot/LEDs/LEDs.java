@@ -1,6 +1,7 @@
 package frc.robot.LEDs;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants;
 
 import com.ctre.phoenix.led.Animation;
@@ -153,7 +154,7 @@ public class LEDs extends SubsystemBase {
                 break;
 
             case HasGamepiece:
-                setAnimation(LEDAnimations.TealStrobe);
+                setAnimation(LEDAnimations.TealStrobe, 0);
                 this._currentMode = LEDModes.HasGamepiece;
                 break;
 
@@ -183,14 +184,13 @@ public class LEDs extends SubsystemBase {
             case PartyMode:
                 this._candle.setLEDs(0, 0, 0);
                 this._candle.clearAnimation(0);
-            // setColor(LEDColors.Pink);
-                setAnimation(LEDAnimations.Rainbow);
+                setAnimation(LEDAnimations.Rainbow, -1);
             
                 this._currentMode = LEDModes.PartyMode;
                 break;
 
             case Disabled:
-                setAnimation(LEDAnimations.PinkDisabledMode);
+                setAnimation(LEDAnimations.PinkDisabledMode, -1);
                 this._currentMode = LEDModes.Disabled;
                 break;
 
@@ -274,7 +274,7 @@ public class LEDs extends SubsystemBase {
      * 
      */
 
-    public void setAnimation(LEDAnimations animation) {
+    public void setAnimation(LEDAnimations animation, double duration) {
 
         //this._candle.clearAnimation(0);
 
@@ -301,7 +301,7 @@ public class LEDs extends SubsystemBase {
                 break;
 
             case PinkPartyMode:
-                setAnimation(LEDAnimations.Rainbow);
+                setAnimation(LEDAnimations.Rainbow, duration);
                 // this._storedAnimation = new TwinkleAnimation(_currentRValue, _currentGValue, _currentBValue, 100, 0.6, LEDCount, TwinklePercent.Percent64);
 
                 // if (_currentRValue == WhiteRValue && _currentGValue == WhiteGValue && _currentBValue == WhiteBValue) {
@@ -327,15 +327,21 @@ public class LEDs extends SubsystemBase {
             default:
                 this._storedAnimation = null;
                 break;
-
         }
 
-        // this._candle.animate(this._storedAnimation, 0);
+        
+        this._currentAnimation = animation;
+
+        if (duration < 0) {
+            duration = 135; // match length is 2:15
+        }
+
+        new WaitCommand(duration);
+
+        this.setColor(_currentColor);
 
         // Use this print statement for testing/debugging:
         //System.out.println("Current animation: " + _storedAnimation.toString());
-
-        this._currentAnimation = animation;
     }
 
     public void setCustomAnimation(LEDCustomAnimations customAnimation) {
