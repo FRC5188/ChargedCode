@@ -39,14 +39,14 @@ import frc.robot.arm.commands.CmdArmSetMode;
 import frc.robot.arm.commands.CmdArmSpit;
 import frc.robot.arm.commands.CmdArmUpdateGoal;
 import frc.robot.arm.commands.CmdArmUpdateToFinalPosition;
-import frc.robot.arm.commands.CmdArmUpdateToLastTarget;
-import frc.robot.autonomous.Autonomous;
-import frc.robot.autonomous.Autonomous.FIELD_POSITIONS;
+// import frc.robot.arm.commands.CmdArmUpdateToLastTarget;
+// import frc.robot.autonomous.Autonomous;
+// import frc.robot.autonomous.Autonomous.FIELD_POSITIONS;
 import frc.robot.arm.commands.CmdArmDisablePID;
 import frc.robot.arm.commands.CmdArmEnablePID;
 import frc.robot.arm.commands.CmdArmMoveElbowManual;
 import frc.robot.arm.commands.CmdArmMoveShoulderManual;
-import frc.robot.dashboard.Dashboard;
+// import frc.robot.dashboard.Dashboard;
 import frc.robot.drive.Drive;
 import frc.robot.drive.commands.CmdDriveAutoBalance;
 import frc.robot.drive.commands.CmdDriveAutoRotate;
@@ -68,7 +68,7 @@ public class RobotContainer {
         // The robot's subsystems and commands are defined here...
         private final Drive _driveSubsystem = new Drive();
         private final Arm _armSubsystem = new Arm();
-        private final Dashboard _dashboardSubsystem = new Dashboard(_armSubsystem, _driveSubsystem);
+        // private final Dashboard _dashboardSubsystem = new Dashboard(_armSubsystem, _driveSubsystem);
         private final LEDs _leds = new LEDs();
 
         private final XboxController _driverController = new XboxController(0);
@@ -143,26 +143,26 @@ public class RobotContainer {
                                                 * Drive.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND
                                                 * _driveSubsystem.getSpeedMultiplier())));
 
-                HashMap<String, Command> eventMap = generateEventMap();
+                // HashMap<String, Command> eventMap = generateEventMap();
 
-                _dashboardSubsystem.setDefaultAuto("High Cube Mobility",
-                                Autonomous.generateFullAuto("HighCubeMobility", eventMap, 3, 0.75,
-                                                _driveSubsystem));
+                // _dashboardSubsystem.setDefaultAuto("High Cube Mobility",
+                //                 Autonomous.generateFullAuto("HighCubeMobility", eventMap, 3, 0.75,
+                //                                 _driveSubsystem));
 
-                _dashboardSubsystem.addAuto("High Cube Mobility Auto Balance",
-                                Autonomous.generateFullAuto("HighCubeMobilityBalance", eventMap, 3, 0.75,
-                                                _driveSubsystem));
+                // _dashboardSubsystem.addAuto("High Cube Mobility Auto Balance",
+                //                 Autonomous.generateFullAuto("HighCubeMobilityBalance", eventMap, 3, 0.75,
+                //                                 _driveSubsystem));
 
-                _dashboardSubsystem.addAuto("2 Piece Cone Then Cube",
-                                Autonomous.generateFullAuto("2PieceAuto", eventMap, 3, 0.75,
-                                                _driveSubsystem));
+                // _dashboardSubsystem.addAuto("2 Piece Cone Then Cube",
+                //                 Autonomous.generateFullAuto("2PieceAuto", eventMap, 3, 0.75,
+                //                                 _driveSubsystem));
 
-                _dashboardSubsystem.addAuto("1.5 Piece Cone",
-                                Autonomous.generateFullAuto("1.5PieceAuto", eventMap, 3.5, 1.25,
-                                                _driveSubsystem));
+                // _dashboardSubsystem.addAuto("1.5 Piece Cone",
+                //                 Autonomous.generateFullAuto("1.5PieceAuto", eventMap, 3.5, 1.25,
+                //                                 _driveSubsystem));
 
-                _dashboardSubsystem.addAuto("Move a Meter",
-                                Autonomous.generateFullAuto("TEST_Short_Distance", eventMap, 4, 1, _driveSubsystem));
+                // _dashboardSubsystem.addAuto("Move a Meter",
+                //                 Autonomous.generateFullAuto("TEST_Short_Distance", eventMap, 4, 1, _driveSubsystem));
 
                 configureButtonBindings();
         }
@@ -353,9 +353,9 @@ public class RobotContainer {
          *
          * @return the command to run in autonomous
          */
-        public Command getAutonomousCommand() {
+        // public Command getAutonomousCommand() {
 
-                return _dashboardSubsystem.getSelectedAutonomousCommand();
+                // return _dashboardSubsystem.getSelectedAutonomousCommand();
                 // return
                 // Autonomous.getMovementCommand(FIELD_POSITIONS.LEFT_SIDE_GRID_CUBE_SECOND_CLOSEST,
                 // 3, 4, _driveSubsystem, null)
@@ -363,10 +363,11 @@ public class RobotContainer {
                 // _driveSubsystem);
 
                 // return new CmdDriveAutoBalance(_driveSubsystem);
-        }
+        // }
 
         public Command getInitialArmPosCommand() {
-                return new CmdArmUpdateToLastTarget(_armSubsystem);
+                // return new CmdArmUpdateToLastTarget(_armSubsystem);
+                return new CmdArmDefault(_armSubsystem);
         }
 
         public Command getPIDCommand() {

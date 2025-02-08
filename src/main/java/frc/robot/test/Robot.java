@@ -6,7 +6,7 @@ import frc.robot.test.arm.Arm;
 import frc.robot.test.autonomous.Autonomous;
 import frc.robot.test.drive.Drive;
 import frc.robot.test.hardware.Hardware;
-import frc.robot.test.vision.Vision;
+// import frc.robot.test.vision.Vision;
 
 public abstract class Robot {
 	/**
@@ -33,7 +33,7 @@ public abstract class Robot {
 					// Run All Checks
 					runDriveChecks(),
 					runAutonomousChecks(),
-					runVisionChecks(),
+					// runVisionChecks(),
 					runArmChecks(),
 					runHardwareChecks()
 				);
@@ -41,8 +41,8 @@ public abstract class Robot {
 				return runDriveChecks();
 			case AUTONOMOUS_TESTS:
 				return runAutonomousChecks();
-			case VISION_TESTS:
-				return runVisionChecks();
+			// case VISION_TESTS:
+			// 	return runVisionChecks();
 			case ARM_TESTS:
 				return runArmChecks();
 			case HARDWARE_TESTS:
@@ -77,9 +77,9 @@ public abstract class Robot {
 	/**
 	<Strong>Part One: </Strong> 
 	**/
-	private static Command runVisionChecks(){
-        return Vision.runChecks(null);
-	}
+	// private static Command runVisionChecks(){
+    //    // return Vision.runChecks(null);
+	// }
 	
 	private static Command runArmChecks(){
         return Arm.runChecks(null);

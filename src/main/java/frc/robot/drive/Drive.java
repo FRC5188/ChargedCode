@@ -22,7 +22,7 @@ import frc.robot.Constants;
 import frc.robot.drive.sds.Mk4iSwerveModuleHelper;
 import frc.robot.drive.sds.SdsModuleConfigurations;
 import frc.robot.drive.sds.SwerveModule;
-import frc.robot.vision.Vision;
+// import frc.robot.vision.Vision;
 
 /**
  * Singleton subsystem for Drivebase.
@@ -71,7 +71,7 @@ public class Drive extends SubsystemBase {
     /** The offset to get the encoder to read 0 when facing forward */
     private static final double BACK_RIGHT_MODULE_ENCODER_OFFSET = -351.6434;
 
-    private Vision _visionSubsystem;
+    // private Vision _visionSubsystem;
 
     /**
      * This object does the math to convert a motion vector into individual module
@@ -301,7 +301,7 @@ public class Drive extends SubsystemBase {
         SwerveDriveKinematics.desaturateWheelSpeeds(states, MAX_VELOCITY_METERS_PER_SECOND);
 
         // Update odometry if applicable
-        _odometry = Vision.getVisionEstimatedRobotPose(_odometry);
+        // _odometry = Vision.getVisionEstimatedRobotPose(_odometry);
         _odometry.update(
             getGyroscopeRotation(), 
             new SwerveModulePosition[] {
@@ -313,13 +313,13 @@ public class Drive extends SubsystemBase {
         SmartDashboard.putString("Odometry", _odometry.getEstimatedPosition().toString());
 
         // Set each module's speed and angle
-        _frontLeftModule.set(states[0].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE,
+        _frontLeftModule.set(states[0].speedMetersPerSecond / (MAX_VELOCITY_METERS_PER_SECOND / 2) * MAX_VOLTAGE,
                 states[0].angle.getRadians());
-        _frontRightModule.set(states[1].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE,
+        _frontRightModule.set(states[1].speedMetersPerSecond / (MAX_VELOCITY_METERS_PER_SECOND / 2) * MAX_VOLTAGE,
                 states[1].angle.getRadians());
-        _backLeftModule.set(states[2].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE,
+        _backLeftModule.set(states[2].speedMetersPerSecond / (MAX_VELOCITY_METERS_PER_SECOND / 2) * MAX_VOLTAGE,
                 states[2].angle.getRadians());
-        _backRightModule.set(states[3].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE,
+        _backRightModule.set(states[3].speedMetersPerSecond / (MAX_VELOCITY_METERS_PER_SECOND / 2) * MAX_VOLTAGE,
                 states[3].angle.getRadians());
 
         _field.setRobotPose(_odometry.getEstimatedPosition());
